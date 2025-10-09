@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import uuid
 import json
-from database import client, database
+from database import client, database, users_collection, companies_collection, accounts_collection, transactions_collection, documents_collection, audit_logs_collection
 
 # Load environment variables
 load_dotenv()
