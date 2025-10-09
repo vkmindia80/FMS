@@ -308,8 +308,9 @@ async def login_user(user_credentials: UserLogin):
     )
 
 @auth_router.post("/refresh", response_model=Dict[str, str])
-async def refresh_access_token(refresh_token: str):
+async def refresh_access_token(request: RefreshTokenRequest):
     """Refresh access token using refresh token"""
+    refresh_token = request.refresh_token
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
