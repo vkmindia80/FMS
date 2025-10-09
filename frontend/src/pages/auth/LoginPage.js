@@ -140,11 +140,14 @@ const LoginPage = () => {
               <button
                 type="button"
                 onClick={handleDemoLogin}
+                disabled={loading}
                 data-testid="demo-login-button"
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 <UserIcon className="w-4 h-4 mr-1" />
-                Use Demo
+                {loading ? 'Signing In...' : 'Demo Login'}
               </button>
             </div>
             <div className="mt-2 text-xs text-blue-600 space-y-1">
