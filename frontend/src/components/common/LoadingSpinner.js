@@ -24,7 +24,8 @@ const LoadingSpinner = ({
   return (
     <div
       className={clsx(
-        'spinner',
+        'animate-spin rounded-full border-2 border-transparent',
+        'border-t-current',
         sizeClasses[size],
         colorClasses[color],
         className
