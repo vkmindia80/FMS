@@ -89,7 +89,8 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
 
   const getIconColor = (color, isCurrentActive) => {
     if (isCurrentActive) {
-      switch (currentScheme.name) {
+      const schemeName = currentScheme?.name || 'Default';
+      switch (schemeName) {
         case 'Warm':
           return 'text-orange-600 dark:text-orange-400';
         case 'Cool':
