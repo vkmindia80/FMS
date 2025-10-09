@@ -407,15 +407,59 @@ async def generate_demo_data():
     
     # Demo user credentials
     DEMO_EMAIL = "john.doe@testcompany.com"
+    DEMO_PASSWORD = "testpassword123"
     
     try:
-        # Find demo user
+        # Find or create demo user
         demo_user = await users_collection.find_one({"email": DEMO_EMAIL})
+        
         if not demo_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Demo user not found. Please ensure the demo account exists."
-            )
+            # Create demo company
+            company_id = str(uuid.uuid4())
+            company_doc = {
+                "_id": company_id,
+                "name": "Test Company Inc.",
+                "type": CompanyType.SMALL_BUSINESS,
+                "created_at": datetime.utcnow(),
+                "is_active": True,
+                "settings": {
+                    "base_currency": "USD",
+                    "fiscal_year_start": "01-01",
+                    "date_format": "MM/DD/YYYY",
+                    "number_format": "US",
+                    "timezone": "UTC"
+                },
+                "subscription": {
+                    "plan": "demo",
+                    "status": "active",
+                    "expires_at": datetime.utcnow() + timedelta(days=365)
+                }
+            }
+            await companies_collection.insert_one(company_doc)
+            
+            # Create demo user
+            user_id = str(uuid.uuid4())
+            hashed_password = get_password_hash(DEMO_PASSWORD)
+            
+            user_doc = {
+                "_id": user_id,
+                "email": DEMO_EMAIL,
+                "password": hashed_password,
+                "full_name": "John Doe",
+                "role": UserRole.BUSINESS,
+                "company_id": company_id,
+                "is_active": True,
+                "created_at": datetime.utcnow(),
+                "last_login": None,
+                "preferences": {
+                    "theme": "light",
+                    "language": "en",
+                    "notifications": True
+                }
+            }
+            await users_collection.insert_one(user_doc)
+            
+            demo_user = user_doc
         
         company_id = demo_user["company_id"]
         user_id = demo_user["_id"]
