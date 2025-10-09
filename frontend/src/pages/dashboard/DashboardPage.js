@@ -230,7 +230,7 @@ const DashboardPage = () => {
           value={dashboardData.expenses}
           change={-3.2}
           changeType="negative"
-          icon={TrendingDownIcon}
+          icon={ArrowTrendingDownIcon}
           color="bg-gradient-to-br from-orange-500 to-red-500"
         />
         <StatCard
