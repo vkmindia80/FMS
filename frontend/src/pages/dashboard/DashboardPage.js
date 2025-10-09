@@ -7,7 +7,6 @@ import {
   ChartBarIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  TrendingUpIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { reportsAPI } from '../../services/api';
