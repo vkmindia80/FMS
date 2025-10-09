@@ -1,26 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Toaster } from 'react-hot-toast';
-
-// Context Providers
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './contexts/AuthContext';
-
-// Components
-import LoadingSpinner from './components/common/LoadingSpinner';
-import Layout from './components/layout/Layout';
-
-// Pages
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import DashboardPage from './pages/dashboard/DashboardPage';
-import DocumentsPage from './pages/documents/DocumentsPage';
-import TransactionsPage from './pages/transactions/TransactionsPage';
-import AccountsPage from './pages/accounts/AccountsPage';
-import ReportsPage from './pages/reports/ReportsPage';
-import SettingsPage from './pages/settings/SettingsPage';
-import AdminPage from './pages/admin/AdminPage';
+import SimpleApp from './SimpleApp';
 
 // Create a client
 const queryClient = new QueryClient({
