@@ -207,27 +207,51 @@ const LoginPage = () => {
                     </div>
                   </div>
                   
-                  <button
-                    type="button"
-                    onClick={handleDemoLogin}
-                    disabled={loading}
-                    data-testid="demo-login-button"
-                    className={`ml-4 inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
-                      loading ? 'opacity-50 cursor-not-allowed transform-none' : ''
-                    }`}
-                  >
-                    {loading ? (
-                      <>
-                        <LoadingSpinner size="small" color="white" className="mr-2" />
-                        Signing In...
-                      </>
-                    ) : (
-                      <>
-                        <UserIcon className="w-4 h-4 mr-2" />
-                        Demo Login
-                      </>
-                    )}
-                  </button>
+                  <div className="ml-4 flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDemoLogin}
+                      disabled={loading || generatingData}
+                      data-testid="demo-login-button"
+                      className={`inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                        loading || generatingData ? 'opacity-50 cursor-not-allowed transform-none' : ''
+                      }`}
+                    >
+                      {loading ? (
+                        <>
+                          <LoadingSpinner size="small" color="white" className="mr-2" />
+                          Signing In...
+                        </>
+                      ) : (
+                        <>
+                          <UserIcon className="w-4 h-4 mr-2" />
+                          Demo Login
+                        </>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={handleGenerateData}
+                      disabled={loading || generatingData}
+                      data-testid="generate-data-button"
+                      className={`inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                        loading || generatingData ? 'opacity-50 cursor-not-allowed transform-none' : ''
+                      }`}
+                    >
+                      {generatingData ? (
+                        <>
+                          <LoadingSpinner size="small" color="white" className="mr-2" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <CircleStackIcon className="w-4 h-4 mr-2" />
+                          Generate Data
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
