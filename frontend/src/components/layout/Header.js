@@ -9,8 +9,8 @@ import {
   SunIcon,
   MoonIcon,
   UserCircleIcon,
-  CogIcon,
-  PowerIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
   ChevronDownIcon,
   PaintBrushIcon,
 } from '@heroicons/react/24/outline';
