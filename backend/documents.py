@@ -201,8 +201,38 @@ async def upload_document(
             }
         )
         
-        # TODO: Trigger async document processing
-        # await process_document_async(document_id)
+        # Trigger async document processing automatically
+        try:
+            from document_processor import process_document_async
+            
+            # Process document in background
+            processing_result = await process_document_async(
+                file_path,
+                detected_type
+            )
+            
+            # Update document with initial processing results
+            await documents_collection.update_one(
+                {"_id": document_id},
+                {"$set": {
+                    "processing_status": ProcessingStatus.COMPLETED if processing_result.get("confidence_score", 0) > 0 else ProcessingStatus.FAILED,
+                    "processed_date": datetime.utcnow(),
+                    "extracted_data": processing_result.get("structured_data", {}),
+                    "confidence_score": processing_result.get("confidence_score", 0.0),
+                    "ocr_text": processing_result.get("ocr_text", ""),
+                    "processing_details": {
+                        "method": processing_result.get("processing_method", "unknown"),
+                        "ai_analysis": processing_result.get("ai_analysis", {}),
+                        "extraction_details": processing_result.get("extraction_details", {})
+                    }
+                }}
+            )
+            
+            logger.info(f"Document {document_id} auto-processed with confidence {processing_result.get('confidence_score', 0.0)}")
+            
+        except Exception as auto_process_error:
+            logger.warning(f"Auto-processing failed for {document_id}: {str(auto_process_error)}")
+            # Document still uploaded successfully, processing can be retried manually
         
         return DocumentResponse(
             id=document_id,
