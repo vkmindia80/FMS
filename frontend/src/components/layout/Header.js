@@ -181,7 +181,7 @@ const Header = ({ onMobileMenuClick }) => {
                       Profile
                     </button>
                     <button className="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">
-                      <CogIcon className="h-4 w-4 mr-3" />
+                      <Cog6ToothIcon className="h-4 w-4 mr-3" />
                       Settings
                     </button>
                   </div>
