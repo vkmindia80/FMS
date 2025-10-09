@@ -398,11 +398,11 @@ const DashboardPage = () => {
                     : 'bg-red-100 dark:bg-red-900/20'
                 }`}>
                   {transaction.type === 'income' ? (
-                    <ArrowUpRightIcon className={`h-4 w-4 ${
+                    <ArrowTopRightOnSquareIcon className={`h-4 w-4 ${
                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                     }`} />
                   ) : (
-                    <ArrowDownRightIcon className="h-4 w-4 text-red-600" />
+                    <ArrowRightIcon className="h-4 w-4 text-red-600 transform rotate-45" />
                   )}
                 </div>
                 
