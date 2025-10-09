@@ -237,7 +237,7 @@ async def create_transaction(
         "amount": float(transaction_data.amount),
         "transaction_type": transaction_data.transaction_type,
         "category": transaction_data.category,
-        "transaction_date": transaction_data.transaction_date,
+        "transaction_date": datetime.combine(transaction_data.transaction_date, datetime.min.time()) if isinstance(transaction_data.transaction_date, date) else transaction_data.transaction_date,
         "status": TransactionStatus.PENDING,
         "reference_number": transaction_data.reference_number,
         "payee": transaction_data.payee,
