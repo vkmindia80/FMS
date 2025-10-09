@@ -13,9 +13,12 @@ import {
   SparklesIcon,
   ShieldCheckIcon,
   ChartBarIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CircleStackIcon
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 const LoginPage = () => {
   const { login, loading, error, clearError } = useAuth();
