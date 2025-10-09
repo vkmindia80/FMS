@@ -278,7 +278,7 @@ async def create_transaction(
         amount=Decimal(str(transaction_doc["amount"])),
         transaction_type=transaction_doc["transaction_type"],
         category=transaction_doc["category"],
-        transaction_date=transaction_doc["transaction_date"],
+        transaction_date=transaction_doc["transaction_date"].date() if isinstance(transaction_doc["transaction_date"], datetime) else transaction_doc["transaction_date"],
         status=transaction_doc["status"],
         reference_number=transaction_doc["reference_number"],
         payee=transaction_doc["payee"],
