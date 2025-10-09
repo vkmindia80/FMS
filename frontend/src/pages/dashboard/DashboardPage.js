@@ -11,8 +11,8 @@ import {
   EyeIcon,
   EyeSlashIcon,
   PlusIcon,
-  ArrowUpRightIcon,
-  ArrowDownRightIcon,
+  ArrowTopRightOnSquareIcon,
+  ArrowRightIcon,
   CalendarDaysIcon,
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
