@@ -307,7 +307,7 @@ async def login_user(user_credentials: UserLogin):
         user=user_response
     )
 
-@auth_router.post("/refresh", response_model=Dict[str, str])
+@auth_router.post("/refresh")
 async def refresh_access_token(request: RefreshTokenRequest):
     """Refresh access token using refresh token"""
     refresh_token = request.refresh_token
