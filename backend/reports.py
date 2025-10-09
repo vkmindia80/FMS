@@ -124,25 +124,25 @@ def get_period_dates(period: ReportPeriod, custom_start: Optional[date] = None, 
             end_date = datetime.combine(date(today.year, today.month, 1) - timedelta(days=1), datetime.max.time())
     elif period == ReportPeriod.CURRENT_QUARTER:
         quarter = (today.month - 1) // 3 + 1
-        start_date = date(today.year, (quarter - 1) * 3 + 1, 1)
+        start_date = datetime.combine(date(today.year, (quarter - 1) * 3 + 1, 1), datetime.min.time())
         if quarter == 4:
-            end_date = date(today.year + 1, 1, 1) - timedelta(days=1)
+            end_date = datetime.combine(date(today.year + 1, 1, 1) - timedelta(days=1), datetime.max.time())
         else:
-            end_date = date(today.year, quarter * 3 + 1, 1) - timedelta(days=1)
+            end_date = datetime.combine(date(today.year, quarter * 3 + 1, 1) - timedelta(days=1), datetime.max.time())
     elif period == ReportPeriod.CURRENT_YEAR:
-        start_date = date(today.year, 1, 1)
-        end_date = date(today.year, 12, 31)
+        start_date = datetime.combine(date(today.year, 1, 1), datetime.min.time())
+        end_date = datetime.combine(date(today.year, 12, 31), datetime.max.time())
     elif period == ReportPeriod.LAST_YEAR:
-        start_date = date(today.year - 1, 1, 1)
-        end_date = date(today.year - 1, 12, 31)
+        start_date = datetime.combine(date(today.year - 1, 1, 1), datetime.min.time())
+        end_date = datetime.combine(date(today.year - 1, 12, 31), datetime.max.time())
     elif period == ReportPeriod.CUSTOM:
         if not custom_start or not custom_end:
             raise HTTPException(
                 status_code=400,
                 detail="Custom period requires start_date and end_date"
             )
-        start_date = custom_start
-        end_date = custom_end
+        start_date = datetime.combine(custom_start, datetime.min.time()) if isinstance(custom_start, date) else custom_start
+        end_date = datetime.combine(custom_end, datetime.max.time()) if isinstance(custom_end, date) else custom_end
     else:
         raise HTTPException(
             status_code=400,
