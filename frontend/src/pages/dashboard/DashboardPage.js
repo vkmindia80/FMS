@@ -137,9 +137,9 @@ const DashboardPage = () => {
           {change && (
             <div className="flex items-center mt-2">
               {changeType === 'positive' ? (
-                <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
               ) : (
-                <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
+                <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
               )}
               <span className={`text-sm font-medium ${
                 changeType === 'positive' ? 'text-green-600' : 'text-red-600'
