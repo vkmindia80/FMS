@@ -397,3 +397,255 @@ def require_corporate_or_above():
 
 def require_admin():
     return require_role([UserRole.ADMIN])
+
+@auth_router.post("/generate-demo-data")
+async def generate_demo_data():
+    """Generate comprehensive demo data for the demo user account"""
+    from datetime import timedelta
+    from decimal import Decimal
+    import random
+    
+    # Demo user credentials
+    DEMO_EMAIL = "john.doe@testcompany.com"
+    
+    try:
+        # Find demo user
+        demo_user = await users_collection.find_one({"email": DEMO_EMAIL})
+        if not demo_user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Demo user not found. Please ensure the demo account exists."
+            )
+        
+        company_id = demo_user["company_id"]
+        user_id = demo_user["_id"]
+        
+        # Import necessary collections and functions
+        from database import accounts_collection, transactions_collection, documents_collection
+        from accounts import create_default_accounts, AccountType
+        from transactions import TransactionType, TransactionCategory, TransactionStatus
+        
+        # Clear existing data for demo company
+        await accounts_collection.delete_many({"company_id": company_id})
+        await transactions_collection.delete_many({"company_id": company_id})
+        await documents_collection.delete_many({"company_id": company_id})
+        
+        # 1. Create default accounts
+        account_ids = await create_default_accounts(company_id)
+        
+        # Get all created accounts for transactions
+        accounts = await accounts_collection.find({"company_id": company_id}).to_list(length=None)
+        accounts_by_type = {}
+        for account in accounts:
+            acc_type = account["account_type"]
+            if acc_type not in accounts_by_type:
+                accounts_by_type[acc_type] = []
+            accounts_by_type[acc_type].append(account["_id"])
+        
+        # 2. Generate transactions for last 2 years
+        transactions_created = 0
+        current_date = datetime.utcnow()
+        start_date = current_date - timedelta(days=730)  # 2 years
+        
+        # Transaction templates for realistic data
+        income_transactions = [
+            {"desc": "Monthly Salary - John Doe", "amount": (5000, 8000), "category": TransactionCategory.SALARY},
+            {"desc": "Client Payment - ABC Corp", "amount": (2000, 15000), "category": TransactionCategory.BUSINESS_INCOME},
+            {"desc": "Consulting Services", "amount": (1500, 10000), "category": TransactionCategory.BUSINESS_INCOME},
+            {"desc": "Project Completion Bonus", "amount": (3000, 12000), "category": TransactionCategory.BUSINESS_INCOME},
+            {"desc": "Investment Returns", "amount": (500, 3000), "category": TransactionCategory.OTHER_INCOME},
+        ]
+        
+        expense_transactions = [
+            {"desc": "Office Rent Payment", "amount": (1200, 2500), "category": TransactionCategory.RENT},
+            {"desc": "Electric Bill", "amount": (100, 300), "category": TransactionCategory.UTILITIES},
+            {"desc": "Internet & Phone", "amount": (150, 250), "category": TransactionCategory.UTILITIES},
+            {"desc": "Office Supplies - Staples", "amount": (50, 500), "category": TransactionCategory.OFFICE_SUPPLIES},
+            {"desc": "Business Insurance Premium", "amount": (200, 800), "category": TransactionCategory.INSURANCE},
+            {"desc": "Legal Consultation", "amount": (500, 3000), "category": TransactionCategory.PROFESSIONAL_SERVICES},
+            {"desc": "Accounting Services", "amount": (300, 1500), "category": TransactionCategory.PROFESSIONAL_SERVICES},
+            {"desc": "Marketing Campaign", "amount": (500, 5000), "category": TransactionCategory.MARKETING},
+            {"desc": "Business Lunch - Client Meeting", "amount": (50, 200), "category": TransactionCategory.MEALS},
+            {"desc": "Conference Travel", "amount": (500, 3000), "category": TransactionCategory.TRAVEL},
+            {"desc": "Software Subscription", "amount": (50, 500), "category": TransactionCategory.SOFTWARE},
+            {"desc": "Equipment Purchase", "amount": (500, 5000), "category": TransactionCategory.EQUIPMENT},
+        ]
+        
+        # Generate transactions month by month
+        for month_offset in range(24):  # 24 months = 2 years
+            month_date = start_date + timedelta(days=30 * month_offset)
+            
+            # Generate 2-4 income transactions per month
+            for _ in range(random.randint(2, 4)):
+                template = random.choice(income_transactions)
+                amount = round(random.uniform(template["amount"][0], template["amount"][1]), 2)
+                transaction_date = month_date + timedelta(days=random.randint(1, 28))
+                
+                # Get appropriate accounts
+                cash_account = random.choice(accounts_by_type.get(AccountType.CHECKING, accounts_by_type.get(AccountType.CASH, account_ids[:1])))
+                revenue_account = random.choice(accounts_by_type.get(AccountType.REVENUE, accounts_by_type.get(AccountType.SERVICE_INCOME, account_ids[:1])))
+                
+                transaction_doc = {
+                    "_id": str(uuid.uuid4()),
+                    "company_id": company_id,
+                    "created_by": user_id,
+                    "description": template["desc"],
+                    "amount": amount,
+                    "transaction_type": TransactionType.INCOME,
+                    "category": template["category"],
+                    "transaction_date": transaction_date,
+                    "status": TransactionStatus.CLEARED,
+                    "reference_number": f"REF{random.randint(1000, 9999)}",
+                    "payee": template["desc"].split("-")[0].strip() if "-" in template["desc"] else "Customer",
+                    "memo": f"Generated demo transaction",
+                    "tags": ["demo", "income"],
+                    "created_at": transaction_date,
+                    "updated_at": transaction_date,
+                    "journal_entries": [
+                        {
+                            "account_id": cash_account,
+                            "debit_amount": amount,
+                            "credit_amount": 0,
+                            "description": f"Cash received - {template['desc']}"
+                        },
+                        {
+                            "account_id": revenue_account,
+                            "debit_amount": 0,
+                            "credit_amount": amount,
+                            "description": f"Revenue - {template['desc']}"
+                        }
+                    ],
+                    "confidence_score": 1.0,
+                    "is_reconciled": True,
+                    "document_id": None,
+                    "metadata": {"source": "demo_data_generator"}
+                }
+                await transactions_collection.insert_one(transaction_doc)
+                transactions_created += 1
+            
+            # Generate 4-8 expense transactions per month
+            for _ in range(random.randint(4, 8)):
+                template = random.choice(expense_transactions)
+                amount = round(random.uniform(template["amount"][0], template["amount"][1]), 2)
+                transaction_date = month_date + timedelta(days=random.randint(1, 28))
+                
+                # Get appropriate accounts
+                cash_account = random.choice(accounts_by_type.get(AccountType.CHECKING, accounts_by_type.get(AccountType.CASH, account_ids[:1])))
+                expense_account = random.choice(accounts_by_type.get(AccountType.OPERATING_EXPENSES, accounts_by_type.get(AccountType.ADMINISTRATIVE_EXPENSES, account_ids[:1])))
+                
+                transaction_doc = {
+                    "_id": str(uuid.uuid4()),
+                    "company_id": company_id,
+                    "created_by": user_id,
+                    "description": template["desc"],
+                    "amount": amount,
+                    "transaction_type": TransactionType.EXPENSE,
+                    "category": template["category"],
+                    "transaction_date": transaction_date,
+                    "status": TransactionStatus.CLEARED,
+                    "reference_number": f"REF{random.randint(1000, 9999)}",
+                    "payee": template["desc"].split("-")[0].strip(),
+                    "memo": f"Generated demo transaction",
+                    "tags": ["demo", "expense"],
+                    "created_at": transaction_date,
+                    "updated_at": transaction_date,
+                    "journal_entries": [
+                        {
+                            "account_id": expense_account,
+                            "debit_amount": amount,
+                            "credit_amount": 0,
+                            "description": f"Expense - {template['desc']}"
+                        },
+                        {
+                            "account_id": cash_account,
+                            "debit_amount": 0,
+                            "credit_amount": amount,
+                            "description": f"Cash paid - {template['desc']}"
+                        }
+                    ],
+                    "confidence_score": 1.0,
+                    "is_reconciled": True,
+                    "document_id": None,
+                    "metadata": {"source": "demo_data_generator"}
+                }
+                await transactions_collection.insert_one(transaction_doc)
+                transactions_created += 1
+        
+        # 3. Generate sample documents
+        documents_created = 0
+        document_types = ["invoice", "receipt", "bank_statement", "contract"]
+        
+        for month_offset in range(24):
+            month_date = start_date + timedelta(days=30 * month_offset)
+            
+            # Generate 2-3 documents per month
+            for _ in range(random.randint(2, 3)):
+                doc_type = random.choice(document_types)
+                doc_date = month_date + timedelta(days=random.randint(1, 28))
+                
+                document_doc = {
+                    "_id": str(uuid.uuid4()),
+                    "company_id": company_id,
+                    "uploaded_by": user_id,
+                    "filename": f"demo_{doc_type}_{doc_date.strftime('%Y%m%d')}_{random.randint(100, 999)}.pdf",
+                    "original_filename": f"{doc_type}_{doc_date.strftime('%Y%m%d')}.pdf",
+                    "file_path": f"/demo/documents/{doc_type}_{random.randint(1000, 9999)}.pdf",
+                    "file_size": random.randint(50000, 500000),
+                    "mime_type": "application/pdf",
+                    "document_type": doc_type,
+                    "status": "processed",
+                    "uploaded_at": doc_date,
+                    "processed_at": doc_date + timedelta(minutes=random.randint(1, 30)),
+                    "created_at": doc_date,
+                    "updated_at": doc_date,
+                    "extracted_data": {
+                        "vendor": f"Demo Vendor {random.randint(1, 10)}",
+                        "date": doc_date.isoformat(),
+                        "total_amount": round(random.uniform(100, 5000), 2),
+                        "currency": "USD",
+                        "items": []
+                    },
+                    "ocr_text": f"Demo OCR text for {doc_type}",
+                    "confidence_score": random.uniform(0.85, 0.99),
+                    "tags": ["demo", doc_type],
+                    "metadata": {
+                        "pages": 1,
+                        "source": "demo_data_generator"
+                    }
+                }
+                await documents_collection.insert_one(document_doc)
+                documents_created += 1
+        
+        # Log audit event
+        await log_audit_event(
+            user_id=user_id,
+            company_id=company_id,
+            action="demo_data_generated",
+            details={
+                "accounts_created": len(account_ids),
+                "transactions_created": transactions_created,
+                "documents_created": documents_created,
+                "date_range": "2 years"
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Demo data generated successfully",
+            "data": {
+                "accounts_created": len(account_ids),
+                "transactions_created": transactions_created,
+                "documents_created": documents_created,
+                "date_range": "Last 2 years",
+                "demo_user": DEMO_EMAIL
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating demo data: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate demo data: {str(e)}"
+        )
