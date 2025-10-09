@@ -322,17 +322,19 @@ def main():
         
         # Save detailed results
         results_file = f"/app/test_reports/backend_test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        results_data = {
+            "summary": {
+                "total_tests": tester.tests_run,
+                "passed_tests": tester.tests_passed,
+                "failed_tests": tester.tests_run - tester.tests_passed,
+                "success_rate": (tester.tests_passed/tester.tests_run)*100 if tester.tests_run > 0 else 0,
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            "detailed_results": tester.test_results
+        }
+        
         with open(results_file, 'w') as f:
-            json.dump({
-                "summary": {
-                    "total_tests": tester.tests_run,
-                    "passed_tests": tester.tests_passed,
-                    "failed_tests": tester.tests_run - tester.tests_passed,
-                    "success_rate": (tester.tests_passed/tester.tests_run)*100 if tester.tests_run > 0 else 0,
-                    "timestamp": datetime.utcnow().isoformat()
-                },
-                "detailed_results": tester.test_results
-            }, indent=2)
+            json.dump(results_data, f, indent=2)
         
         print(f"\n📄 Detailed results saved to: {results_file}")
         
