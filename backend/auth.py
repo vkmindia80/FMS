@@ -373,9 +373,9 @@ async def logout_user(current_user: dict = Depends(get_current_user)):
     return {"message": "Successfully logged out"}
 
 # Role-based dependency functions
-async def require_role(required_roles: List[UserRole]):
+def require_role(required_roles: List[UserRole]):
     """Factory function for role-based access control"""
-    async def check_role(current_user: dict = Depends(get_current_user)):
+    def check_role(current_user: dict = Depends(get_current_user)):
         if UserRole(current_user["role"]) not in required_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -385,6 +385,11 @@ async def require_role(required_roles: List[UserRole]):
     return check_role
 
 # Convenience functions for specific roles
-require_business_or_above = lambda: require_role([UserRole.BUSINESS, UserRole.CORPORATE, UserRole.ADMIN])
-require_corporate_or_above = lambda: require_role([UserRole.CORPORATE, UserRole.ADMIN])
-require_admin = lambda: require_role([UserRole.ADMIN])
+def require_business_or_above():
+    return require_role([UserRole.BUSINESS, UserRole.CORPORATE, UserRole.ADMIN])
+
+def require_corporate_or_above():
+    return require_role([UserRole.CORPORATE, UserRole.ADMIN])
+
+def require_admin():
+    return require_role([UserRole.ADMIN])
