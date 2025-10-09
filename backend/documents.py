@@ -7,7 +7,7 @@ import aiofiles
 import uuid
 from enum import Enum
 import mimetypes
-from server import database, documents_collection
+from database import database, documents_collection
 from auth import get_current_user, log_audit_event
 import logging
 
