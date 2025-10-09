@@ -238,7 +238,7 @@ async def get_system_stats(current_user: dict = Depends(require_admin())):
     active_users = await users_collection.count_documents({"is_active": True})
     
     # Count transactions
-    from transactions import transactions_collection
+    from database import transactions_collection
     total_transactions = await transactions_collection.count_documents({})
     
     # Count documents
