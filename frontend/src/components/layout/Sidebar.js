@@ -75,7 +75,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
     {
       name: 'Settings',
       href: '/settings',
-      icon: CogIcon,
+      icon: Cog6ToothIcon,
       color: 'gray',
     },
   ];
