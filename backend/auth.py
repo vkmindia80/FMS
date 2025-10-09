@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import os
 from enum import Enum
 from motor.motor_asyncio import AsyncIOMotorDatabase
