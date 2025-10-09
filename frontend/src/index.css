@@ -182,13 +182,13 @@
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Custom form styles with enhanced design */
+/* Enhanced form styles with dark mode support */
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-2;
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
 }
 
 .form-input {
-  @apply block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:ring-2 focus:ring-opacity-50 focus:outline-none transition-all duration-200;
+  @apply block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 focus:ring-2 focus:ring-opacity-50 focus:outline-none transition-all duration-200;
 }
 
 .btn-primary {
@@ -196,7 +196,25 @@
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center px-4 py-3 border border-gray-200 text-gray-700 bg-white font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 hover:shadow-md;
+  @apply inline-flex items-center justify-center px-4 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 hover:shadow-md;
+}
+
+/* Dark mode enhanced components */
+.card {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm;
+}
+
+.card-hover {
+  @apply card hover:shadow-lg dark:hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1;
+}
+
+/* Glassmorphism effects for modern UI */
+.glass-card {
+  @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-xl;
+}
+
+.glass-button {
+  @apply bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm border border-white/30 dark:border-gray-700/30 text-gray-900 dark:text-white hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-200;
 }
 
 /* Enhanced glass morphism effects */
