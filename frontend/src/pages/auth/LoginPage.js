@@ -31,6 +31,7 @@ const LoginPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [generatingData, setGeneratingData] = useState(false);
 
   // Demo credentials
   const DEMO_CREDENTIALS = {
