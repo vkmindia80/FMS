@@ -222,7 +222,7 @@ const DashboardPage = () => {
           value={dashboardData.income}
           change={12.5}
           changeType="positive"
-          icon={TrendingUpIcon}
+          icon={ArrowTrendingUpIcon}
           color="bg-gradient-to-br from-green-500 to-emerald-600"
         />
         <StatCard
