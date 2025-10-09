@@ -74,12 +74,16 @@ const LoginPage = () => {
     }
   };
 
-  const handleDemoLogin = () => {
+  const handleDemoLogin = async () => {
+    // Fill the form data first
     setFormData(prev => ({
       ...prev,
       email: DEMO_CREDENTIALS.email,
       password: DEMO_CREDENTIALS.password
     }));
+    
+    // Automatically submit the login
+    await login(DEMO_CREDENTIALS.email, DEMO_CREDENTIALS.password);
   };
 
   const handleSocialLogin = (provider) => {
