@@ -431,7 +431,7 @@ async def update_transaction(
     if update_data.category is not None:
         update_fields["category"] = update_data.category
     if update_data.transaction_date is not None:
-        update_fields["transaction_date"] = datetime.combine(update_data.transaction_date, datetime.min.time()) if isinstance(update_data.transaction_date, date) else update_data.transaction_date
+        update_fields["transaction_date"] = update_data.transaction_date
     if update_data.reference_number is not None:
         update_fields["reference_number"] = update_data.reference_number
     if update_data.payee is not None:
