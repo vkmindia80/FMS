@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import asyncio
-import motor.motor_asyncio
 import os
 from dotenv import load_dotenv
 import logging
@@ -12,8 +11,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import uuid
 import json
-from bson import ObjectId
-import hashlib
+from database import client, database
 
 # Load environment variables
 load_dotenv()
@@ -21,22 +19,6 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Database connection
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/afms_db")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-database = client.afms_db
-
-# Security
-security = HTTPBearer()
-
-# Collections
-users_collection = database.users
-companies_collection = database.companies
-accounts_collection = database.accounts
-transactions_collection = database.transactions
-documents_collection = database.documents
-audit_logs_collection = database.audit_logs
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
