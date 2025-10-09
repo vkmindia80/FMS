@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, date, timedelta
 from enum import Enum
 import uuid
-from server import database, users_collection, companies_collection, audit_logs_collection
+from database import database, users_collection, companies_collection, audit_logs_collection
 from auth import get_current_user, log_audit_event, UserRole, require_admin, require_corporate_or_above
 import logging
 
