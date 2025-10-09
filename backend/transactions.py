@@ -378,7 +378,7 @@ async def get_transaction(
         amount=Decimal(str(transaction["amount"])),
         transaction_type=transaction["transaction_type"],
         category=transaction.get("category"),
-        transaction_date=transaction["transaction_date"],
+        transaction_date=transaction["transaction_date"].date() if isinstance(transaction["transaction_date"], datetime) else transaction["transaction_date"],
         status=transaction["status"],
         reference_number=transaction.get("reference_number"),
         payee=transaction.get("payee"),
