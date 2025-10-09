@@ -64,7 +64,7 @@ const DashboardPage = () => {
       value: `$${summary?.summary?.current_month_revenue?.toLocaleString() || '0'}`,
       change: '+18.2%',
       changeType: 'positive',
-      icon: TrendingUpIcon,
+      icon: ArrowUpIcon,
     },
     {
       name: 'Monthly Expenses',
