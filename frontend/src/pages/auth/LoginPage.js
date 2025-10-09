@@ -99,6 +99,40 @@ const LoginPage = () => {
     console.log(`Social login with ${provider} - Coming soon!`);
   };
 
+  const handleGenerateData = async () => {
+    setGeneratingData(true);
+    
+    try {
+      const response = await api.post('/auth/generate-demo-data');
+      
+      if (response.data.success) {
+        const { data } = response.data;
+        toast.success(
+          `Demo data generated successfully!\n\n` +
+          `📊 ${data.accounts_created} accounts created\n` +
+          `💰 ${data.transactions_created} transactions generated\n` +
+          `📄 ${data.documents_created} documents created\n` +
+          `📅 Date range: ${data.date_range}`,
+          {
+            duration: 6000,
+            style: {
+              minWidth: '350px',
+              whiteSpace: 'pre-line'
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.error('Error generating demo data:', error);
+      toast.error(
+        error.response?.data?.detail || 'Failed to generate demo data. Please try again.',
+        { duration: 4000 }
+      );
+    } finally {
+      setGeneratingData(false);
+    }
+  };
+
   // Load remembered email on component mount
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('afms_remembered_email');
