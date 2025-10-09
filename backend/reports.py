@@ -110,18 +110,18 @@ def get_period_dates(period: ReportPeriod, custom_start: Optional[date] = None, 
     today = date.today()
     
     if period == ReportPeriod.CURRENT_MONTH:
-        start_date = date(today.year, today.month, 1)
+        start_date = datetime.combine(date(today.year, today.month, 1), datetime.min.time())
         if today.month == 12:
-            end_date = date(today.year + 1, 1, 1) - timedelta(days=1)
+            end_date = datetime.combine(date(today.year + 1, 1, 1) - timedelta(days=1), datetime.max.time())
         else:
-            end_date = date(today.year, today.month + 1, 1) - timedelta(days=1)
+            end_date = datetime.combine(date(today.year, today.month + 1, 1) - timedelta(days=1), datetime.max.time())
     elif period == ReportPeriod.LAST_MONTH:
         if today.month == 1:
-            start_date = date(today.year - 1, 12, 1)
-            end_date = date(today.year, 1, 1) - timedelta(days=1)
+            start_date = datetime.combine(date(today.year - 1, 12, 1), datetime.min.time())
+            end_date = datetime.combine(date(today.year, 1, 1) - timedelta(days=1), datetime.max.time())
         else:
-            start_date = date(today.year, today.month - 1, 1)
-            end_date = date(today.year, today.month, 1) - timedelta(days=1)
+            start_date = datetime.combine(date(today.year, today.month - 1, 1), datetime.min.time())
+            end_date = datetime.combine(date(today.year, today.month, 1) - timedelta(days=1), datetime.max.time())
     elif period == ReportPeriod.CURRENT_QUARTER:
         quarter = (today.month - 1) // 3 + 1
         start_date = date(today.year, (quarter - 1) * 3 + 1, 1)
