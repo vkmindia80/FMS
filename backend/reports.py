@@ -629,7 +629,7 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
     })
     
     # Get document counts
-    from documents import documents_collection
+    from database import documents_collection
     total_documents = await documents_collection.count_documents({
         "company_id": current_user["company_id"]
     })
