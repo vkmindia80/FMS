@@ -9,7 +9,7 @@ import os
 from enum import Enum
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import uuid
-from server import database, users_collection, companies_collection, audit_logs_collection
+from database import database, users_collection, companies_collection, audit_logs_collection
 import logging
 
 logger = logging.getLogger(__name__)
