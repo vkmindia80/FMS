@@ -128,6 +128,37 @@ const SimpleApp = () => {
         </button>
       </div>
 
+      {isLogin && (
+        <div style={{ 
+          marginBottom: '20px', 
+          padding: '12px', 
+          backgroundColor: '#f3f4f6', 
+          borderRadius: '6px', 
+          fontSize: '14px',
+          border: '1px solid #d1d5db'
+        }}>
+          <div style={{ fontWeight: '600', marginBottom: '8px', color: '#374151' }}>Demo Credentials:</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ color: '#6b7280' }}>Email:</span>
+            <button 
+              onClick={() => setEmail('john.doe@testcompany.com')}
+              style={{ color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              john.doe@testcompany.com
+            </button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#6b7280' }}>Password:</span>
+            <button 
+              onClick={() => setPassword('testpassword123')}
+              style={{ color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              testpassword123
+            </button>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         {!isLogin && (
           <>
