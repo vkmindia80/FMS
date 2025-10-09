@@ -242,7 +242,7 @@ async def get_system_stats(current_user: dict = Depends(require_admin())):
     total_transactions = await transactions_collection.count_documents({})
     
     # Count documents
-    from documents import documents_collection
+    from database import documents_collection
     total_documents = await documents_collection.count_documents({})
     
     # Calculate storage used (simplified)
