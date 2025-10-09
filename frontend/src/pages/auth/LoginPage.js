@@ -134,8 +134,8 @@ const LoginPage = () => {
           <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg animate-slide-in">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-blue-900">Try Demo Account</h3>
-                <p className="text-xs text-blue-700 mt-1">Experience all features instantly</p>
+                <h3 className="text-sm font-medium text-blue-900">Quick Demo Access</h3>
+                <p className="text-xs text-blue-700 mt-1">Login instantly with demo account</p>
               </div>
               <button
                 type="button"
