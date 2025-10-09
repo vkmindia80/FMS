@@ -1,232 +1,374 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { 
-  XMarkIcon,
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import {
   HomeIcon,
   DocumentTextIcon,
   CreditCardIcon,
   BanknotesIcon,
   ChartBarIcon,
-  Cog6ToothIcon,
-  UsersIcon,
-  BuildingOfficeIcon
+  CogIcon,
+  UserCircleIcon,
+  PowerIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+  BuildingOfficeIcon,
+  BellIcon,
+  QuestionMarkCircleIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLocation } from 'react-router-dom';
-import { clsx } from 'clsx';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Documents', href: '/documents', icon: DocumentTextIcon },
-  { name: 'Transactions', href: '/transactions', icon: CreditCardIcon },
-  { name: 'Accounts', href: '/accounts', icon: BanknotesIcon },
-  { name: 'Reports', href: '/reports', icon: ChartBarIcon },
-];
-
-const bottomNavigation = [
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-];
-
-const adminNavigation = [
-  { name: 'Administration', href: '/admin', icon: UsersIcon, roles: ['admin', 'corporate'] },
-];
-
-const Sidebar = ({ open, setOpen }) => {
-  const { user, hasAnyRole } = useAuth();
+const Sidebar = ({ isMobile, isOpen, onClose }) => {
+  const { darkMode, sidebarCollapsed, toggleSidebar, currentScheme } = useTheme();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const [hoveredItem, setHoveredItem] = useState(null);
 
-  const isCurrentPage = (href) => {
-    return location.pathname === href;
+  const navigationItems = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: HomeIcon,
+      color: 'blue',
+      badge: null,
+    },
+    {
+      name: 'Documents',
+      href: '/documents',
+      icon: DocumentTextIcon,
+      color: 'purple',
+      badge: '3',
+    },
+    {
+      name: 'Transactions',
+      href: '/transactions',
+      icon: CreditCardIcon,
+      color: 'green',
+      badge: null,
+    },
+    {
+      name: 'Accounts',
+      href: '/accounts',
+      icon: BanknotesIcon,
+      color: 'orange',
+      badge: null,
+    },
+    {
+      name: 'Reports',
+      href: '/reports',
+      icon: ChartBarIcon,
+      color: 'red',
+      badge: 'New',
+    },
+  ];
+
+  const bottomItems = [
+    {
+      name: 'Help Center',
+      href: '/help',
+      icon: QuestionMarkCircleIcon,
+      color: 'gray',
+    },
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: CogIcon,
+      color: 'gray',
+    },
+  ];
+
+  const isActive = (href) => {
+    if (href === '/dashboard') {
+      return location.pathname === '/dashboard' || location.pathname === '/';
+    }
+    return location.pathname.startsWith(href);
   };
 
-  const SidebarContent = () => (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-      {/* Logo */}
-      <div className="flex h-16 shrink-0 items-center">
+  const getIconColor = (color, isCurrentActive) => {
+    if (isCurrentActive) {
+      switch (currentScheme.name) {
+        case 'Warm':
+          return 'text-orange-600 dark:text-orange-400';
+        case 'Cool':
+          return 'text-cyan-600 dark:text-cyan-400';
+        case 'Monochrome':
+          return 'text-gray-900 dark:text-gray-100';
+        default:
+          return 'text-blue-600 dark:text-blue-400';
+      }
+    }
+    
+    const colorMap = {
+      blue: 'text-blue-500',
+      purple: 'text-purple-500',
+      green: 'text-emerald-500',
+      orange: 'text-orange-500',
+      red: 'text-red-500',
+      gray: 'text-gray-400',
+    };
+    
+    return `${colorMap[color] || 'text-gray-400'} group-hover:text-gray-600 dark:group-hover:text-gray-200`;
+  };
+
+  const getBadgeColor = (color) => {
+    const colorMap = {
+      blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      green: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+      orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    };
+    return colorMap[color] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+  };
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
+      {/* Logo Section */}
+      <div className="flex items-center p-6 border-b border-gray-200 dark:border-gray-700">
+        <motion.div
+          className="flex items-center"
+          animate={{ justifyContent: sidebarCollapsed && !isMobile ? 'center' : 'flex-start' }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur opacity-20"></div>
+            <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-xl">
+              <BuildingOfficeIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          
+          <AnimatePresence>
+            {(!sidebarCollapsed || isMobile) && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="ml-3"
+              >
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">AFMS</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Finance Management</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Mobile close button */}
+        {isMobile && (
+          <button
+            onClick={onClose}
+            className="ml-auto p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        )}
+
+        {/* Desktop collapse button */}
+        {!isMobile && (
+          <button
+            onClick={toggleSidebar}
+            className="ml-auto p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            data-testid="sidebar-toggle"
+          >
+            {sidebarCollapsed ? (
+              <ChevronDoubleRightIcon className="h-5 w-5" />
+            ) : (
+              <ChevronDoubleLeftIcon className="h-5 w-5" />
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* User Info */}
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
-          <BuildingOfficeIcon className="h-8 w-8 text-primary-600" />
-          <span className="ml-2 text-xl font-bold text-gray-900">
-            AFMS
-          </span>
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">
+                {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+            </div>
+          </div>
+          
+          <AnimatePresence>
+            {(!sidebarCollapsed || isMobile) && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="ml-3 min-w-0 flex-1"
+              >
+                <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  {user?.full_name || 'User'}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {user?.company_name || 'Company'}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Company info */}
-      <div className="border-t border-gray-200 pt-4">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-          Company
-        </div>
-        <div className="mt-1 text-sm text-gray-900 font-medium">
-          {user?.company_name}
-        </div>
-        <div className="text-xs text-gray-500 capitalize">
-          {user?.role} User
-        </div>
-      </div>
-
-      <nav className="flex flex-1 flex-col">
-        <ul role="list" className="flex flex-1 flex-col gap-y-7">
-          {/* Main navigation */}
-          <li>
-            <ul role="list" className="-mx-2 space-y-1">
-              {navigation.map((item) => (
-                <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className={clsx(
-                      isCurrentPage(item.href)
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                    )}
+      {/* Navigation Items */}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const isCurrentActive = isActive(item.href);
+          
+          return (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={`group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 ${
+                isCurrentActive
+                  ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 shadow-sm'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+              onMouseEnter={() => setHoveredItem(item.name)}
+              onMouseLeave={() => setHoveredItem(null)}
+              data-testid={`nav-${item.name.toLowerCase()}`}
+            >
+              <Icon className={`h-5 w-5 ${getIconColor(item.color, isCurrentActive)} transition-colors`} />
+              
+              <AnimatePresence>
+                {(!sidebarCollapsed || isMobile) && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -5 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-3 flex-1 flex items-center justify-between"
                   >
-                    <item.icon
-                      className={clsx(
-                        isCurrentPage(item.href) 
-                          ? 'text-primary-700' 
-                          : 'text-gray-400 group-hover:text-primary-700',
-                        'h-6 w-6 shrink-0'
-                      )}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-
-          {/* Admin navigation */}
-          {hasAnyRole(['admin', 'corporate']) && (
-            <li>
-              <div className="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wide">
-                Administration
-              </div>
-              <ul role="list" className="-mx-2 mt-2 space-y-1">
-                {adminNavigation.map((item) => (
-                  <li key={item.name}>
-                    <a
-                      href={item.href}
-                      className={clsx(
-                        isCurrentPage(item.href)
-                          ? 'bg-primary-50 text-primary-700'
-                          : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50',
-                        'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                      )}
-                    >
-                      <item.icon
-                        className={clsx(
-                          isCurrentPage(item.href) 
-                            ? 'text-primary-700' 
-                            : 'text-gray-400 group-hover:text-primary-700',
-                          'h-6 w-6 shrink-0'
-                        )}
-                        aria-hidden="true"
-                      />
+                    <span className={`text-sm font-medium ${
+                      isCurrentActive
+                        ? 'text-gray-900 dark:text-white'
+                        : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'
+                    } transition-colors`}>
                       {item.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          )}
-
-          {/* Bottom navigation */}
-          <li className="mt-auto">
-            <ul role="list" className="-mx-2 space-y-1">
-              {bottomNavigation.map((item) => (
-                <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className={clsx(
-                      isCurrentPage(item.href)
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                    </span>
+                    
+                    {item.badge && (
+                      <span className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
+                        getBadgeColor(item.color)
+                      }`}>
+                        {item.badge}
+                      </span>
                     )}
-                  >
-                    <item.icon
-                      className={clsx(
-                        isCurrentPage(item.href) 
-                          ? 'text-primary-700' 
-                          : 'text-gray-400 group-hover:text-primary-700',
-                        'h-6 w-6 shrink-0'
-                      )}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Link>
+          );
+        })}
       </nav>
+
+      {/* Bottom Navigation */}
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        {bottomItems.map((item) => {
+          const Icon = item.icon;
+          const isCurrentActive = isActive(item.href);
+          
+          return (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={`group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                isCurrentActive
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'
+              }`}
+              data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
+            >
+              <Icon className="h-5 w-5 transition-colors" />
+              
+              <AnimatePresence>
+                {(!sidebarCollapsed || isMobile) && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -5 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-3 text-sm font-medium"
+                  >
+                    {item.name}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          );
+        })}
+        
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className="w-full group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+          data-testid="logout-button"
+        >
+          <PowerIcon className="h-5 w-5" />
+          
+          <AnimatePresence>
+            {(!sidebarCollapsed || isMobile) && (
+              <motion.span
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -5 }}
+                transition={{ duration: 0.2 }}
+                className="ml-3 text-sm font-medium"
+              >
+                Sign Out
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+      </div>
     </div>
   );
 
-  return (
-    <>
-      {/* Mobile sidebar */}
-      <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-50 lg:hidden" onClose={setOpen}>
-          <Transition.Child
-            as={Fragment}
-            enter="transition-opacity ease-linear duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity ease-linear duration-300"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-gray-900/80" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 flex">
-            <Transition.Child
-              as={Fragment}
-              enter="transition ease-in-out duration-300 transform"
-              enterFrom="-translate-x-full"
-              enterTo="translate-x-0"
-              leave="transition ease-in-out duration-300 transform"
-              leaveFrom="translate-x-0"
-              leaveTo="-translate-x-full"
+  if (isMobile) {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={onClose}
+            />
+            
+            {/* Mobile Sidebar */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed left-0 top-0 z-50 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl"
             >
-              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-300"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-300"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                    <button
-                      type="button"
-                      className="-m-2.5 p-2.5"
-                      onClick={() => setOpen(false)}
-                    >
-                      <span className="sr-only">Close sidebar</span>
-                      <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                    </button>
-                  </div>
-                </Transition.Child>
-                <SidebarContent />
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition.Root>
+              {sidebarContent}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    );
+  }
 
-      {/* Static sidebar for desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-          <SidebarContent />
-        </div>
-      </div>
-    </>
+  return (
+    <motion.div
+      animate={{ width: sidebarCollapsed ? 80 : 320 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm"
+      data-testid="desktop-sidebar"
+    >
+      {sidebarContent}
+    </motion.div>
   );
 };
 
