@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-import SimpleApp from './SimpleApp';
+import DashboardLayout from './components/layout/DashboardLayout';
+import DashboardPage from './pages/dashboard/DashboardPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -12,8 +14,11 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+          <div className="text-gray-600 dark:text-gray-400 font-medium">Loading your dashboard...</div>
+        </div>
       </div>
     );
   }
@@ -27,8 +32,11 @@ const PublicRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+          <div className="text-gray-600 font-medium">Checking authentication...</div>
+        </div>
       </div>
     );
   }
@@ -45,22 +53,28 @@ function AppContent() {
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#363636',
-              color: '#fff',
+              background: 'var(--toast-bg)',
+              color: 'var(--toast-text)',
+              border: '1px solid var(--toast-border)',
+              borderRadius: '12px',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             },
             success: {
               duration: 3000,
-              theme: {
-                primary: '#4ade80',
-                secondary: '#black',
+              iconTheme: {
+                primary: '#10B981',
+                secondary: '#FFFFFF',
               },
             },
             error: {
               duration: 5000,
-              theme: {
-                primary: '#ef4444',
-                secondary: '#black',
+              iconTheme: {
+                primary: '#EF4444',
+                secondary: '#FFFFFF',
               },
+            },
+            loading: {
+              duration: Infinity,
             },
           }}
         />
@@ -89,16 +103,115 @@ function AppContent() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <SimpleApp />
+                <DashboardLayout>
+                  <DashboardPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Placeholder routes for navigation items */}
+          <Route 
+            path="/documents" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Documents</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Document management features coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/transactions" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Transactions</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Transaction management features coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/accounts" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Accounts</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Account management features coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/reports" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Reports</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Advanced reporting features coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Settings</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Settings and preferences coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/help" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Help Center</h2>
+                      <p className="text-gray-600 dark:text-gray-400">Help documentation coming soon!</p>
+                    </div>
+                  </div>
+                </DashboardLayout>
               </ProtectedRoute>
             } 
           />
           
           {/* Default route */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
           {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
     </Router>
@@ -107,9 +220,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

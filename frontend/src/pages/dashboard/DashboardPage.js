@@ -1,370 +1,432 @@
-import React from 'react';
-import { useQuery } from 'react-query';
-import { 
-  BanknotesIcon, 
-  DocumentTextIcon, 
-  CreditCardIcon, 
-  ChartBarIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
-import { reportsAPI } from '../../services/api';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import {
+  BanknotesIcon,
+  CreditCardIcon,
+  DocumentTextIcon,
+  TrendingUpIcon,
+  TrendingDownIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  PlusIcon,
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  CalendarDaysIcon,
+  ChartBarIcon,
+} from '@heroicons/react/24/outline';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { darkMode, currentScheme } = useTheme();
+  const [showAmounts, setShowAmounts] = useState(true);
+  const [timeframe, setTimeframe] = useState('7d');
 
-  // Fetch dashboard summary data
-  const {
-    data: summary,
-    isLoading: summaryLoading,
-    error: summaryError,
-  } = useQuery('dashboard-summary', reportsAPI.getDashboardSummary, {
-    refetchInterval: 30000, // Refresh every 30 seconds
+  // Mock data - replace with real API calls
+  const [dashboardData, setDashboardData] = useState({
+    balance: 125840.50,
+    income: 32150.75,
+    expenses: 18940.25,
+    transactions: 247,
+    documents: 18,
+    pendingApprovals: 3,
   });
 
-  if (summaryLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <LoadingSpinner size="large" />
-      </div>
-    );
-  }
-
-  if (summaryError) {
-    return (
-      <div className="text-center py-12">
-        <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-error-400" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">Error loading dashboard</h3>
-        <p className="mt-1 text-sm text-gray-500">
-          {summaryError?.response?.data?.detail || 'Something went wrong'}
-        </p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="btn-primary mt-4"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  const stats = [
-    {
-      name: 'Cash Balance',
-      value: `$${summary?.summary?.cash_balance?.toLocaleString() || '0'}`,
-      change: '+12.5%',
-      changeType: 'positive',
-      icon: BanknotesIcon,
-    },
-    {
-      name: 'Monthly Revenue',
-      value: `$${summary?.summary?.current_month_revenue?.toLocaleString() || '0'}`,
-      change: '+18.2%',
-      changeType: 'positive',
-      icon: ArrowUpIcon,
-    },
-    {
-      name: 'Monthly Expenses',
-      value: `$${summary?.summary?.current_month_expenses?.toLocaleString() || '0'}`,
-      change: '-4.7%',
-      changeType: 'negative',
-      icon: CreditCardIcon,
-    },
-    {
-      name: 'Net Profit',
-      value: `$${summary?.summary?.current_month_profit?.toLocaleString() || '0'}`,
-      change: '+25.8%',
-      changeType: 'positive',
-      icon: ChartBarIcon,
-    },
+  const timeframeOptions = [
+    { value: '7d', label: '7 Days' },
+    { value: '30d', label: '30 Days' },
+    { value: '90d', label: '90 Days' },
+    { value: '1y', label: '1 Year' },
   ];
 
-  const quickActions = [
-    {
-      name: 'Upload Document',
-      description: 'Add receipts, invoices, and statements',
-      href: '/documents',
-      icon: DocumentTextIcon,
-      color: 'bg-primary-500',
-    },
-    {
-      name: 'Add Transaction',
-      description: 'Record income, expenses, or transfers',
-      href: '/transactions',
-      icon: CreditCardIcon,
-      color: 'bg-success-500',
-    },
-    {
-      name: 'View Reports',
-      description: 'Generate financial statements',
-      href: '/reports',
-      icon: ChartBarIcon,
-      color: 'bg-warning-500',
-    },
-    {
-      name: 'Manage Accounts',
-      description: 'Set up chart of accounts',
-      href: '/accounts',
-      icon: BanknotesIcon,
-      color: 'bg-error-500',
-    },
+  // Mock chart data
+  const revenueData = [
+    { name: 'Jan', income: 24000, expenses: 18000 },
+    { name: 'Feb', income: 28000, expenses: 19000 },
+    { name: 'Mar', income: 32000, expenses: 21000 },
+    { name: 'Apr', income: 35000, expenses: 22000 },
+    { name: 'May', income: 31000, expenses: 20000 },
+    { name: 'Jun', income: 38000, expenses: 24000 },
   ];
 
-  const recentActivities = [
+  const categoryData = [
+    { name: 'Office Supplies', value: 4800, color: '#3B82F6' },
+    { name: 'Marketing', value: 7200, color: '#10B981' },
+    { name: 'Travel', value: 3200, color: '#F59E0B' },
+    { name: 'Software', value: 2400, color: '#EF4444' },
+    { name: 'Other', value: 1340, color: '#8B5CF6' },
+  ];
+
+  const recentTransactions = [
     {
       id: 1,
-      type: 'document_uploaded',
-      description: 'Receipt uploaded - Office supplies',
-      amount: '$234.56',
-      time: '2 hours ago',
-      status: 'processed',
+      description: 'Office Rent - June 2024',
+      amount: -2400.00,
+      category: 'Office Expenses',
+      date: '2024-06-01',
+      type: 'expense',
     },
     {
       id: 2,
-      type: 'transaction_created',
-      description: 'Payment received from client',
-      amount: '$2,500.00',
-      time: '4 hours ago',
-      status: 'cleared',
+      description: 'Client Payment - ABC Corp',
+      amount: 8500.00,
+      category: 'Revenue',
+      date: '2024-05-30',
+      type: 'income',
     },
     {
       id: 3,
-      type: 'document_uploaded',
-      description: 'Invoice uploaded - Marketing services',
-      amount: '$1,200.00',
-      time: '6 hours ago',
-      status: 'processing',
+      description: 'Software License - Adobe',
+      amount: -52.99,
+      category: 'Software',
+      date: '2024-05-29',
+      type: 'expense',
     },
     {
       id: 4,
-      type: 'transaction_created',
-      description: 'Rent payment',
-      amount: '$3,000.00',
-      time: '1 day ago',
-      status: 'cleared',
+      description: 'Marketing Campaign - Google Ads',
+      amount: -850.00,
+      category: 'Marketing',
+      date: '2024-05-28',
+      type: 'expense',
     },
   ];
 
+  const formatCurrency = (amount) => {
+    if (!showAmounts) return '••••••';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const StatCard = ({ title, value, change, changeType, icon: Icon, color }) => (
+    <motion.div
+      whileHover={{ scale: 1.02, y: -5 }}
+      transition={{ type: 'spring', stiffness: 300 }}
+      className={`relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700`}
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+            {formatCurrency(value)}
+          </p>
+          {change && (
+            <div className="flex items-center mt-2">
+              {changeType === 'positive' ? (
+                <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+              ) : (
+                <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
+              )}
+              <span className={`text-sm font-medium ${
+                changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {change}% from last month
+              </span>
+            </div>
+          )}
+        </div>
+        <div className={`p-3 rounded-xl ${color}`}>
+          <Icon className="h-8 w-8 text-white" />
+        </div>
+      </div>
+      
+      {/* Gradient overlay */}
+      <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-5 rounded-full -translate-y-16 translate-x-16`} />
+    </motion.div>
+  );
+
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {user?.full_name || 'User'}
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Here's an overview of your financial activity for {user?.company_name}
-        </p>
+      {/* Welcome Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            {getGreeting()}, {user?.full_name?.split(' ')[0] || 'User'}! 👋
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Here's what's happening with your finances today.
+          </p>
+        </div>
+        
+        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          {/* Timeframe Selector */}
+          <select
+            value={timeframe}
+            onChange={(e) => setTimeframe(e.target.value)}
+            className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {timeframeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          
+          {/* Toggle amounts visibility */}
+          <button
+            onClick={() => setShowAmounts(!showAmounts)}
+            className="p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            data-testid="toggle-amounts"
+          >
+            {showAmounts ? (
+              <EyeIcon className="h-5 w-5" />
+            ) : (
+              <EyeSlashIcon className="h-5 w-5" />
+            )}
+          </button>
+          
+          {/* Quick Add Button */}
+          <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl">
+            <PlusIcon className="h-4 w-4" />
+            <span>Add Transaction</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.name} className="card">
-            <div className="card-body">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <stat.icon className="h-6 w-6 text-gray-400" />
-                </div>
-                <div className="ml-4 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      {stat.name}
-                    </dt>
-                    <dd className="flex items-baseline">
-                      <div className="text-2xl font-semibold text-gray-900">
-                        {stat.value}
-                      </div>
-                      <div
-                        className={`ml-2 flex items-baseline text-sm font-semibold ${
-                          stat.changeType === 'positive'
-                            ? 'text-success-600'
-                            : 'text-error-600'
-                        }`}
-                      >
-                        {stat.changeType === 'positive' ? (
-                          <ArrowUpIcon className="h-4 w-4 flex-shrink-0 self-center" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4 flex-shrink-0 self-center" />
-                        )}
-                        <span className="sr-only">
-                          {stat.changeType === 'positive' ? 'Increased' : 'Decreased'} by
-                        </span>
-                        {stat.change}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Balance"
+          value={dashboardData.balance}
+          change={8.2}
+          changeType="positive"
+          icon={BanknotesIcon}
+          color="bg-gradient-to-br from-blue-500 to-blue-600"
+        />
+        <StatCard
+          title="Monthly Income"
+          value={dashboardData.income}
+          change={12.5}
+          changeType="positive"
+          icon={TrendingUpIcon}
+          color="bg-gradient-to-br from-green-500 to-emerald-600"
+        />
+        <StatCard
+          title="Monthly Expenses"
+          value={dashboardData.expenses}
+          change={-3.2}
+          changeType="negative"
+          icon={TrendingDownIcon}
+          color="bg-gradient-to-br from-orange-500 to-red-500"
+        />
+        <StatCard
+          title="Transactions"
+          value={dashboardData.transactions}
+          change={15.8}
+          changeType="positive"
+          icon={CreditCardIcon}
+          color="bg-gradient-to-br from-purple-500 to-indigo-600"
+        />
       </div>
 
-      {/* Quick Actions */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-          <p className="text-sm text-gray-600">Get started with these common tasks</p>
-        </div>
-        <div className="card-body">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {quickActions.map((action) => (
-              <a
-                key={action.name}
-                href={action.href}
-                className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
-              >
-                <div>
-                  <span
-                    className={`rounded-lg inline-flex p-3 ring-4 ring-white ${action.color}`}
-                  >
-                    <action.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-lg font-medium">
-                    <span className="absolute inset-0" aria-hidden="true" />
-                    {action.name}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500">{action.description}</p>
-                </div>
-                <span
-                  className="pointer-events-none absolute top-6 right-6 text-gray-300 group-hover:text-gray-400"
-                  aria-hidden="true"
-                >
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4h1a1 1 0 00-1-1v1zm-1 12a1 1 0 102 0h-2zM8 3a1 1 0 000 2V3zM3.293 19.293a1 1 0 101.414 1.414l-1.414-1.414zM19 4v12h2V4h-2zm1-1H8v2h12V3zm-.707.293l-16 16 1.414 1.414 16-16-1.414-1.414z" />
-                  </svg>
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Two Column Layout */}
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <div className="card">
-          <div className="card-header">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/transactions" className="text-sm text-primary-600 hover:text-primary-500">
-              View all
-            </a>
+        {/* Revenue Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Revenue Overview</h3>
+            <ChartBarIcon className="h-5 w-5 text-gray-400" />
           </div>
-          <div className="card-body p-0">
-            <div className="flow-root">
-              <ul role="list" className="-mb-8">
-                {recentActivities.map((activity, activityIdx) => (
-                  <li key={activity.id}>
-                    <div className="relative pb-8">
-                      {activityIdx !== recentActivities.length - 1 ? (
-                        <span
-                          className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                      <div className="relative flex space-x-3 px-6">
-                        <div>
-                          <span
-                            className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${
-                              activity.type === 'document_uploaded'
-                                ? 'bg-primary-500'
-                                : 'bg-success-500'
-                            }`}
-                          >
-                            {activity.type === 'document_uploaded' ? (
-                              <DocumentTextIcon className="h-4 w-4 text-white" />
-                            ) : (
-                              <CreditCardIcon className="h-4 w-4 text-white" />
-                            )}
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                          <div>
-                            <p className="text-sm text-gray-900">{activity.description}</p>
-                            <p className="text-sm font-medium text-gray-900">{activity.amount}</p>
-                          </div>
-                          <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                            <time>{activity.time}</time>
-                            <div className="mt-1">
-                              <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  activity.status === 'processed'
-                                    ? 'bg-success-100 text-success-800'
-                                    : activity.status === 'processing'
-                                    ? 'bg-warning-100 text-warning-800'
-                                    : 'bg-primary-100 text-primary-800'
-                                }`}
-                              >
-                                {activity.status}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+          
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={revenueData}>
+              <defs>
+                <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
+              <XAxis 
+                dataKey="name" 
+                stroke={darkMode ? '#9CA3AF' : '#6B7280'}
+                fontSize={12}
+              />
+              <YAxis 
+                stroke={darkMode ? '#9CA3AF' : '#6B7280'}
+                fontSize={12}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
+                  border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                  borderRadius: '8px',
+                  color: darkMode ? '#F9FAFB' : '#111827'
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="income"
+                stroke="#3B82F6"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#incomeGradient)"
+              />
+              <Area
+                type="monotone"
+                dataKey="expenses"
+                stroke="#EF4444"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#expenseGradient)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
 
-        {/* Account Summary */}
-        <div className="card">
-          <div className="card-header">
-            <h2 className="text-lg font-semibold text-gray-900">Account Summary</h2>
-            <a href="/accounts" className="text-sm text-primary-600 hover:text-primary-500">
-              Manage accounts
-            </a>
+        {/* Category Breakdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Expense Categories</h3>
+            <CalendarDaysIcon className="h-5 w-5 text-gray-400" />
           </div>
-          <div className="card-body">
-            <dl className="space-y-4">
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium text-gray-500">Total Assets</dt>
-                <dd className="text-sm font-semibold text-gray-900">
-                  ${summary?.summary?.total_assets?.toLocaleString() || '0'}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium text-gray-500">Total Liabilities</dt>
-                <dd className="text-sm font-semibold text-gray-900">
-                  ${summary?.summary?.total_liabilities?.toLocaleString() || '0'}
-                </dd>
-              </div>
-              <div className="flex justify-between border-t pt-4">
-                <dt className="text-sm font-medium text-gray-900">Net Worth</dt>
-                <dd className="text-sm font-semibold text-gray-900">
-                  ${summary?.summary?.total_equity?.toLocaleString() || '0'}
-                </dd>
-              </div>
-            </dl>
+          
+          <div className="flex flex-col lg:flex-row items-center">
+            <div className="w-48 h-48 mb-4 lg:mb-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(value)}
+                    contentStyle={{
+                      backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
+                      border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                      borderRadius: '8px',
+                      color: darkMode ? '#F9FAFB' : '#111827'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             
-            <div className="mt-6 pt-6 border-t">
-              <div className="text-sm text-gray-500 mb-2">Processing Status</div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600">Documents:</span>
-                  <span className="ml-1 font-medium">
-                    {summary?.counts?.processing_documents || 0} processing
+            <div className="flex-1 lg:ml-6 space-y-3 w-full">
+              {categoryData.map((category, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-3"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {category.name}
+                    </span>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {formatCurrency(category.value)}
                   </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">Transactions:</span>
-                  <span className="ml-1 font-medium">
-                    {summary?.counts?.pending_transactions || 0} pending
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* Recent Transactions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
+          <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors">
+            View all →
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          {recentTransactions.map((transaction) => (
+            <div
+              key={transaction.id}
+              className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-center space-x-4">
+                <div className={`p-2 rounded-lg ${
+                  transaction.type === 'income' 
+                    ? 'bg-green-100 dark:bg-green-900/20' 
+                    : 'bg-red-100 dark:bg-red-900/20'
+                }`}>
+                  {transaction.type === 'income' ? (
+                    <ArrowUpRightIcon className={`h-4 w-4 ${
+                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                    }`} />
+                  ) : (
+                    <ArrowDownRightIcon className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+                
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-white">
+                    {transaction.description}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+              
+              <div className={`font-semibold ${
+                transaction.type === 'income' 
+                  ? 'text-green-600 dark:text-green-400' 
+                  : 'text-red-600 dark:text-red-400'
+              }`}>
+                {transaction.type === 'income' ? '+' : ''}{formatCurrency(Math.abs(transaction.amount))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };
