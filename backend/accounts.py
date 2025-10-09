@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 import uuid
-from server import database, accounts_collection, transactions_collection
+from database import database, accounts_collection, transactions_collection
 from auth import get_current_user, log_audit_event
 import logging
 
