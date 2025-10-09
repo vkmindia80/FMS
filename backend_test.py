@@ -182,12 +182,12 @@ class AFMSBackendTester:
             self.log_test("Token Refresh", False, "No refresh token available")
             return False
             
-        # The refresh endpoint expects refresh_token as query parameter
         success, response = self.run_test(
             "Token Refresh",
             "POST",
-            f"auth/refresh?refresh_token={self.refresh_token}",
-            200
+            "auth/refresh",
+            200,
+            data={"refresh_token": self.refresh_token}
         )
         
         if success and response:
