@@ -429,8 +429,48 @@ async def process_document(
         {"$set": {"processing_status": ProcessingStatus.PROCESSING}}
     )
     
-    # TODO: Trigger actual document processing
-    # This would normally trigger an async task or call to ML services
+    # Trigger actual document processing
+    try:
+        from document_processor import process_document_async
+        
+        # Process document asynchronously
+        processing_result = await process_document_async(
+            document["file_path"], 
+            document["document_type"]
+        )
+        
+        # Update document with processing results
+        await documents_collection.update_one(
+            {"_id": document_id},
+            {"$set": {
+                "processing_status": ProcessingStatus.COMPLETED,
+                "processed_date": datetime.utcnow(),
+                "extracted_data": processing_result.get("structured_data", {}),
+                "confidence_score": processing_result.get("confidence_score", 0.0),
+                "ocr_text": processing_result.get("ocr_text", ""),
+                "processing_details": {
+                    "method": processing_result.get("processing_method", "unknown"),
+                    "ai_analysis": processing_result.get("ai_analysis", {}),
+                    "extraction_details": processing_result.get("extraction_details", {})
+                }
+            }}
+        )
+        
+        # Log successful processing
+        logger.info(f"Document {document_id} processed successfully with confidence {processing_result.get('confidence_score', 0.0)}")
+        
+    except Exception as processing_error:
+        logger.error(f"Document processing failed for {document_id}: {str(processing_error)}")
+        
+        # Mark document as failed
+        await documents_collection.update_one(
+            {"_id": document_id},
+            {"$set": {
+                "processing_status": ProcessingStatus.FAILED,
+                "processed_date": datetime.utcnow(),
+                "error_message": str(processing_error)
+            }}
+        )
     
     # Log audit event
     await log_audit_event(
