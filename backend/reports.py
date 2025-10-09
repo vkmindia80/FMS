@@ -312,8 +312,8 @@ async def generate_profit_loss_report(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Profit & Loss Statement - {period_start} to {period_end}",
-        period_start=period_start,
-        period_end=period_end,
+        period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
+        period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
         generated_at=datetime.utcnow(),
         currency="USD",  # TODO: Get from company settings
         total_revenue=total_revenue,
@@ -587,8 +587,8 @@ async def generate_cash_flow_report(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Cash Flow Statement - {period_start} to {period_end}",
-        period_start=period_start,
-        period_end=period_end,
+        period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
+        period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
         generated_at=datetime.utcnow(),
         currency="USD",  # TODO: Get from company settings
         net_income=net_income,
