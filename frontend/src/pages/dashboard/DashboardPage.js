@@ -36,15 +36,18 @@ const DashboardPage = () => {
   const { darkMode, currentScheme } = useTheme();
   const [showAmounts, setShowAmounts] = useState(true);
   const [timeframe, setTimeframe] = useState('7d');
+  const [loading, setLoading] = useState(true);
+  const [generatingDemo, setGeneratingDemo] = useState(false);
 
-  // Mock data - replace with real API calls
+  // Real data from API
   const [dashboardData, setDashboardData] = useState({
-    balance: 125840.50,
-    income: 32150.75,
-    expenses: 18940.25,
-    transactions: 247,
-    documents: 18,
-    pendingApprovals: 3,
+    balance: 0,
+    income: 0,
+    expenses: 0,
+    profit: 0,
+    transactions: 0,
+    documents: 0,
+    pendingApprovals: 0,
   });
 
   const timeframeOptions = [
