@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from enum import Enum
 import uuid
-from database import database, transactions_collection, accounts_collection
+from database import database, transactions_collection, accounts_collection, companies_collection
 from auth import get_current_user, log_audit_event
 from accounts import AccountCategory, AccountType, calculate_account_balance
 import logging
