@@ -11,6 +11,10 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import uuid
 from database import database, users_collection, companies_collection, audit_logs_collection
 import logging
+import random
+from faker import Faker
+
+fake = Faker()
 
 logger = logging.getLogger(__name__)
 
