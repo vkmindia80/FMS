@@ -103,6 +103,263 @@ class CashFlowReport(BaseModel):
     # Net Change
     net_change_in_cash: Decimal
     beginning_cash: Decimal
+
+
+class TrialBalanceReport(BaseModel):
+    report_id: str
+    company_id: str
+    report_name: str
+    as_of_date: date
+    generated_at: datetime
+    currency: str
+    accounts: List[Dict[str, Any]]
+    total_debits: Decimal
+    total_credits: Decimal
+    is_balanced: bool
+
+class GeneralLedgerReport(BaseModel):
+    report_id: str
+    company_id: str
+    report_name: str
+    period_start: date
+    period_end: date
+    generated_at: datetime
+    currency: str
+    accounts: List[Dict[str, Any]]
+
+@reports_router.get("/trial-balance", response_model=TrialBalanceReport)
+async def generate_trial_balance(
+    as_of_date: Optional[date] = Query(None),
+    format: ReportFormat = ReportFormat.JSON,
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate Trial Balance report"""
+    
+    if not as_of_date:
+        as_of_date = date.today()
+    
+    # Get all active accounts
+    accounts = await accounts_collection.find({
+        "company_id": current_user["company_id"],
+        "is_active": True
+    }).sort("account_number", 1).to_list(length=None)
+    
+    account_balances = []
+    total_debits = Decimal("0")
+    total_credits = Decimal("0")
+    
+    for account in accounts:
+        # Calculate balance for each account
+        balance = await calculate_account_balance(account["_id"], current_user["company_id"])
+        
+        account_category = AccountCategory(account.get("account_category", "assets"))
+        
+        # Determine debit or credit balance based on account category
+        # Assets and Expenses have debit balances
+        # Liabilities, Equity, and Income have credit balances
+        if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
+            debit_balance = balance if balance > 0 else Decimal("0")
+            credit_balance = abs(balance) if balance < 0 else Decimal("0")
+        else:
+            debit_balance = abs(balance) if balance < 0 else Decimal("0")
+            credit_balance = balance if balance > 0 else Decimal("0")
+        
+        total_debits += debit_balance
+        total_credits += credit_balance
+        
+        account_balances.append({
+            "account_id": account["_id"],
+            "account_number": account.get("account_number", ""),
+            "account_name": account["name"],
+            "account_type": account["account_type"],
+            "account_category": account_category,
+            "debit_balance": debit_balance,
+            "credit_balance": credit_balance
+        })
+    
+    # Check if balanced
+    is_balanced = abs(total_debits - total_credits) < Decimal("0.01")
+    
+    report_id = str(uuid.uuid4())
+    
+    # Log audit event
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="trial_balance_report_generated",
+        details={
+            "report_id": report_id,
+            "as_of_date": as_of_date.isoformat(),
+            "total_debits": float(total_debits),
+            "total_credits": float(total_credits),
+            "is_balanced": is_balanced
+        }
+    )
+    
+    report_data = TrialBalanceReport(
+        report_id=report_id,
+        company_id=current_user["company_id"],
+        report_name=f"Trial Balance as of {as_of_date}",
+        as_of_date=as_of_date,
+        generated_at=datetime.utcnow(),
+        currency="USD",
+        accounts=account_balances,
+        total_debits=total_debits,
+        total_credits=total_credits,
+        is_balanced=is_balanced
+    )
+    
+    # Handle export formats
+    if format == ReportFormat.PDF:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        return ReportExporter.export_to_pdf(report_dict, "trial_balance")
+    elif format == ReportFormat.EXCEL:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_excel(report_dict, "trial_balance")
+    elif format == ReportFormat.CSV:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_csv(report_dict, "trial_balance")
+    
+    return report_data
+
+@reports_router.get("/general-ledger", response_model=GeneralLedgerReport)
+async def generate_general_ledger(
+    period: ReportPeriod = ReportPeriod.CURRENT_MONTH,
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+    account_id: Optional[str] = Query(None),
+    format: ReportFormat = ReportFormat.JSON,
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate General Ledger report (detailed transaction listing by account)"""
+    
+    # Get period dates
+    period_start, period_end = get_period_dates(period, start_date, end_date)
+    
+    # Get accounts to include in report
+    account_query = {"company_id": current_user["company_id"], "is_active": True}
+    if account_id:
+        account_query["_id"] = account_id
+    
+    accounts = await accounts_collection.find(account_query).sort("account_number", 1).to_list(length=None)
+    
+    account_ledgers = []
+    
+    for account in accounts:
+        # Get all transactions affecting this account
+        pipeline = [
+            {
+                "$match": {
+                    "company_id": current_user["company_id"],
+                    "transaction_date": {"$gte": period_start, "$lte": period_end},
+                    "status": {"$ne": "void"},
+                    "journal_entries.account_id": account["_id"]
+                }
+            },
+            {
+                "$sort": {"transaction_date": 1, "created_at": 1}
+            },
+            {
+                "$project": {
+                    "transaction_date": 1,
+                    "description": 1,
+                    "reference_number": 1,
+                    "journal_entries": {
+                        "$filter": {
+                            "input": "$journal_entries",
+                            "as": "entry",
+                            "cond": {"$eq": ["$$entry.account_id", account["_id"]]}
+                        }
+                    }
+                }
+            }
+        ]
+        
+        transactions = await transactions_collection.aggregate(pipeline).to_list(length=None)
+        
+        # Calculate running balance
+        running_balance = Decimal("0")
+        transaction_list = []
+        
+        for txn in transactions:
+            for entry in txn.get("journal_entries", []):
+                debit = Decimal(str(entry.get("debit_amount", 0)))
+                credit = Decimal(str(entry.get("credit_amount", 0)))
+                
+                # Update running balance based on account category
+                account_category = AccountCategory(account.get("account_category", "assets"))
+                if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
+                    running_balance += (debit - credit)
+                else:
+                    running_balance += (credit - debit)
+                
+                transaction_list.append({
+                    "date": txn["transaction_date"].strftime('%Y-%m-%d') if isinstance(txn["transaction_date"], datetime) else str(txn["transaction_date"]),
+                    "description": entry.get("description", txn.get("description", "")),
+                    "reference": txn.get("reference_number", ""),
+                    "debit": debit,
+                    "credit": credit,
+                    "balance": running_balance
+                })
+        
+        if transaction_list:  # Only include accounts with transactions
+            account_ledgers.append({
+                "account_id": account["_id"],
+                "account_number": account.get("account_number", ""),
+                "account_name": account["name"],
+                "account_type": account["account_type"],
+                "opening_balance": Decimal("0"),  # Simplified - would need to calculate from period start
+                "closing_balance": running_balance,
+                "transactions": transaction_list
+            })
+    
+    report_id = str(uuid.uuid4())
+    
+    # Log audit event
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="general_ledger_report_generated",
+        details={
+            "report_id": report_id,
+            "period_start": period_start.isoformat(),
+            "period_end": period_end.isoformat(),
+            "account_count": len(account_ledgers)
+        }
+    )
+    
+    report_data = GeneralLedgerReport(
+        report_id=report_id,
+        company_id=current_user["company_id"],
+        report_name=f"General Ledger - {period_start.date()} to {period_end.date()}",
+        period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
+        period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
+        generated_at=datetime.utcnow(),
+        currency="USD",
+        accounts=account_ledgers
+    )
+    
+    # Handle export formats
+    if format == ReportFormat.PDF:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        return ReportExporter.export_to_pdf(report_dict, "general_ledger")
+    elif format == ReportFormat.EXCEL:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_excel(report_dict, "general_ledger")
+    elif format == ReportFormat.CSV:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_csv(report_dict, "general_ledger")
+    
+    return report_data
+
     ending_cash: Decimal
 
 def get_period_dates(period: ReportPeriod, custom_start: Optional[date] = None, custom_end: Optional[date] = None):
