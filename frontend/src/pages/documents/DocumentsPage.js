@@ -484,7 +484,30 @@ const DocumentsPage = () => {
 
 // Document Preview Modal Component
 const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfError, setPdfError] = useState(false);
+
   if (!isOpen || !document) return null;
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+    setPageNumber(1);
+    setPdfError(false);
+  };
+
+  const onDocumentLoadError = (error) => {
+    console.error('Error loading PDF:', error);
+    setPdfError(true);
+  };
+
+  const goToPrevPage = () => {
+    setPageNumber(prev => Math.max(prev - 1, 1));
+  };
+
+  const goToNextPage = () => {
+    setPageNumber(prev => Math.min(prev + 1, numPages));
+  };
 
   const renderPreview = () => {
     const fileUrl = `${BACKEND_URL}/uploads/${document.filename}`;
@@ -496,6 +519,73 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
           alt={document.original_filename}
           className="max-w-full max-h-[600px] mx-auto rounded-lg"
         />
+      );
+    } else if (document.file_type.includes('pdf')) {
+      if (pdfError) {
+        return (
+          <div className="text-center py-12">
+            <DocumentIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Unable to load PDF preview
+            </p>
+            <a
+              href={fileUrl}
+              download={document.original_filename}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+              Download PDF
+            </a>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg">
+            <Document
+              file={fileUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              loading={
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+              }
+            >
+              <Page
+                pageNumber={pageNumber}
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                className="max-w-full"
+                width={Math.min(800, window.innerWidth - 100)}
+              />
+            </Document>
+          </div>
+
+          {/* PDF Navigation Controls */}
+          {numPages && numPages > 1 && (
+            <div className="mt-4 flex items-center gap-4">
+              <button
+                onClick={goToPrevPage}
+                disabled={pageNumber <= 1}
+                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeftIcon className="h-5 w-5" />
+              </button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Page {pageNumber} of {numPages}
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={pageNumber >= numPages}
+                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRightIcon className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
       );
     } else if (document.file_type.includes('csv') || document.file_type.includes('text')) {
       return (
@@ -511,11 +601,16 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
       <div className="text-center py-12">
         <DocumentIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
         <p className="text-gray-600 dark:text-gray-400">
-          Preview available for images and text files
+          Preview available for images, PDFs, and text files
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-          For PDF files, please download to view
-        </p>
+        <a
+          href={fileUrl}
+          download={document.original_filename}
+          className="inline-flex items-center px-4 py-2 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+          Download File
+        </a>
       </div>
     );
   };
