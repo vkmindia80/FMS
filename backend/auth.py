@@ -833,6 +833,8 @@ async def generate_demo_data():
             }
         )
         
+        logger.info(f"Demo data generation completed successfully: {len(account_ids)} accounts, {transactions_created} transactions, {documents_created} documents")
+        
         return {
             "success": True,
             "message": "Demo data generated successfully",
