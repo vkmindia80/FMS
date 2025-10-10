@@ -219,6 +219,17 @@ const DashboardPage = () => {
     </motion.div>
   );
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+          <div className="text-gray-600 dark:text-gray-400 font-medium">Loading dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
