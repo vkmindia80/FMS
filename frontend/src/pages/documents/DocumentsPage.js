@@ -122,7 +122,7 @@ const DocumentsPage = () => {
     if (!window.confirm('Are you sure you want to delete this document?')) return;
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('afms_access_token');
       await axios.delete(`${BACKEND_URL}/api/documents/${docId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
