@@ -246,6 +246,7 @@ async def upload_document(
             upload_date=document_doc["upload_date"],
             processed_date=None,
             extracted_data=None,
+            ocr_text=None,
             confidence_score=None,
             error_message=None,
             tags=parsed_tags
