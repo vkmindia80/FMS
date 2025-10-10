@@ -233,6 +233,26 @@ const DashboardPage = () => {
         </div>
         
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          {/* Generate Demo Data Button */}
+          <button
+            onClick={handleGenerateDemoData}
+            disabled={generatingDemo}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            data-testid="generate-demo-btn"
+          >
+            {generatingDemo ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <ChartBarIcon className="h-4 w-4" />
+                <span>Generate Data</span>
+              </>
+            )}
+          </button>
+          
           {/* Timeframe Selector */}
           <select
             value={timeframe}
