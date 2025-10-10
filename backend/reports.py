@@ -566,7 +566,7 @@ async def generate_profit_loss_report(
         }
     )
     
-    return ProfitLossReport(
+    report_data = ProfitLossReport(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Profit & Loss Statement - {period_start} to {period_end}",
@@ -581,6 +581,23 @@ async def generate_profit_loss_report(
         gross_profit=gross_profit,
         net_income=net_income
     )
+    
+    # Handle export formats
+    if format == ReportFormat.PDF:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        return ReportExporter.export_to_pdf(report_dict, "profit_loss")
+    elif format == ReportFormat.EXCEL:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_excel(report_dict, "profit_loss")
+    elif format == ReportFormat.CSV:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_csv(report_dict, "profit_loss")
+    
+    return report_data
 
 @reports_router.get("/balance-sheet", response_model=BalanceSheetReport)
 async def generate_balance_sheet_report(
