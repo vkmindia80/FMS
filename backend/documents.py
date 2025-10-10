@@ -43,6 +43,7 @@ class DocumentResponse(BaseModel):
     upload_date: datetime
     processed_date: Optional[datetime]
     extracted_data: Optional[Dict[str, Any]]
+    ocr_text: Optional[str] = None
     confidence_score: Optional[float]
     error_message: Optional[str]
     tags: List[str]
