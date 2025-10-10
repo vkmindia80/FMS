@@ -143,7 +143,7 @@ const DocumentsPage = () => {
   // Download document
   const handleDownload = async (doc) => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await axios.get(
         `${BACKEND_URL}/uploads/${doc.filename}`,
         {
