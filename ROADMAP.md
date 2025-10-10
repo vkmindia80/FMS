@@ -799,11 +799,32 @@ REFRESH_TOKEN_EXPIRE_DAYS=7
 UPLOAD_DIR=/app/uploads
 MAX_FILE_SIZE=50000000
 ALLOWED_EXTENSIONS=pdf,csv,xlsx,xls,ofx,qfx,qif,jpg,jpeg,png,gif
-EMERGENT_LLM_KEY=<your-emergent-llm-key>  # Optional for AI features
+EMERGENT_LLM_KEY=<your-emergent-llm-key>  # Required for AI document processing
 
 # Frontend (.env)
 REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_NAME=Advanced Finance Management System
+REACT_APP_VERSION=1.0.0
+REACT_APP_UPLOAD_MAX_SIZE=50000000
+REACT_APP_SUPPORTED_FORMATS=pdf,csv,xlsx,xls,ofx,qfx,qif,jpg,jpeg,png,gif
 ```
+
+### Dependencies (Updated January 2025)
+**Backend Requirements:**
+- FastAPI 0.118.3
+- Starlette 0.48.0
+- Motor (MongoDB async driver)
+- OpenAI 1.99.9
+- Google Generative AI 0.8.5
+- LiteLLM 1.77.7
+- aiohttp 3.13.0
+- pytesseract
+- opencv-python
+- bcrypt (password hashing)
+- python-jose (JWT)
+- Faker (demo data generation)
+
+All dependencies are installed and operational. See `/app/backend/requirements.txt` for complete list.
 
 ### Demo Data Generation
 The system includes a comprehensive demo data generator that creates:
