@@ -41,15 +41,25 @@ Building a comprehensive, scalable finance management system from Individual use
 
 ## System Architecture
 
-### Technology Stack
-- **Backend**: FastAPI (Python) with async capabilities
+### Technology Stack (Updated January 2025)
+- **Backend**: FastAPI 0.118.3 (Python) with async capabilities
+- **Web Framework**: Starlette 0.48.0 for ASGI support
 - **Frontend**: React with modern hooks and context management
-- **Database**: MongoDB for flexible document storage
-- **ML/AI**: Emergent LLM + Google Vision API + AWS Textract
-- **Authentication**: JWT with role-based access control
-- **File Storage**: Multi-tier storage (local + cloud)
-- **Banking Integration**: Plaid API + mock services + manual upload
-- **Deployment**: Docker containers with Kubernetes manifests
+- **Database**: MongoDB for flexible document storage (Motor async driver)
+- **ML/AI**: 
+  - Emergent LLM (OpenAI GPT-4o-mini / Gemini 2.0 Flash)
+  - LiteLLM for unified AI interface
+  - Pytesseract for OCR
+  - OpenCV for image preprocessing
+- **AI Libraries**: 
+  - openai==1.99.9
+  - google-generativeai==0.8.5
+  - litellm==1.77.7
+  - aiohttp==3.13.0 (async HTTP)
+- **Authentication**: JWT with role-based access control (bcrypt password hashing)
+- **File Storage**: Local filesystem with async file operations
+- **Banking Integration**: Plaid API (planned) + manual document upload (working)
+- **Deployment**: Environment-ready (Docker/Kubernetes configs pending)
 
 ### Core Components
 
