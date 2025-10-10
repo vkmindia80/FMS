@@ -652,6 +652,14 @@ async def generate_demo_data():
                     file_path = generate_sample_receipt_image(filename, amount, vendor, doc_date)
                     file_size = os.path.getsize(file_path)
                     
+                    # Generate simulated OCR text for receipt
+                    ocr_text = f"""{vendor}
+Receipt
+Date: {doc_date.strftime('%m/%d/%Y')}
+Total: ${amount:.2f}
+Payment Method: Credit Card
+Thank you for your business!"""
+                    
                     document_doc = {
                         "_id": doc_id,
                         "company_id": company_id,
@@ -672,6 +680,7 @@ async def generate_demo_data():
                             "currency": "USD",
                             "category": random.choice(["office_supplies", "meals", "travel"])
                         },
+                        "ocr_text": ocr_text,
                         "confidence_score": random.uniform(0.88, 0.98),
                         "error_message": None,
                         "tags": ["demo", "receipt"],
