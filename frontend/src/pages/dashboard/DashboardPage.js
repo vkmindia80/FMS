@@ -57,7 +57,7 @@ const DashboardPage = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/reports/dashboard-summary`, {
         headers: { Authorization: `Bearer ${token}` }
       });
