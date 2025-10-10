@@ -82,26 +82,63 @@ const DashboardPage = () => {
   };
 
   const handleGenerateDemoData = async () => {
-    if (!window.confirm('This will generate sample data for testing. Continue?')) return;
+    if (!window.confirm('This will generate sample data for testing. This process may take up to 2 minutes. Continue?')) return;
     
     setGeneratingDemo(true);
     try {
+      toast.loading('Generating demo data... Please wait...', {
+        id: 'demo-data-loading',
+        duration: Infinity
+      });
+
       const token = localStorage.getItem('afms_access_token');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/auth/generate-demo-data`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      toast.dismiss('demo-data-loading');
       
       if (response.ok) {
         const result = await response.json();
-        alert(`Demo data generated successfully!\n\nAccounts: ${result.data.accounts_created}\nTransactions: ${result.data.transactions_created}\nDocuments: ${result.data.documents_created}`);
+        toast.success(
+          `Demo data generated successfully!\n\n` +
+          `📊 ${result.data.accounts_created} accounts\n` +
+          `💰 ${result.data.transactions_created} transactions\n` +
+          `📄 ${result.data.documents_created} documents`,
+          {
+            duration: 8000,
+            style: {
+              minWidth: '350px',
+              whiteSpace: 'pre-line'
+            }
+          }
+        );
         fetchDashboardData(); // Refresh dashboard
       } else {
-        alert('Failed to generate demo data');
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.detail || 'Failed to generate demo data. Please try again.', {
+          duration: 5000
+        });
       }
     } catch (error) {
+      toast.dismiss('demo-data-loading');
       console.error('Error generating demo data:', error);
-      alert('Error generating demo data');
+      
+      if (error.name === 'AbortError') {
+        toast.error('Request timed out. The demo data generation is taking too long. Please try again later.', {
+          duration: 6000
+        });
+      } else {
+        toast.error(error.message || 'Error generating demo data. Please check your connection and try again.', {
+          duration: 5000
+        });
+      }
     } finally {
       setGeneratingDemo(false);
     }
