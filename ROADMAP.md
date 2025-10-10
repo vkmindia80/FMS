@@ -1064,6 +1064,10 @@ The system includes a comprehensive demo data generator that creates:
 - ✅ Role-based access control (5 roles: Individual, Business, Corporate, Auditor, Admin)
 - ✅ Multi-tenant data isolation (company_id based security)
 - ✅ Document upload with validation (50MB limit, 11 file types)
+- ✅ Document preview for all file types:
+  - PDF preview with page navigation (react-pdf)
+  - Image preview (JPG, PNG, GIF)
+  - Text/CSV preview with formatting
 - ✅ AI-powered document processing (OCR + Emergent LLM)
   - Receipt extraction (vendor, amount, date, tax, category)
   - Invoice processing (line items, totals, due dates)
