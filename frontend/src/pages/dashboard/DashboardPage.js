@@ -50,6 +50,63 @@ const DashboardPage = () => {
     pendingApprovals: 0,
   });
 
+  // Fetch dashboard data
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/reports/dashboard-summary`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData({
+          balance: data.summary?.cash_balance || 0,
+          income: data.summary?.current_month_revenue || 0,
+          expenses: data.summary?.current_month_expenses || 0,
+          profit: data.summary?.current_month_profit || 0,
+          transactions: data.counts?.total_transactions || 0,
+          documents: data.counts?.total_documents || 0,
+          pendingApprovals: data.counts?.pending_transactions || 0,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateDemoData = async () => {
+    if (!window.confirm('This will generate sample data for testing. Continue?')) return;
+    
+    setGeneratingDemo(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/auth/generate-demo-data`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Demo data generated successfully!\n\nAccounts: ${result.data.accounts_created}\nTransactions: ${result.data.transactions_created}\nDocuments: ${result.data.documents_created}`);
+        fetchDashboardData(); // Refresh dashboard
+      } else {
+        alert('Failed to generate demo data');
+      }
+    } catch (error) {
+      console.error('Error generating demo data:', error);
+      alert('Error generating demo data');
+    } finally {
+      setGeneratingDemo(false);
+    }
+  };
+
   const timeframeOptions = [
     { value: '7d', label: '7 Days' },
     { value: '30d', label: '30 Days' },
