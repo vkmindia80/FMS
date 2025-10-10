@@ -149,7 +149,10 @@ Building a comprehensive, scalable finance management system from Individual use
 - ✅ Document upload interface (`/frontend/src/pages/documents/`)
 - ✅ Document library with search and filters (API endpoints ready)
 - ✅ File type icons and status indicators
-- 🟡 Preview capabilities for different file types (basic structure, may need enhancement)
+- ✅ Preview capabilities for all file types (images, PDFs, text/CSV files)
+  - PDF preview with page navigation (react-pdf integration)
+  - Image preview with responsive sizing
+  - Text/CSV preview with formatted display
 - ✅ Progress tracking via processing_status field
 
 **Testing**: ✅ Upload various document types, view documents, search functionality available
