@@ -304,6 +304,7 @@ async def list_documents(
             upload_date=doc["upload_date"],
             processed_date=doc.get("processed_date"),
             extracted_data=doc.get("extracted_data"),
+            ocr_text=doc.get("ocr_text"),
             confidence_score=doc.get("confidence_score"),
             error_message=doc.get("error_message"),
             tags=doc.get("tags", [])
