@@ -1259,8 +1259,8 @@ The modular architecture supports incremental feature additions without disrupti
 
 ---
 
-**Last Updated**: 2025
-**Version**: 1.0.0
+**Last Updated**: January 2025 (PDF Preview Implementation)
+**Version**: 1.0.1
 **Status**: Active Development
 
 For questions or contributions, refer to the project documentation or contact the development team.
