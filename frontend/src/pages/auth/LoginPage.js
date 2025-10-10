@@ -103,31 +103,58 @@ const LoginPage = () => {
     setGeneratingData(true);
     
     try {
-      const response = await api.post('/auth/generate-demo-data');
+      // Show loading message
+      toast.loading('Generating demo data... This may take up to 2 minutes.', {
+        id: 'demo-data-loading',
+        duration: Infinity
+      });
+
+      const response = await authAPI.generateDemoData();
       
-      if (response.data.success) {
-        const { data } = response.data;
+      // Dismiss loading toast
+      toast.dismiss('demo-data-loading');
+      
+      if (response.success) {
+        const { data } = response;
         toast.success(
           `Demo data generated successfully!\n\n` +
           `📊 ${data.accounts_created} accounts created\n` +
           `💰 ${data.transactions_created} transactions generated\n` +
           `📄 ${data.documents_created} documents created\n` +
-          `📅 Date range: ${data.date_range}`,
+          `📅 Date range: ${data.date_range}\n\n` +
+          `You can now login with:\n` +
+          `Email: ${data.demo_user}\n` +
+          `Password: testpassword123`,
           {
-            duration: 6000,
+            duration: 10000,
             style: {
-              minWidth: '350px',
+              minWidth: '400px',
               whiteSpace: 'pre-line'
             }
           }
         );
       }
     } catch (error) {
+      // Dismiss loading toast
+      toast.dismiss('demo-data-loading');
+      
       console.error('Error generating demo data:', error);
-      toast.error(
-        error.response?.data?.detail || 'Failed to generate demo data. Please try again.',
-        { duration: 4000 }
-      );
+      
+      let errorMessage = 'Failed to generate demo data. ';
+      
+      if (error.code === 'ECONNABORTED') {
+        errorMessage += 'Request timed out. Please try again.';
+      } else if (error.response?.status === 500) {
+        errorMessage += error.response?.data?.detail || 'Server error occurred.';
+      } else if (error.response?.data?.detail) {
+        errorMessage += error.response.data.detail;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += 'Please check your connection and try again.';
+      }
+      
+      toast.error(errorMessage, { duration: 6000 });
     } finally {
       setGeneratingData(false);
     }
