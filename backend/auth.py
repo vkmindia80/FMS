@@ -710,6 +710,21 @@ Thank you for your business!"""
                     file_path = generate_sample_invoice_pdf(filename, amount, vendor, doc_date)
                     file_size = os.path.getsize(file_path)
                     
+                    # Generate simulated OCR text for invoice
+                    invoice_num = f"INV-{random.randint(1000, 9999)}"
+                    due_date = (doc_date + timedelta(days=30)).strftime('%m/%d/%Y')
+                    ocr_text = f"""INVOICE
+{vendor}
+Invoice Number: {invoice_num}
+Date: {doc_date.strftime('%m/%d/%Y')}
+Due Date: {due_date}
+
+Description: Professional Services
+Amount: ${amount:.2f}
+Total: ${amount:.2f}
+
+Please remit payment by due date."""
+                    
                     document_doc = {
                         "_id": doc_id,
                         "company_id": company_id,
@@ -728,9 +743,10 @@ Thank you for your business!"""
                             "date": doc_date.strftime('%Y-%m-%d'),
                             "amount": round(amount, 2),
                             "currency": "USD",
-                            "invoice_number": f"INV-{random.randint(1000, 9999)}",
+                            "invoice_number": invoice_num,
                             "due_date": (doc_date + timedelta(days=30)).strftime('%Y-%m-%d')
                         },
+                        "ocr_text": ocr_text,
                         "confidence_score": random.uniform(0.90, 0.99),
                         "error_message": None,
                         "tags": ["demo", "invoice"],
