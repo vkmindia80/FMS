@@ -63,7 +63,7 @@ const DocumentsPage = () => {
       formData.append('file', file);
 
       try {
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('afms_access_token');
         
         // Update progress
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
