@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, File
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from contextlib import asynccontextmanager
 import asyncio
 import os
 from dotenv import load_dotenv
@@ -20,36 +19,40 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info("Starting AFMS Backend Server...")
-    
-    # Create indexes
-    await users_collection.create_index("email", unique=True)
-    await users_collection.create_index("company_id")
-    await transactions_collection.create_index([("company_id", 1), ("date", -1)])
-    await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
-    await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
-    
-    # Create upload directory
-    upload_dir = os.getenv("UPLOAD_DIR", "/app/uploads")
-    os.makedirs(upload_dir, exist_ok=True)
-    
-    logger.info("AFMS Backend Server started successfully!")
-    yield
-    
-    # Shutdown
-    logger.info("Shutting down AFMS Backend Server...")
-    client.close()
-
 # Initialize FastAPI app
 app = FastAPI(
     title="Advanced Finance Management System",
     description="Enterprise-grade finance management with ML-powered document processing",
-    version="1.0.0",
-    lifespan=lifespan
+    version="1.0.0"
 )
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup"""
+    logger.info("Starting AFMS Backend Server...")
+    
+    try:
+        # Create indexes
+        await users_collection.create_index("email", unique=True)
+        await users_collection.create_index("company_id")
+        await transactions_collection.create_index([("company_id", 1), ("transaction_date", -1)])
+        await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
+        await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
+        
+        # Create upload directory
+        upload_dir = os.getenv("UPLOAD_DIR", "/app/uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        logger.info("AFMS Backend Server started successfully!")
+    except Exception as e:
+        logger.error(f"Startup error: {str(e)}")
+        raise
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up on shutdown"""
+    logger.info("Shutting down AFMS Backend Server...")
+    client.close()
 
 # CORS middleware
 app.add_middleware(
