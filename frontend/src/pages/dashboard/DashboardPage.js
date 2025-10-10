@@ -290,9 +290,9 @@ const DashboardPage = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total Balance"
+          title="Cash Balance"
           value={dashboardData.balance}
-          change={8.2}
+          change={null}
           changeType="positive"
           icon={BanknotesIcon}
           color="bg-gradient-to-br from-blue-500 to-blue-600"
@@ -300,7 +300,7 @@ const DashboardPage = () => {
         <StatCard
           title="Monthly Income"
           value={dashboardData.income}
-          change={12.5}
+          change={null}
           changeType="positive"
           icon={ArrowTrendingUpIcon}
           color="bg-gradient-to-br from-green-500 to-emerald-600"
@@ -308,16 +308,16 @@ const DashboardPage = () => {
         <StatCard
           title="Monthly Expenses"
           value={dashboardData.expenses}
-          change={-3.2}
+          change={null}
           changeType="negative"
           icon={ArrowTrendingDownIcon}
           color="bg-gradient-to-br from-orange-500 to-red-500"
         />
         <StatCard
-          title="Transactions"
-          value={dashboardData.transactions}
-          change={15.8}
-          changeType="positive"
+          title="Monthly Profit"
+          value={dashboardData.profit}
+          change={null}
+          changeType={dashboardData.profit >= 0 ? "positive" : "negative"}
           icon={CreditCardIcon}
           color="bg-gradient-to-br from-purple-500 to-indigo-600"
         />
