@@ -875,7 +875,7 @@ async def generate_cash_flow_report(
         }
     )
     
-    return CashFlowReport(
+    report_data = CashFlowReport(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Cash Flow Statement - {period_start} to {period_end}",
@@ -894,6 +894,23 @@ async def generate_cash_flow_report(
         beginning_cash=beginning_cash,
         ending_cash=ending_cash
     )
+    
+    # Handle export formats
+    if format == ReportFormat.PDF:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        return ReportExporter.export_to_pdf(report_dict, "cash_flow")
+    elif format == ReportFormat.EXCEL:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_excel(report_dict, "cash_flow")
+    elif format == ReportFormat.CSV:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_csv(report_dict, "cash_flow")
+    
+    return report_data
 
 @reports_router.get("/dashboard-summary")
 async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
