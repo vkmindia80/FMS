@@ -341,6 +341,7 @@ async def get_document(
         upload_date=document["upload_date"],
         processed_date=document.get("processed_date"),
         extracted_data=document.get("extracted_data"),
+        ocr_text=document.get("ocr_text"),
         confidence_score=document.get("confidence_score"),
         error_message=document.get("error_message"),
         tags=document.get("tags", [])
