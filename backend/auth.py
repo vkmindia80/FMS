@@ -615,50 +615,204 @@ async def generate_demo_data():
                 await transactions_collection.insert_one(transaction_doc)
                 transactions_created += 1
         
-        # 3. Generate sample documents
+        # 3. Generate sample documents with actual files
         documents_created = 0
-        document_types = ["invoice", "receipt", "bank_statement", "contract"]
         
-        for month_offset in range(24):
-            month_date = start_date + timedelta(days=30 * month_offset)
+        # Import document generators
+        from demo_data_generator import (
+            generate_sample_receipt_image,
+            generate_sample_invoice_pdf,
+            generate_sample_bank_statement_pdf,
+            generate_csv_expense_report
+        )
+        
+        # Get company info for documents
+        company = await companies_collection.find_one({"_id": company_id})
+        company_name = company.get("name", "Test Company Inc.")
+        
+        # Generate receipts (images)
+        for month_offset in range(12):  # Last 12 months
+            month_date = start_date + timedelta(days=30 * (12 + month_offset))
             
-            # Generate 2-3 documents per month
-            for _ in range(random.randint(2, 3)):
-                doc_type = random.choice(document_types)
+            for _ in range(random.randint(2, 4)):
                 doc_date = month_date + timedelta(days=random.randint(1, 28))
+                doc_id = str(uuid.uuid4())
+                vendor = fake.company()
+                amount = random.uniform(50, 500)
+                
+                try:
+                    # Generate actual receipt image
+                    filename = f"receipt_{doc_id}.png"
+                    file_path = generate_sample_receipt_image(filename, amount, vendor, doc_date)
+                    file_size = os.path.getsize(file_path)
+                    
+                    document_doc = {
+                        "_id": doc_id,
+                        "company_id": company_id,
+                        "user_id": user_id,
+                        "filename": filename,
+                        "original_filename": f"receipt_{doc_date.strftime('%Y%m%d')}.png",
+                        "file_path": file_path,
+                        "file_size": file_size,
+                        "file_type": "image/png",
+                        "document_type": "receipt",
+                        "processing_status": "completed",
+                        "upload_date": doc_date,
+                        "processed_date": doc_date + timedelta(minutes=random.randint(1, 5)),
+                        "extracted_data": {
+                            "vendor": vendor,
+                            "date": doc_date.strftime('%Y-%m-%d'),
+                            "amount": round(amount, 2),
+                            "currency": "USD",
+                            "category": random.choice(["office_supplies", "meals", "travel"])
+                        },
+                        "confidence_score": random.uniform(0.88, 0.98),
+                        "error_message": None,
+                        "tags": ["demo", "receipt"],
+                        "metadata": {
+                            "source": "demo_data_generator",
+                            "generated": True
+                        }
+                    }
+                    await documents_collection.insert_one(document_doc)
+                    documents_created += 1
+                except Exception as e:
+                    logger.error(f"Failed to generate receipt: {e}")
+        
+        # Generate invoices (PDFs)
+        for month_offset in range(12):
+            month_date = start_date + timedelta(days=30 * (12 + month_offset))
+            
+            for _ in range(random.randint(1, 2)):
+                doc_date = month_date + timedelta(days=random.randint(1, 28))
+                doc_id = str(uuid.uuid4())
+                vendor = fake.company()
+                amount = random.uniform(500, 5000)
+                
+                try:
+                    # Generate actual invoice PDF
+                    filename = f"invoice_{doc_id}.pdf"
+                    file_path = generate_sample_invoice_pdf(filename, amount, vendor, doc_date)
+                    file_size = os.path.getsize(file_path)
+                    
+                    document_doc = {
+                        "_id": doc_id,
+                        "company_id": company_id,
+                        "user_id": user_id,
+                        "filename": filename,
+                        "original_filename": f"invoice_{doc_date.strftime('%Y%m%d')}.pdf",
+                        "file_path": file_path,
+                        "file_size": file_size,
+                        "file_type": "application/pdf",
+                        "document_type": "invoice",
+                        "processing_status": "completed",
+                        "upload_date": doc_date,
+                        "processed_date": doc_date + timedelta(minutes=random.randint(1, 10)),
+                        "extracted_data": {
+                            "vendor": vendor,
+                            "date": doc_date.strftime('%Y-%m-%d'),
+                            "amount": round(amount, 2),
+                            "currency": "USD",
+                            "invoice_number": f"INV-{random.randint(1000, 9999)}",
+                            "due_date": (doc_date + timedelta(days=30)).strftime('%Y-%m-%d')
+                        },
+                        "confidence_score": random.uniform(0.90, 0.99),
+                        "error_message": None,
+                        "tags": ["demo", "invoice"],
+                        "metadata": {
+                            "source": "demo_data_generator",
+                            "generated": True
+                        }
+                    }
+                    await documents_collection.insert_one(document_doc)
+                    documents_created += 1
+                except Exception as e:
+                    logger.error(f"Failed to generate invoice: {e}")
+        
+        # Generate bank statements (PDFs)
+        for month_offset in range(6):  # Last 6 months
+            month_date = start_date + timedelta(days=30 * (18 + month_offset))
+            doc_id = str(uuid.uuid4())
+            
+            try:
+                # Generate actual bank statement PDF
+                filename = f"statement_{doc_id}.pdf"
+                file_path = generate_sample_bank_statement_pdf(filename, company_name, month_date)
+                file_size = os.path.getsize(file_path)
                 
                 document_doc = {
-                    "_id": str(uuid.uuid4()),
+                    "_id": doc_id,
                     "company_id": company_id,
-                    "uploaded_by": user_id,
-                    "filename": f"demo_{doc_type}_{doc_date.strftime('%Y%m%d')}_{random.randint(100, 999)}.pdf",
-                    "original_filename": f"{doc_type}_{doc_date.strftime('%Y%m%d')}.pdf",
-                    "file_path": f"/demo/documents/{doc_type}_{random.randint(1000, 9999)}.pdf",
-                    "file_size": random.randint(50000, 500000),
-                    "mime_type": "application/pdf",
-                    "document_type": doc_type,
-                    "status": "processed",
-                    "uploaded_at": doc_date,
-                    "processed_at": doc_date + timedelta(minutes=random.randint(1, 30)),
-                    "created_at": doc_date,
-                    "updated_at": doc_date,
+                    "user_id": user_id,
+                    "filename": filename,
+                    "original_filename": f"bank_statement_{month_date.strftime('%Y%m')}.pdf",
+                    "file_path": file_path,
+                    "file_size": file_size,
+                    "file_type": "application/pdf",
+                    "document_type": "bank_statement",
+                    "processing_status": "completed",
+                    "upload_date": month_date,
+                    "processed_date": month_date + timedelta(hours=1),
                     "extracted_data": {
-                        "vendor": f"Demo Vendor {random.randint(1, 10)}",
-                        "date": doc_date.isoformat(),
-                        "total_amount": round(random.uniform(100, 5000), 2),
-                        "currency": "USD",
-                        "items": []
+                        "account_number": "****5678",
+                        "statement_period": month_date.strftime('%m/%Y'),
+                        "beginning_balance": round(random.uniform(50000, 150000), 2),
+                        "ending_balance": round(random.uniform(50000, 150000), 2)
                     },
-                    "ocr_text": f"Demo OCR text for {doc_type}",
-                    "confidence_score": random.uniform(0.85, 0.99),
-                    "tags": ["demo", doc_type],
+                    "confidence_score": random.uniform(0.85, 0.95),
+                    "error_message": None,
+                    "tags": ["demo", "bank_statement"],
                     "metadata": {
-                        "pages": 1,
-                        "source": "demo_data_generator"
+                        "source": "demo_data_generator",
+                        "generated": True
                     }
                 }
                 await documents_collection.insert_one(document_doc)
                 documents_created += 1
+            except Exception as e:
+                logger.error(f"Failed to generate bank statement: {e}")
+        
+        # Generate CSV expense reports
+        for quarter in range(4):  # Last 4 quarters
+            quarter_date = start_date + timedelta(days=90 * (4 + quarter))
+            doc_id = str(uuid.uuid4())
+            
+            try:
+                # Generate actual CSV file
+                filename = f"expenses_{doc_id}.csv"
+                file_path = generate_csv_expense_report(filename)
+                file_size = os.path.getsize(file_path)
+                
+                document_doc = {
+                    "_id": doc_id,
+                    "company_id": company_id,
+                    "user_id": user_id,
+                    "filename": filename,
+                    "original_filename": f"expense_report_Q{quarter+1}_{quarter_date.year}.csv",
+                    "file_path": file_path,
+                    "file_size": file_size,
+                    "file_type": "text/csv",
+                    "document_type": "other",
+                    "processing_status": "completed",
+                    "upload_date": quarter_date,
+                    "processed_date": quarter_date + timedelta(minutes=5),
+                    "extracted_data": {
+                        "type": "expense_report",
+                        "period": f"Q{quarter+1} {quarter_date.year}",
+                        "entries": random.randint(20, 30)
+                    },
+                    "confidence_score": 1.0,
+                    "error_message": None,
+                    "tags": ["demo", "expense_report", "csv"],
+                    "metadata": {
+                        "source": "demo_data_generator",
+                        "generated": True
+                    }
+                }
+                await documents_collection.insert_one(document_doc)
+                documents_created += 1
+            except Exception as e:
+                logger.error(f"Failed to generate CSV: {e}")
         
         # Log audit event
         await log_audit_event(
