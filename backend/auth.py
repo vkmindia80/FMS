@@ -789,6 +789,13 @@ async def generate_demo_data():
                 file_path = generate_csv_expense_report(filename)
                 file_size = os.path.getsize(file_path)
                 
+                # Read CSV content for ocr_text
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        csv_content = f.read()
+                except Exception:
+                    csv_content = ""
+                
                 document_doc = {
                     "_id": doc_id,
                     "company_id": company_id,
@@ -807,6 +814,7 @@ async def generate_demo_data():
                         "period": f"Q{quarter+1} {quarter_date.year}",
                         "entries": random.randint(20, 30)
                     },
+                    "ocr_text": csv_content,
                     "confidence_score": 1.0,
                     "error_message": None,
                     "tags": ["demo", "expense_report", "csv"],
