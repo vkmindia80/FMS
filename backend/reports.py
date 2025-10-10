@@ -751,7 +751,7 @@ async def generate_balance_sheet_report(
         }
     )
     
-    return BalanceSheetReport(
+    report_data = BalanceSheetReport(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Balance Sheet as of {as_of_date}",
@@ -771,6 +771,23 @@ async def generate_balance_sheet_report(
         assets_minus_liabilities=assets_minus_liabilities,
         is_balanced=is_balanced
     )
+    
+    # Handle export formats
+    if format == ReportFormat.PDF:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        return ReportExporter.export_to_pdf(report_dict, "balance_sheet")
+    elif format == ReportFormat.EXCEL:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_excel(report_dict, "balance_sheet")
+    elif format == ReportFormat.CSV:
+        from report_exports import ReportExporter
+        report_dict = report_data.dict()
+        return ReportExporter.export_to_csv(report_dict, "balance_sheet")
+    
+    return report_data
 
 @reports_router.get("/cash-flow", response_model=CashFlowReport)
 async def generate_cash_flow_report(
