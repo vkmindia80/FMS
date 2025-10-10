@@ -771,6 +771,22 @@ Please remit payment by due date."""
                 file_path = generate_sample_bank_statement_pdf(filename, company_name, month_date)
                 file_size = os.path.getsize(file_path)
                 
+                # Generate simulated OCR text for bank statement
+                beginning_balance = round(random.uniform(50000, 150000), 2)
+                ending_balance = round(random.uniform(50000, 150000), 2)
+                ocr_text = f"""BANK STATEMENT
+{company_name}
+Account: ****5678
+Statement Period: {month_date.strftime('%B %Y')}
+
+Beginning Balance: ${beginning_balance:,.2f}
+Ending Balance: ${ending_balance:,.2f}
+
+Summary of Transactions:
+- Deposits: 15 transactions
+- Withdrawals: 23 transactions
+- Service Charges: $25.00"""
+                
                 document_doc = {
                     "_id": doc_id,
                     "company_id": company_id,
@@ -787,9 +803,10 @@ Please remit payment by due date."""
                     "extracted_data": {
                         "account_number": "****5678",
                         "statement_period": month_date.strftime('%m/%Y'),
-                        "beginning_balance": round(random.uniform(50000, 150000), 2),
-                        "ending_balance": round(random.uniform(50000, 150000), 2)
+                        "beginning_balance": beginning_balance,
+                        "ending_balance": ending_balance
                     },
+                    "ocr_text": ocr_text,
                     "confidence_score": random.uniform(0.85, 0.95),
                     "error_message": None,
                     "tags": ["demo", "bank_statement"],
