@@ -26,35 +26,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize application on startup"""
-    logger.info("Starting AFMS Backend Server...")
-    
-    try:
-        # Create indexes
-        await users_collection.create_index("email", unique=True)
-        await users_collection.create_index("company_id")
-        await transactions_collection.create_index([("company_id", 1), ("transaction_date", -1)])
-        await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
-        await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
-        
-        # Create upload directory
-        upload_dir = os.getenv("UPLOAD_DIR", "/app/uploads")
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        logger.info("AFMS Backend Server started successfully!")
-    except Exception as e:
-        logger.error(f"Startup error: {str(e)}")
-        raise
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Clean up on shutdown"""
-    logger.info("Shutting down AFMS Backend Server...")
-    client.close()
-
-# CORS middleware
+# CORS middleware - MUST be added before mounting and including routers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Configure appropriately for production
@@ -63,10 +35,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static files for uploads
+# Static files for uploads - Mount before including routers
 upload_dir = os.getenv("UPLOAD_DIR", "/app/uploads")
 os.makedirs(upload_dir, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+try:
+    app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+except Exception as e:
+    logger.warning(f"Could not mount static files: {e}")
 
 # Import all route modules
 from auth import auth_router
@@ -83,6 +58,29 @@ app.include_router(transactions_router, prefix="/api/transactions", tags=["Trans
 app.include_router(accounts_router, prefix="/api/accounts", tags=["Accounts"])
 app.include_router(reports_router, prefix="/api/reports", tags=["Reports"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Administration"])
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup"""
+    logger.info("Starting AFMS Backend Server...")
+    
+    try:
+        # Create indexes
+        await users_collection.create_index("email", unique=True)
+        await users_collection.create_index("company_id")
+        await transactions_collection.create_index([("company_id", 1), ("transaction_date", -1)])
+        await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
+        await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
+        
+        logger.info("AFMS Backend Server started successfully!")
+    except Exception as e:
+        logger.error(f"Startup error: {str(e)}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up on shutdown"""
+    logger.info("Shutting down AFMS Backend Server...")
+    client.close()
 
 @app.get("/api/health")
 async def health_check():
