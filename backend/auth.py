@@ -409,6 +409,8 @@ async def generate_demo_data():
     from decimal import Decimal
     import random
     
+    logger.info("Starting demo data generation...")
+    
     # Demo user credentials
     DEMO_EMAIL = "john.doe@testcompany.com"
     DEMO_PASSWORD = "testpassword123"
