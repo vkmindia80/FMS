@@ -276,6 +276,259 @@ class AFMSBackendTester:
         self.log_test("Malformed Requests Suite", overall_success, f"{tests_passed}/{total_tests} tests passed")
         return overall_success
 
+    def test_list_accounts(self):
+        """Test listing accounts"""
+        if not self.token:
+            self.log_test("List Accounts", False, "No authentication token available")
+            return False
+            
+        success, response = self.run_test(
+            "List Accounts",
+            "GET",
+            "accounts/",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            self.log_test("Accounts List Validation", True, f"Found {len(response)} accounts")
+            return True
+        elif success:
+            self.log_test("Accounts List Validation", False, "Response is not a list")
+            return False
+        
+        return success
+
+    def test_setup_default_accounts(self):
+        """Test setting up default accounts"""
+        if not self.token:
+            self.log_test("Setup Default Accounts", False, "No authentication token available")
+            return False
+            
+        success, response = self.run_test(
+            "Setup Default Accounts",
+            "POST",
+            "accounts/setup-defaults",
+            200
+        )
+        
+        if success and response:
+            account_count = response.get('account_count', 0)
+            if account_count > 0:
+                self.log_test("Default Accounts Creation", True, f"Created {account_count} default accounts")
+                return True
+            else:
+                self.log_test("Default Accounts Creation", False, "No accounts were created")
+                return False
+        
+        return success
+
+    def test_create_account(self):
+        """Test creating a new account"""
+        if not self.token:
+            self.log_test("Create Account", False, "No authentication token available")
+            return False
+            
+        account_data = {
+            "name": f"Test Account {datetime.now().strftime('%H%M%S')}",
+            "account_type": "cash",
+            "account_number": f"TEST{datetime.now().strftime('%H%M%S')}",
+            "description": "Test account for API testing",
+            "opening_balance": 1000.00,
+            "currency_code": "USD",
+            "is_active": True
+        }
+        
+        success, response = self.run_test(
+            "Create Account",
+            "POST",
+            "accounts/",
+            200,
+            data=account_data
+        )
+        
+        if success and response:
+            account_id = response.get('id')
+            if account_id:
+                self.created_account_ids.append(account_id)
+                self.log_test("Account Creation Validation", True, f"Account ID: {account_id}")
+                
+                # Validate response structure
+                required_fields = ['id', 'name', 'account_type', 'account_category', 'is_active', 'current_balance']
+                missing_fields = [field for field in required_fields if field not in response]
+                
+                if missing_fields:
+                    self.log_test("Account Response Validation", False, f"Missing fields: {missing_fields}")
+                    return False
+                else:
+                    self.log_test("Account Response Validation", True, "All required fields present")
+                    return True
+            else:
+                self.log_test("Account Creation Validation", False, "No account ID in response")
+                return False
+        
+        return success
+
+    def test_get_account(self):
+        """Test getting a specific account"""
+        if not self.token:
+            self.log_test("Get Account", False, "No authentication token available")
+            return False
+            
+        if not self.created_account_ids:
+            self.log_test("Get Account", False, "No account ID available for testing")
+            return False
+            
+        account_id = self.created_account_ids[0]
+        success, response = self.run_test(
+            "Get Account",
+            "GET",
+            f"accounts/{account_id}",
+            200
+        )
+        
+        if success and response:
+            if response.get('id') == account_id:
+                self.log_test("Account Retrieval Validation", True, f"Retrieved account: {response.get('name')}")
+                return True
+            else:
+                self.log_test("Account Retrieval Validation", False, "Account ID mismatch")
+                return False
+        
+        return success
+
+    def test_update_account(self):
+        """Test updating an account"""
+        if not self.token:
+            self.log_test("Update Account", False, "No authentication token available")
+            return False
+            
+        if not self.created_account_ids:
+            self.log_test("Update Account", False, "No account ID available for testing")
+            return False
+            
+        account_id = self.created_account_ids[0]
+        update_data = {
+            "name": f"Updated Test Account {datetime.now().strftime('%H%M%S')}",
+            "description": "Updated description for testing",
+            "is_active": True
+        }
+        
+        success, response = self.run_test(
+            "Update Account",
+            "PUT",
+            f"accounts/{account_id}",
+            200,
+            data=update_data
+        )
+        
+        if success and response:
+            if response.get('name') == update_data['name']:
+                self.log_test("Account Update Validation", True, f"Account updated successfully")
+                return True
+            else:
+                self.log_test("Account Update Validation", False, "Account name not updated")
+                return False
+        
+        return success
+
+    def test_account_filtering(self):
+        """Test account filtering functionality"""
+        if not self.token:
+            self.log_test("Account Filtering", False, "No authentication token available")
+            return False
+            
+        # Test filtering by account type
+        success, response = self.run_test(
+            "Filter Accounts by Type",
+            "GET",
+            "accounts/?account_type=cash",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            # Check if all returned accounts are cash type
+            cash_accounts = [acc for acc in response if acc.get('account_type') == 'cash']
+            if len(cash_accounts) == len(response):
+                self.log_test("Account Type Filter Validation", True, f"Found {len(cash_accounts)} cash accounts")
+                return True
+            else:
+                self.log_test("Account Type Filter Validation", False, "Filter not working correctly")
+                return False
+        
+        return success
+
+    def test_delete_account(self):
+        """Test deleting an account"""
+        if not self.token:
+            self.log_test("Delete Account", False, "No authentication token available")
+            return False
+            
+        if not self.created_account_ids:
+            self.log_test("Delete Account", False, "No account ID available for testing")
+            return False
+            
+        account_id = self.created_account_ids[-1]  # Use last created account
+        success, response = self.run_test(
+            "Delete Account",
+            "DELETE",
+            f"accounts/{account_id}",
+            200
+        )
+        
+        if success:
+            # Remove from our tracking list
+            if account_id in self.created_account_ids:
+                self.created_account_ids.remove(account_id)
+            self.log_test("Account Deletion Validation", True, "Account deleted successfully")
+            return True
+        
+        return success
+
+    def test_invalid_account_operations(self):
+        """Test invalid account operations"""
+        if not self.token:
+            self.log_test("Invalid Account Operations", False, "No authentication token available")
+            return False
+            
+        tests_passed = 0
+        total_tests = 3
+        
+        # Test 1: Get non-existent account
+        success, _ = self.run_test(
+            "Get Non-existent Account",
+            "GET",
+            "accounts/non-existent-id",
+            404
+        )
+        if success:
+            tests_passed += 1
+        
+        # Test 2: Create account with invalid data
+        success, _ = self.run_test(
+            "Create Account Invalid Data",
+            "POST",
+            "accounts/",
+            422,
+            data={"name": "", "account_type": "invalid_type"}
+        )
+        if success:
+            tests_passed += 1
+        
+        # Test 3: Update non-existent account
+        success, _ = self.run_test(
+            "Update Non-existent Account",
+            "PUT",
+            "accounts/non-existent-id",
+            404,
+            data={"name": "Updated Name"}
+        )
+        if success:
+            tests_passed += 1
+        
+        overall_success = tests_passed == total_tests
+        self.log_test("Invalid Account Operations Suite", overall_success, f"{tests_passed}/{total_tests} tests passed")
+        return overall_success
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting AFMS Backend API Tests...")
