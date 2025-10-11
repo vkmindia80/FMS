@@ -20,6 +20,7 @@ const TransactionsPage = () => {
     category: '',
     transaction_date: new Date().toISOString().split('T')[0],
     memo: '',
+    currency: 'USD',
   });
 
   useEffect(() => {
