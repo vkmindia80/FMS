@@ -224,8 +224,97 @@ class ReportExporter:
         elements.append(asset_table)
         elements.append(Spacer(1, 0.3*inch))
         
-        # Liabilities and Equity sections (similar structure)
-        # ... Implementation similar to assets
+        # Liabilities section
+        elements.append(Paragraph("<b>LIABILITIES</b>", heading_style))
+        
+        liability_data = [['Account', 'Account Number', 'Balance']]
+        
+        # Current liabilities
+        liability_data.append(['<b>Current Liabilities</b>', '', ''])
+        for account in data.get('liability_accounts', []):
+            if account.get('is_current'):
+                liability_data.append([
+                    f"  {account.get('account_name', '')}",
+                    account.get('account_number', ''),
+                    f"${float(account.get('balance', 0)):,.2f}"
+                ])
+        
+        liability_data.append(['', '<i>Total Current Liabilities</i>', f"<i>${float(data.get('current_liabilities', 0)):,.2f}</i>"])
+        
+        # Long-term liabilities
+        liability_data.append(['<b>Long-Term Liabilities</b>', '', ''])
+        for account in data.get('liability_accounts', []):
+            if not account.get('is_current'):
+                liability_data.append([
+                    f"  {account.get('account_name', '')}",
+                    account.get('account_number', ''),
+                    f"${float(account.get('balance', 0)):,.2f}"
+                ])
+        
+        liability_data.append(['', '<i>Total Long-Term Liabilities</i>', f"<i>${float(data.get('long_term_liabilities', 0)):,.2f}</i>"])
+        liability_data.append(['', '<b>TOTAL LIABILITIES</b>', f"<b>${float(data.get('total_liabilities', 0)):,.2f}</b>"])
+        
+        liability_table = Table(liability_data, colWidths=[3*inch, 1.5*inch, 1.5*inch])
+        liability_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+        ]))
+        
+        elements.append(liability_table)
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Equity section
+        elements.append(Paragraph("<b>EQUITY</b>", heading_style))
+        
+        equity_data = [['Account', 'Account Number', 'Balance']]
+        
+        for account in data.get('equity_accounts', []):
+            equity_data.append([
+                account.get('account_name', ''),
+                account.get('account_number', ''),
+                f"${float(account.get('balance', 0)):,.2f}"
+            ])
+        
+        equity_data.append(['', '<b>TOTAL EQUITY</b>', f"<b>${float(data.get('total_equity', 0)):,.2f}</b>"])
+        
+        equity_table = Table(equity_data, colWidths=[3*inch, 1.5*inch, 1.5*inch])
+        equity_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+        ]))
+        
+        elements.append(equity_table)
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Balance equation check
+        total_liabilities_equity = float(data.get('total_liabilities', 0)) + float(data.get('total_equity', 0))
+        balance_check = Table([
+            ['', '<b>TOTAL LIABILITIES + EQUITY</b>', f"<b>${total_liabilities_equity:,.2f}</b>"],
+        ], colWidths=[3*inch, 1.5*inch, 1.5*inch])
+        balance_check.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('LINEABOVE', (0, 0), (-1, 0), 2, colors.black),
+        ]))
+        elements.append(balance_check)
+        
+        # Balance validation
+        if data.get('is_balanced', False):
+            elements.append(Spacer(1, 0.2*inch))
+            elements.append(Paragraph("<font color='green'><b>✓ Balance Sheet is Balanced</b></font>", heading_style))
         
         return elements
     
