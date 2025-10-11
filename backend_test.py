@@ -582,7 +582,8 @@ class AFMSBackendTester:
         
         # Authentication tests
         print("\n🔐 Testing Authentication...")
-        login_success = self.test_demo_user_login()
+        registration_success = self.test_user_registration()
+        login_success = self.test_demo_user_login() if registration_success else False
         self.test_invalid_login()
         self.test_get_current_user()
         self.test_refresh_token()
