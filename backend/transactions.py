@@ -253,6 +253,18 @@ async def create_transaction(
     # Generate transaction ID
     transaction_id = str(uuid.uuid4())
     
+    # Convert to base currency if needed
+    base_currency_amount = transaction_data.base_currency_amount
+    exchange_rate = transaction_data.exchange_rate
+    
+    if base_currency_amount is None or exchange_rate is None:
+        base_currency_amount, exchange_rate = await convert_to_base_currency(
+            transaction_data.amount,
+            transaction_data.currency,
+            current_user["company_id"],
+            transaction_data.transaction_date
+        )
+    
     # Handle journal entries
     if transaction_data.journal_entries:
         # Validate provided journal entries
