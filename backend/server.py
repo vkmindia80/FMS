@@ -52,6 +52,7 @@ from transactions import transactions_router
 from accounts import accounts_router
 from reports import reports_router
 from admin import admin_router
+from currency_service import currency_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
