@@ -595,8 +595,9 @@ def main():
     """Main test execution"""
     print("Advanced Finance Management System - Backend API Tests")
     print("Testing against demo credentials: john.doe@testcompany.com")
+    print("Using public endpoint: https://acct-mgmt-dev.preview.emergentagent.com")
     
-    tester = AFMSBackendTester("http://localhost:8001")
+    tester = AFMSBackendTester("https://acct-mgmt-dev.preview.emergentagent.com")
     
     try:
         success = tester.run_all_tests()
