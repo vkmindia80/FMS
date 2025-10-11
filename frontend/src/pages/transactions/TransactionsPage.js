@@ -19,7 +19,7 @@ const TransactionsPage = () => {
     transaction_type: 'expense',
     category: '',
     transaction_date: new Date().toISOString().split('T')[0],
-    notes: '',
+    memo: '',
   });
 
   useEffect(() => {
