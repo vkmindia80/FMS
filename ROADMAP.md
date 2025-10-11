@@ -1037,7 +1037,49 @@ The system includes a comprehensive demo data generator that creates:
 
 ## 🔧 **Recent Fixes & Updates (January 2025)**
 
-### PDF Preview Implementation (Latest)
+### Network Error & Transaction Bugs Fixed (October 11, 2025) - LATEST
+**Issue Identified:** 
+1. Network Error preventing transactions from loading - "Mixed Content: HTTPS → HTTP" blocking
+2. "Add Transaction" button not functional
+
+**Root Causes:**
+1. **Network Error:** `proxy: "http://localhost:8001"` in package.json caused axios to convert HTTPS URLs to HTTP, triggering browser mixed content blocking
+2. **Add Transaction:** Static buttons with no onClick handlers or modal implementation
+
+**Solutions Implemented:**
+1. ✅ **Network Error Fix:**
+   - Removed problematic proxy setting from `/app/frontend/package.json`
+   - Fixed undefined `BACKEND_URL` variable in api.js
+   - Replaced axios with native fetch() API for transactions (bypasses axios HTTP conversion bug)
+   - Ensured all API calls use proper HTTPS URLs
+
+2. ✅ **Add Transaction Feature Implementation:**
+   - Added modal state management (`showModal`, `formData`)
+   - Created complete transaction form with validation:
+     * Description field (required)
+     * Amount field with number validation
+     * Transaction type selector (Income/Expense)
+     * Category dropdown with backend enum values (e.g., `office_supplies`, `business_income`)
+     * Transaction date picker
+     * Memo field (optional)
+   - Implemented form submission using fetch() API
+   - Added success/error handling with toast notifications
+   - Auto-refresh transaction list after creation
+   - Modal auto-close on success
+
+3. ✅ **Testing Results:**
+   - Transactions page now loads 50+ transactions successfully
+   - Add Transaction modal opens correctly
+   - Form validates properly
+   - New transactions created successfully (e.g., "Office Equipment Purchase" $299.99)
+   - Modal closes and list refreshes automatically
+   - All HTTPS requests working properly
+
+**Result:** Both critical bugs resolved. Transactions feature fully functional.
+
+---
+
+### PDF Preview Implementation
 **Issue Identified:** PDF files could not be previewed in the document viewer
 **User Impact:** Users had to download PDF files to view them, disrupting workflow
 
