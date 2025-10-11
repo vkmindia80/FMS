@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class AFMSBackendTester:
-    def __init__(self, base_url="http://localhost:8001"):
+    def __init__(self, base_url="https://acct-mgmt-dev.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.refresh_token = None
@@ -15,6 +15,7 @@ class AFMSBackendTester:
         self.tests_run = 0
         self.tests_passed = 0
         self.test_results = []
+        self.created_account_ids = []  # Track created accounts for cleanup
 
     def log_test(self, name: str, success: bool, details: str = ""):
         """Log test result"""
