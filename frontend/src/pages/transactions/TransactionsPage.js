@@ -19,6 +19,11 @@ const TransactionsPage = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
+      
+      // Debug: Check if we have auth token
+      const token = localStorage.getItem('afms_access_token');
+      console.log('Auth token exists:', !!token);
+      
       const params = {
         page: currentPage,
         page_size: 20,
@@ -32,7 +37,9 @@ const TransactionsPage = () => {
         params.search = searchTerm;
       }
 
+      console.log('Fetching transactions with params:', params);
       const data = await transactionsAPI.getTransactions(params);
+      console.log('Received transactions data:', data);
       
       if (Array.isArray(data)) {
         setTransactions(data);
