@@ -170,8 +170,30 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         
     return user
 
-async def log_audit_event(user_id: str, company_id: str, action: str, details: Dict[str, Any]):
-    """Log audit event"""
+async def log_audit_event(
+    user_id: str, 
+    company_id: str, 
+    action: str, 
+    details: Dict[str, Any],
+    request: Optional[Request] = None
+):
+    """Log audit event with IP and user agent"""
+    ip_address = None
+    user_agent = None
+    
+    if request:
+        # Extract IP address (handle proxy headers)
+        forwarded = request.headers.get("X-Forwarded-For")
+        if forwarded:
+            ip_address = forwarded.split(",")[0].strip()
+        elif request.headers.get("X-Real-IP"):
+            ip_address = request.headers.get("X-Real-IP")
+        elif request.client:
+            ip_address = request.client.host
+        
+        # Extract user agent
+        user_agent = request.headers.get("User-Agent")
+    
     audit_event = {
         "_id": str(uuid.uuid4()),
         "user_id": user_id,
@@ -179,8 +201,8 @@ async def log_audit_event(user_id: str, company_id: str, action: str, details: D
         "action": action,
         "details": details,
         "timestamp": datetime.utcnow(),
-        "ip_address": None,  # TODO: Extract from request
-        "user_agent": None   # TODO: Extract from request
+        "ip_address": ip_address,
+        "user_agent": user_agent
     }
     
     try:
