@@ -353,7 +353,11 @@ async def create_transaction(
         journal_entries=transaction_doc["journal_entries"],
         confidence_score=transaction_doc["confidence_score"],
         is_reconciled=transaction_doc["is_reconciled"],
-        document_id=transaction_doc["document_id"]
+        document_id=transaction_doc["document_id"],
+        # Multi-currency fields
+        currency=transaction_doc["currency"],
+        base_currency_amount=Decimal(str(transaction_doc["base_currency_amount"])) if transaction_doc.get("base_currency_amount") else None,
+        exchange_rate=Decimal(str(transaction_doc["exchange_rate"])) if transaction_doc.get("exchange_rate") else None
     )
 
 @transactions_router.get("/", response_model=List[TransactionResponse])
