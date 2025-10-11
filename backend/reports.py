@@ -13,6 +13,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+async def get_company_base_currency(company_id: str) -> str:
+    """Get the base currency for a company"""
+    company = await companies_collection.find_one({"_id": company_id})
+    if company and "base_currency" in company:
+        return company["base_currency"]
+    return "USD"  # Default fallback
+
 reports_router = APIRouter()
 
 class ReportFormat(str, Enum):
