@@ -63,6 +63,10 @@ class TransactionCreate(BaseModel):
     payee: Optional[str] = None
     memo: Optional[str] = None
     tags: Optional[List[str]] = []
+    # Multi-currency support
+    currency: str = Field(default="USD", min_length=3, max_length=3)
+    base_currency_amount: Optional[Decimal] = None
+    exchange_rate: Optional[Decimal] = None
     # For double-entry accounting
     journal_entries: Optional[List[JournalEntry]] = []
     # For automatic account mapping
