@@ -489,23 +489,33 @@ const TransactionsPage = () => {
                   />
                 </div>
 
-                {/* Amount */}
-                <div>
-                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Amount ($) *
-                  </label>
-                  <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    required
-                    min="0"
-                    step="0.01"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="0.00"
-                  />
+                {/* Amount and Currency */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Amount *
+                    </label>
+                    <input
+                      type="number"
+                      id="amount"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div>
+                    <CurrencySelector
+                      label="Currency"
+                      selectedCurrency={formData.currency}
+                      onCurrencyChange={(currency) => setFormData(prev => ({ ...prev, currency }))}
+                      size="medium"
+                    />
+                  </div>
                 </div>
 
                 {/* Category */}
