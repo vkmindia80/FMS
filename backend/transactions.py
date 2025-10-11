@@ -461,7 +461,11 @@ async def get_transaction(
         journal_entries=transaction.get("journal_entries", []),
         confidence_score=transaction.get("confidence_score"),
         is_reconciled=transaction.get("is_reconciled", False),
-        document_id=transaction.get("document_id")
+        document_id=transaction.get("document_id"),
+        # Multi-currency fields
+        currency=transaction.get("currency", "USD"),
+        base_currency_amount=Decimal(str(transaction["base_currency_amount"])) if transaction.get("base_currency_amount") else None,
+        exchange_rate=Decimal(str(transaction["exchange_rate"])) if transaction.get("exchange_rate") else None
     )
 
 @transactions_router.put("/{transaction_id}", response_model=TransactionResponse)
