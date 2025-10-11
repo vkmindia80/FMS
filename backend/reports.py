@@ -767,13 +767,16 @@ async def generate_balance_sheet_report(
         }
     )
     
+    # Get company base currency
+    base_currency = await get_company_base_currency(current_user["company_id"])
+    
     report_data = BalanceSheetReport(
         report_id=report_id,
         company_id=current_user["company_id"],
         report_name=f"Balance Sheet as of {as_of_date}",
         as_of_date=as_of_date,
         generated_at=datetime.utcnow(),
-        currency="USD",  # TODO: Get from company settings
+        currency=base_currency,
         total_assets=total_assets,
         current_assets=current_assets,
         non_current_assets=non_current_assets,
