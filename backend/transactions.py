@@ -107,6 +107,10 @@ class TransactionResponse(BaseModel):
     confidence_score: Optional[float]
     is_reconciled: bool
     document_id: Optional[str]
+    # Multi-currency support
+    currency: str
+    base_currency_amount: Optional[Decimal]
+    exchange_rate: Optional[Decimal]
 
 def validate_journal_entries(entries: List[JournalEntry]) -> tuple[bool, str]:
     """Validate that journal entries balance (debits = credits)"""
