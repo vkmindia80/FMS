@@ -88,6 +88,12 @@ async def startup_event():
         await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
         await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
         
+        # Exchange rates indexes
+        from database import exchange_rates_collection
+        await exchange_rates_collection.create_index([("base_currency", 1), ("target_currency", 1), ("date", -1)])
+        await exchange_rates_collection.create_index([("date", -1)])
+        await exchange_rates_collection.create_index([("is_active", 1)])
+        
         logger.info("✅ AFMS Backend Server started successfully!")
         logger.info(f"   - Token blacklist: {'✅ Active' if token_blacklist.client else '⚠️  Disabled (Redis unavailable)'}")
         logger.info(f"   - Rate limiting: {'✅ Active' if rate_limiter.enabled else '⚠️  Disabled (Redis unavailable)'}")
