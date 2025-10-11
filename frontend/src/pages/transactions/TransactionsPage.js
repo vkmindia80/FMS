@@ -11,6 +11,7 @@ const TransactionsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [filter, setFilter] = useState('all'); // all, income, expense
   const [searchTerm, setSearchTerm] = useState('');
+  const [debugInfo, setDebugInfo] = useState(null);
 
   useEffect(() => {
     fetchTransactions();
