@@ -189,6 +189,10 @@ def test_token_revocation():
     print("TEST 3: Token Revocation System")
     print("=" * 80)
     
+    # Wait a bit to avoid rate limiting from previous tests
+    print("Waiting 2 seconds to avoid rate limiting...")
+    time.sleep(2)
+    
     # Register a test user
     test_email = f"test_revoke_{int(time.time())}@example.com"
     test_password = "TestPass123!"
