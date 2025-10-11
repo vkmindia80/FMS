@@ -494,6 +494,39 @@ def require_corporate_or_above():
 def require_admin():
     return require_role([UserRole.ADMIN])
 
+# Additional security endpoints
+@auth_router.post("/revoke-all-tokens")
+async def revoke_all_user_tokens(
+    request: Request,
+    current_user: dict = Depends(get_current_user)
+):
+    """Revoke all tokens for current user (e.g., after password change)"""
+    
+    success = token_blacklist.blacklist_all_user_tokens(current_user["_id"])
+    
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="all_tokens_revoked",
+        details={"reason": "user_requested"},
+        request=request
+    )
+    
+    return {
+        "message": "All tokens revoked successfully",
+        "success": success
+    }
+
+@auth_router.get("/security/blacklist-stats")
+async def get_blacklist_stats(current_user: dict = Depends(require_admin())):
+    """Get token blacklist statistics (admin only)"""
+    return token_blacklist.get_stats()
+
+@auth_router.get("/security/rate-limit-stats")
+async def get_rate_limit_stats(current_user: dict = Depends(require_admin())):
+    """Get rate limiting statistics (admin only)"""
+    return rate_limiter.get_stats()
+
 @auth_router.post("/generate-demo-data")
 async def generate_demo_data():
     """Generate comprehensive demo data for the demo user account"""
