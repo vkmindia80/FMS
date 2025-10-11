@@ -59,6 +59,15 @@ const TransactionsPage = () => {
       
       const errorMessage = error.response?.data?.detail || error.message || 'Failed to load transactions';
       toast.error(`Failed to load transactions: ${errorMessage}`);
+      
+      // Set debug info
+      setDebugInfo({
+        error: errorMessage,
+        status: error.response?.status,
+        hasToken: !!localStorage.getItem('afms_access_token'),
+        backendUrl: process.env.REACT_APP_BACKEND_URL,
+      });
+      
       setTransactions([]);
     } finally {
       setLoading(false);
