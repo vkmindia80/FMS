@@ -21,49 +21,57 @@ const TransactionsPage = () => {
     try {
       setLoading(true);
       
-      // Debug: Check if we have auth token
+      // Use fetch with full HTTPS URL (like dashboard does)
       const token = localStorage.getItem('afms_access_token');
       console.log('Auth token exists:', !!token);
       
-      const params = {
+      // Build query string
+      const queryParams = new URLSearchParams({
         page: currentPage,
         page_size: 20,
-      };
+      });
 
       if (filter !== 'all') {
-        params.transaction_type = filter;
+        queryParams.append('transaction_type', filter);
       }
 
       if (searchTerm) {
-        params.search = searchTerm;
+        queryParams.append('search', searchTerm);
       }
 
-      console.log('Fetching transactions with params:', params);
-      const data = await transactionsAPI.getTransactions(params);
-      console.log('Received transactions data:', data);
+      console.log('Fetching transactions with params:', Object.fromEntries(queryParams));
       
-      if (Array.isArray(data)) {
-        setTransactions(data);
-        // Estimate total pages based on results
-        setTotalPages(data.length === 20 ? currentPage + 1 : currentPage);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/transactions/?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Received transactions data:', data);
+        
+        if (Array.isArray(data)) {
+          setTransactions(data);
+          setTotalPages(data.length === 20 ? currentPage + 1 : currentPage);
+          setDebugInfo(null); // Clear debug info on success
+        } else {
+          setTransactions([]);
+        }
       } else {
-        setTransactions([]);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP ${response.status}`);
       }
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
       
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to load transactions';
+      const errorMessage = error.message || 'Failed to load transactions';
       toast.error(`Failed to load transactions: ${errorMessage}`);
       
       // Set debug info
       setDebugInfo({
         error: errorMessage,
-        status: error.response?.status,
         hasToken: !!localStorage.getItem('afms_access_token'),
         backendUrl: process.env.REACT_APP_BACKEND_URL,
       });
