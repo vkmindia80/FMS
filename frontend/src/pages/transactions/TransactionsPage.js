@@ -366,6 +366,11 @@ const TransactionsPage = () => {
                           {formatAmount(transaction.amount, transaction.currency)}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded text-xs font-medium">
+                          {transaction.currency || 'USD'}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         <span className="capitalize">{transaction.status}</span>
                       </td>
