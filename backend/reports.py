@@ -894,6 +894,9 @@ async def generate_cash_flow_report(
         }
     )
     
+    # Get company base currency
+    base_currency = await get_company_base_currency(current_user["company_id"])
+    
     report_data = CashFlowReport(
         report_id=report_id,
         company_id=current_user["company_id"],
@@ -901,7 +904,7 @@ async def generate_cash_flow_report(
         period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
         period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
         generated_at=datetime.utcnow(),
-        currency="USD",  # TODO: Get from company settings
+        currency=base_currency,
         net_income=net_income,
         operating_cash_flow=operating_cash_flow,
         operating_activities=operating_activities,
