@@ -417,7 +417,11 @@ async def list_transactions(
             journal_entries=txn.get("journal_entries", []),
             confidence_score=txn.get("confidence_score"),
             is_reconciled=txn.get("is_reconciled", False),
-            document_id=txn.get("document_id")
+            document_id=txn.get("document_id"),
+            # Multi-currency fields
+            currency=txn.get("currency", "USD"),
+            base_currency_amount=Decimal(str(txn["base_currency_amount"])) if txn.get("base_currency_amount") else None,
+            exchange_rate=Decimal(str(txn["exchange_rate"])) if txn.get("exchange_rate") else None
         ))
     
     return response_transactions
