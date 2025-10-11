@@ -614,9 +614,24 @@ class ReportExporter:
     def _write_general_ledger_excel(data: Dict[str, Any], writer):
         """Write General Ledger to Excel"""
         # Create separate sheet for each account
-        for i, account_data in enumerate(data.get('accounts', [])):
+        accounts = data.get('accounts', [])
+        
+        # If no accounts, create a summary sheet
+        if not accounts:
+            summary_df = pd.DataFrame([{
+                'Message': 'No transactions found for the selected period'
+            }])
+            summary_df.to_excel(writer, sheet_name='Summary', index=False)
+            return
+        
+        for i, account_data in enumerate(accounts):
             sheet_name = f"Account {i+1}"[:31]  # Excel sheet name limit
             df = pd.DataFrame(account_data.get('transactions', []))
+            
+            if df.empty:
+                # Create empty sheet with headers
+                df = pd.DataFrame(columns=['date', 'description', 'reference', 'debit', 'credit', 'balance'])
+            
             df.to_excel(writer, sheet_name=sheet_name, index=False)
             
             # Add account info
