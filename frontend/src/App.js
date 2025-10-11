@@ -8,6 +8,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import DocumentsPage from './pages/documents/DocumentsPage';
+import TransactionsPage from './pages/transactions/TransactionsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
