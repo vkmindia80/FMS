@@ -61,6 +61,7 @@ app.include_router(transactions_router, prefix="/api/transactions", tags=["Trans
 app.include_router(accounts_router, prefix="/api/accounts", tags=["Accounts"])
 app.include_router(reports_router, prefix="/api/reports", tags=["Reports"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Administration"])
+app.include_router(currency_router, prefix="/api/currency", tags=["Currency"])
 
 @app.on_event("startup")
 async def startup_event():
