@@ -52,6 +52,11 @@ class JournalEntry(BaseModel):
     debit_amount: Optional[Decimal] = None
     credit_amount: Optional[Decimal] = None
     description: Optional[str] = None
+    # Multi-currency support
+    currency: Optional[str] = Field(None, min_length=3, max_length=3)
+    base_currency_debit: Optional[Decimal] = None
+    base_currency_credit: Optional[Decimal] = None
+    exchange_rate: Optional[Decimal] = None
 
 class TransactionCreate(BaseModel):
     description: str
