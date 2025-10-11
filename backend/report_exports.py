@@ -641,8 +641,12 @@ class ReportExporter:
             ReportExporter._write_profit_loss_csv(report_data, writer)
         elif report_type == 'balance_sheet':
             ReportExporter._write_balance_sheet_csv(report_data, writer)
+        elif report_type == 'cash_flow':
+            ReportExporter._write_cash_flow_csv(report_data, writer)
         elif report_type == 'trial_balance':
             ReportExporter._write_trial_balance_csv(report_data, writer)
+        elif report_type == 'general_ledger':
+            ReportExporter._write_general_ledger_csv(report_data, writer)
         
         output.seek(0)
         
