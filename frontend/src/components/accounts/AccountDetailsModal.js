@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, CalendarIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { api } from '../../services/api';
+import api from '../../services/api';
 
 const AccountDetailsModal = ({ isOpen, onClose, account }) => {
   const [transactions, setTransactions] = useState([]);
