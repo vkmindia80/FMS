@@ -343,6 +343,9 @@ async def generate_general_ledger(
         }
     )
     
+    # Get company base currency
+    base_currency = await get_company_base_currency(current_user["company_id"])
+    
     report_data = GeneralLedgerReport(
         report_id=report_id,
         company_id=current_user["company_id"],
@@ -350,7 +353,7 @@ async def generate_general_ledger(
         period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
         period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
         generated_at=datetime.utcnow(),
-        currency="USD",
+        currency=base_currency,
         accounts=account_ledgers
     )
     
