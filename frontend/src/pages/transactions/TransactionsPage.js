@@ -360,7 +360,7 @@ const TransactionsPage = () => {
                           }`}
                         >
                           {transaction.transaction_type === 'income' ? '+' : '-'}
-                          {formatAmount(transaction.amount)}
+                          {formatAmount(transaction.amount, transaction.currency)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
