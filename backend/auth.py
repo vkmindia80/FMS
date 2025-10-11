@@ -119,7 +119,7 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current authenticated user"""
+    """Get current authenticated user with token blacklist checking"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -128,6 +128,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     
     try:
         token = credentials.credentials
+        
+        # CHECK 1: Is token blacklisted?
+        if token_blacklist.is_blacklisted(token):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         
         if payload.get("type") != "access":
@@ -136,6 +145,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
+        
+        # CHECK 2: Are all user's tokens revoked?
+        issued_at = datetime.fromtimestamp(payload.get("iat", 0))
+        if token_blacklist.is_user_revoked(user_id, issued_at):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="All user tokens have been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
             
     except JWTError:
         raise credentials_exception
@@ -143,6 +161,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     user = await users_collection.find_one({"_id": user_id})
     if user is None:
         raise credentials_exception
+    
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account is deactivated"
+        )
         
     return user
 
