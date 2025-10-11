@@ -350,8 +350,80 @@ class ReportExporter:
         elements.append(operating_table)
         elements.append(Spacer(1, 0.2*inch))
         
-        # Similar sections for investing and financing activities
-        # ... Implementation continues
+        # Investing activities
+        elements.append(Paragraph("<b>CASH FLOWS FROM INVESTING ACTIVITIES</b>", heading_style))
+        
+        investing_data = [['Description', 'Amount']]
+        for activity in data.get('investing_activities', []):
+            investing_data.append([
+                activity.get('description', ''),
+                f"${float(activity.get('amount', 0)):,.2f}"
+            ])
+        
+        investing_data.append(['<b>Net Cash from Investing Activities</b>', 
+                              f"<b>${float(data.get('investing_cash_flow', 0)):,.2f}</b>"])
+        
+        investing_table = Table(investing_data, colWidths=[4*inch, 2*inch])
+        investing_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+        ]))
+        
+        elements.append(investing_table)
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Financing activities
+        elements.append(Paragraph("<b>CASH FLOWS FROM FINANCING ACTIVITIES</b>", heading_style))
+        
+        financing_data = [['Description', 'Amount']]
+        for activity in data.get('financing_activities', []):
+            financing_data.append([
+                activity.get('description', ''),
+                f"${float(activity.get('amount', 0)):,.2f}"
+            ])
+        
+        financing_data.append(['<b>Net Cash from Financing Activities</b>', 
+                              f"<b>${float(data.get('financing_cash_flow', 0)):,.2f}</b>"])
+        
+        financing_table = Table(financing_data, colWidths=[4*inch, 2*inch])
+        financing_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+        ]))
+        
+        elements.append(financing_table)
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Net change summary
+        net_change_color = colors.green if float(data.get('net_change_in_cash', 0)) >= 0 else colors.red
+        
+        summary_data = [
+            ['<b>Net Change in Cash</b>', f"<b>${float(data.get('net_change_in_cash', 0)):,.2f}</b>"],
+            ['<b>Beginning Cash Balance</b>', f"<b>${float(data.get('beginning_cash', 0)):,.2f}</b>"],
+            ['<b>Ending Cash Balance</b>', f"<b>${float(data.get('ending_cash', 0)):,.2f}</b>"]
+        ]
+        
+        summary_table = Table(summary_data, colWidths=[4*inch, 2*inch])
+        summary_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('LINEABOVE', (0, 0), (-1, 0), 2, colors.black),
+            ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
+            ('TEXTCOLOR', (1, 0), (1, 0), net_change_color),
+        ]))
+        
+        elements.append(summary_table)
         
         return elements
     
