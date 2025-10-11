@@ -308,6 +308,10 @@ async def create_transaction(
         "journal_entries": journal_entries,
         "confidence_score": None,
         "is_reconciled": False,
+        # Multi-currency fields
+        "currency": transaction_data.currency,
+        "base_currency_amount": float(base_currency_amount),
+        "exchange_rate": float(exchange_rate),
         "document_id": None,
         "metadata": {
             "source": "manual_entry",
