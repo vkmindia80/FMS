@@ -189,7 +189,7 @@ const TransactionsPage = () => {
               Manage your income, expenses, and transfers
             </p>
           </div>
-          <button className="btn-primary">
+          <button onClick={() => setShowModal(true)} className="btn-primary">
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Transaction
           </button>
