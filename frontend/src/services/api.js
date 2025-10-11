@@ -1,19 +1,14 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Get backend URL from environment
-// In development with proxy, use relative URL
-// In production, use full URL from env
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-
-// Create axios instance
+// Use relative URL since frontend and backend are on the same domain
+// This avoids CORS issues and works with the nginx proxy
 const api = axios.create({
-  baseURL: `${BACKEND_URL}/api`,
+  baseURL: '/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: false, // Set to false since we're using Bearer tokens
 });
 
 // Request interceptor to add auth token
