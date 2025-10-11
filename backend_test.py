@@ -541,11 +541,37 @@ class AFMSBackendTester:
         
         # Authentication tests
         print("\n🔐 Testing Authentication...")
-        self.test_demo_user_login()
+        login_success = self.test_demo_user_login()
         self.test_invalid_login()
         self.test_get_current_user()
         self.test_refresh_token()
         self.test_protected_endpoint_without_auth()
+        
+        # Accounts tests (only if login successful)
+        if login_success:
+            print("\n💰 Testing Accounts Management...")
+            self.test_list_accounts()
+            
+            # Check if we need to setup default accounts first
+            success, response = self.run_test(
+                "Check Existing Accounts",
+                "GET", 
+                "accounts/",
+                200
+            )
+            
+            if success and isinstance(response, list) and len(response) == 0:
+                print("   No accounts found, setting up defaults...")
+                self.test_setup_default_accounts()
+            
+            self.test_create_account()
+            self.test_get_account()
+            self.test_update_account()
+            self.test_account_filtering()
+            self.test_delete_account()
+            self.test_invalid_account_operations()
+        else:
+            print("\n⚠️  Skipping Accounts tests due to authentication failure")
         
         # Edge case tests
         print("\n🧪 Testing Edge Cases...")
