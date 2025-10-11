@@ -303,8 +303,16 @@ async def register_user(user_data: UserRegister, request: Request):
     )
 
 @auth_router.post("/login", response_model=Token)
-async def login_user(user_credentials: UserLogin):
-    """Authenticate user and return tokens"""
+async def login_user(user_credentials: UserLogin, request: Request):
+    """Authenticate user and return tokens with rate limiting"""
+    
+    # Apply rate limiting to prevent brute force attacks
+    await rate_limiter.check_rate_limit(
+        request, 
+        max_requests=5,  # 5 login attempts
+        window_seconds=300,  # per 5 minutes
+        endpoint_name="auth_login"
+    )
     
     # Find user
     user = await users_collection.find_one({"email": user_credentials.email})
