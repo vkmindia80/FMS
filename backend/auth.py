@@ -439,18 +439,38 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     )
 
 @auth_router.post("/logout")
-async def logout_user(current_user: dict = Depends(get_current_user)):
-    """Logout user (token invalidation handled client-side)"""
+async def logout_user(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    current_user: dict = Depends(get_current_user)
+):
+    """Logout user and revoke token"""
+    
+    token = credentials.credentials
+    
+    # Add token to blacklist
+    success = token_blacklist.blacklist_token(
+        token, 
+        JWT_SECRET_KEY, 
+        JWT_ALGORITHM
+    )
     
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
         company_id=current_user["company_id"],
         action="user_logout",
-        details={"email": current_user["email"]}
+        details={
+            "email": current_user["email"],
+            "token_revoked": success
+        },
+        request=request
     )
     
-    return {"message": "Successfully logged out"}
+    return {
+        "message": "Successfully logged out",
+        "token_revoked": success
+    }
 
 # Role-based dependency functions
 def require_role(required_roles: List[UserRole]):
