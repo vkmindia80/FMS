@@ -78,6 +78,18 @@ const ReportsPage = () => {
   ];
 
   const generateReport = async (format = 'json') => {
+    // Validate report selection
+    if (!selectedReport) {
+      alert('Please select a report type first');
+      return;
+    }
+
+    // Validate custom date range
+    if (period === 'custom' && (!startDate || !endDate)) {
+      alert('Please select both start and end dates for custom range');
+      return;
+    }
+
     setLoading(true);
     try {
       const report = reports.find(r => r.id === selectedReport);
@@ -89,6 +101,8 @@ const ReportsPage = () => {
           url += `&start_date=${startDate}&end_date=${endDate}`;
         }
       }
+
+      console.log('Generating report:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -124,11 +138,13 @@ const ReportsPage = () => {
           document.body.removeChild(a);
         }
       } else {
-        alert('Failed to generate report');
+        const errorText = await response.text();
+        console.error('Report generation failed:', response.status, errorText);
+        alert(`Failed to generate report: ${response.status} - ${errorText.substring(0, 100)}`);
       }
     } catch (error) {
       console.error('Error generating report:', error);
-      alert('Error generating report');
+      alert(`Error generating report: ${error.message}`);
     } finally {
       setLoading(false);
     }
