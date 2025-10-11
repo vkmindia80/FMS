@@ -359,7 +359,8 @@ async def login_user(user_credentials: UserLogin, request: Request):
         user_id=user["_id"],
         company_id=user["company_id"],
         action="user_login",
-        details={"email": user_credentials.email}
+        details={"email": user_credentials.email},
+        request=request
     )
     
     # Prepare user response
