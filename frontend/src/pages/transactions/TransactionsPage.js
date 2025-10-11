@@ -12,6 +12,15 @@ const TransactionsPage = () => {
   const [filter, setFilter] = useState('all'); // all, income, expense
   const [searchTerm, setSearchTerm] = useState('');
   const [debugInfo, setDebugInfo] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    description: '',
+    amount: '',
+    transaction_type: 'expense',
+    category: '',
+    transaction_date: new Date().toISOString().split('T')[0],
+    notes: '',
+  });
 
   useEffect(() => {
     fetchTransactions();
