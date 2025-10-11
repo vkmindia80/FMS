@@ -190,6 +190,15 @@ const TransactionsPage = () => {
           </h2>
         </div>
 
+        {debugInfo && (
+          <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+            <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Debug Information:</h3>
+            <pre className="text-xs text-yellow-700 dark:text-yellow-300 overflow-auto">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
