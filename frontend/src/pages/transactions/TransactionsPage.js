@@ -279,7 +279,7 @@ const TransactionsPage = () => {
               Start by adding your first transaction
             </p>
             <div className="mt-6">
-              <button className="btn-primary">
+              <button onClick={() => setShowModal(true)} className="btn-primary">
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Add Transaction
               </button>
