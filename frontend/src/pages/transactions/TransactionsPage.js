@@ -43,7 +43,14 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      toast.error('Failed to load transactions');
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to load transactions';
+      toast.error(`Failed to load transactions: ${errorMessage}`);
       setTransactions([]);
     } finally {
       setLoading(false);
