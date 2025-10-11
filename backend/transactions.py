@@ -84,6 +84,10 @@ class TransactionUpdate(BaseModel):
     memo: Optional[str] = None
     tags: Optional[List[str]] = None
     status: Optional[TransactionStatus] = None
+    # Multi-currency support
+    currency: Optional[str] = Field(None, min_length=3, max_length=3)
+    base_currency_amount: Optional[Decimal] = None
+    exchange_rate: Optional[Decimal] = None
 
 class TransactionResponse(BaseModel):
     id: str
