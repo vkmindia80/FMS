@@ -96,6 +96,57 @@ const TransactionsPage = () => {
     fetchTransactions();
   };
 
+  const handleCreateTransaction = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const token = localStorage.getItem('afms_access_token');
+      
+      // Prepare transaction data
+      const transactionData = {
+        ...formData,
+        amount: parseFloat(formData.amount),
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/transactions/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (response.ok) {
+        toast.success('Transaction created successfully!');
+        setShowModal(false);
+        setFormData({
+          description: '',
+          amount: '',
+          transaction_type: 'expense',
+          category: '',
+          transaction_date: new Date().toISOString().split('T')[0],
+          notes: '',
+        });
+        fetchTransactions();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      toast.error(`Failed to create transaction: ${error.message}`);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
