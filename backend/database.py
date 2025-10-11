@@ -17,3 +17,4 @@ accounts_collection = database.accounts
 transactions_collection = database.transactions
 documents_collection = database.documents
 audit_logs_collection = database.audit_logs
+exchange_rates_collection = database.exchange_rates
