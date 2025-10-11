@@ -1,6 +1,9 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Get backend URL from environment variable
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 // Use relative URL since frontend and backend are on the same domain
 // This avoids CORS issues and works with the nginx proxy
 const api = axios.create({
