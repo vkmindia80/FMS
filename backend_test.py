@@ -108,11 +108,52 @@ class AFMSBackendTester:
         )
         return success
 
+    def test_user_registration(self):
+        """Test user registration"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        registration_data = {
+            "email": f"test.user.{timestamp}@testcompany.com",
+            "password": "TestPassword123!",
+            "full_name": f"Test User {timestamp}",
+            "company_name": f"Test Company {timestamp}",
+            "company_type": "small_business",
+            "role": "business"
+        }
+        
+        success, response = self.run_test(
+            "User Registration",
+            "POST",
+            "auth/register",
+            200,
+            data=registration_data
+        )
+        
+        if success and response:
+            self.token = response.get('access_token')
+            self.refresh_token = response.get('refresh_token')
+            self.user_data = response.get('user')
+            
+            if self.token and self.user_data:
+                self.log_test("Registration Token Extraction", True, f"User ID: {self.user_data.get('id')}")
+                # Store credentials for login test
+                self.test_email = registration_data["email"]
+                self.test_password = registration_data["password"]
+                return True
+            else:
+                self.log_test("Registration Token Extraction", False, "Missing token or user data in response")
+                return False
+        
+        return success
+
     def test_demo_user_login(self):
-        """Test login with demo credentials"""
+        """Test login with registered credentials"""
+        if not hasattr(self, 'test_email') or not hasattr(self, 'test_password'):
+            self.log_test("Demo User Login", False, "No test credentials available")
+            return False
+            
         demo_credentials = {
-            "email": "john.doe@testcompany.com",
-            "password": "testpassword123"
+            "email": self.test_email,
+            "password": self.test_password
         }
         
         success, response = self.run_test(
