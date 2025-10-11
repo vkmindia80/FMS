@@ -212,6 +212,31 @@ export const adminAPI = {
     }).then((res) => res.data),
 };
 
+// Currency API
+export const currencyAPI = {
+  getCurrencies: () =>
+    api.get('/currency/currencies').then((res) => res.data),
+  
+  getExchangeRates: (params = {}) =>
+    api.get('/currency/rates', { params }).then((res) => res.data),
+  
+  getExchangeRate: (baseCurrency, targetCurrency, rateDate = null) =>
+    api.get(`/currency/rates/${baseCurrency}/${targetCurrency}`, { 
+      params: rateDate ? { rate_date: rateDate } : {} 
+    }).then((res) => res.data),
+  
+  convertCurrency: (data) =>
+    api.post('/currency/convert', data).then((res) => res.data),
+  
+  updateExchangeRates: (baseCurrency = 'USD') =>
+    api.post('/currency/rates/update', null, { 
+      params: { base_currency: baseCurrency } 
+    }).then((res) => res.data),
+  
+  createExchangeRate: (data) =>
+    api.post('/currency/rates', data).then((res) => res.data),
+};
+
 // Health check
 export const healthAPI = {
   check: () => api.get('/health').then((res) => res.data),
