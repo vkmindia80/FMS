@@ -752,3 +752,65 @@ class ReportExporter:
             ])
         
         writer.writerow(['', 'TOTALS', total_debits, total_credits])
+    
+    @staticmethod
+    def _write_cash_flow_csv(data: Dict[str, Any], writer):
+        """Write Cash Flow to CSV"""
+        writer.writerow(['CASH FLOWS FROM OPERATING ACTIVITIES'])
+        writer.writerow(['Description', 'Amount'])
+        
+        for activity in data.get('operating_activities', []):
+            writer.writerow([
+                activity.get('description', ''),
+                float(activity.get('amount', 0))
+            ])
+        
+        writer.writerow(['Net Cash from Operating Activities', float(data.get('operating_cash_flow', 0))])
+        writer.writerow([])
+        
+        writer.writerow(['CASH FLOWS FROM INVESTING ACTIVITIES'])
+        writer.writerow(['Description', 'Amount'])
+        
+        for activity in data.get('investing_activities', []):
+            writer.writerow([
+                activity.get('description', ''),
+                float(activity.get('amount', 0))
+            ])
+        
+        writer.writerow(['Net Cash from Investing Activities', float(data.get('investing_cash_flow', 0))])
+        writer.writerow([])
+        
+        writer.writerow(['CASH FLOWS FROM FINANCING ACTIVITIES'])
+        writer.writerow(['Description', 'Amount'])
+        
+        for activity in data.get('financing_activities', []):
+            writer.writerow([
+                activity.get('description', ''),
+                float(activity.get('amount', 0))
+            ])
+        
+        writer.writerow(['Net Cash from Financing Activities', float(data.get('financing_cash_flow', 0))])
+        writer.writerow([])
+        
+        writer.writerow(['Net Change in Cash', float(data.get('net_change_in_cash', 0))])
+        writer.writerow(['Beginning Cash Balance', float(data.get('beginning_cash', 0))])
+        writer.writerow(['Ending Cash Balance', float(data.get('ending_cash', 0))])
+    
+    @staticmethod
+    def _write_general_ledger_csv(data: Dict[str, Any], writer):
+        """Write General Ledger to CSV"""
+        for account_data in data.get('accounts', []):
+            writer.writerow([f"{account_data.get('account_number', '')} - {account_data.get('account_name', '')}"])
+            writer.writerow(['Date', 'Description', 'Reference', 'Debit', 'Credit', 'Balance'])
+            
+            for txn in account_data.get('transactions', []):
+                writer.writerow([
+                    txn.get('date', ''),
+                    txn.get('description', ''),
+                    txn.get('reference', ''),
+                    float(txn.get('debit', 0)) if txn.get('debit') else '',
+                    float(txn.get('credit', 0)) if txn.get('credit') else '',
+                    float(txn.get('balance', 0))
+                ])
+            
+            writer.writerow([])  # Empty row between accounts
