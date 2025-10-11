@@ -1,10 +1,9 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Get backend URL from environment variable
-// Force HTTPS protocol to prevent mixed content issues
-const envUrl = process.env.REACT_APP_BACKEND_URL || '';
-const BACKEND_URL = envUrl.replace(/^http:/, 'https:');
+// Get backend URL - hardcode HTTPS to fix mixed content issue
+// The environment variable is somehow being converted to HTTP
+const BACKEND_URL = 'https://link-resolver-2.preview.emergentagent.com';
 
 // Create axios instance with full backend URL
 const api = axios.create({
