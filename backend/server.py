@@ -61,20 +61,40 @@ app.include_router(admin_router, prefix="/api/admin", tags=["Administration"])
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize application on startup"""
+    """Initialize application on startup with security validation"""
     logger.info("Starting AFMS Backend Server...")
     
     try:
-        # Create indexes
+        # CRITICAL: Validate security configuration before starting
+        from security_utils import validate_jwt_secret, validate_emergent_llm_key
+        
+        logger.info("🔒 Validating security configuration...")
+        validate_jwt_secret()
+        validate_emergent_llm_key()
+        
+        # Initialize security services
+        from token_blacklist import token_blacklist
+        from rate_limiter import rate_limiter
+        
+        # Create database indexes
+        logger.info("📊 Creating database indexes...")
         await users_collection.create_index("email", unique=True)
         await users_collection.create_index("company_id")
         await transactions_collection.create_index([("company_id", 1), ("transaction_date", -1)])
         await documents_collection.create_index([("company_id", 1), ("created_at", -1)])
         await audit_logs_collection.create_index([("company_id", 1), ("timestamp", -1)])
         
-        logger.info("AFMS Backend Server started successfully!")
+        logger.info("✅ AFMS Backend Server started successfully!")
+        logger.info(f"   - Token blacklist: {'✅ Active' if token_blacklist.client else '⚠️  Disabled (Redis unavailable)'}")
+        logger.info(f"   - Rate limiting: {'✅ Active' if rate_limiter.enabled else '⚠️  Disabled (Redis unavailable)'}")
+        
+    except ValueError as e:
+        logger.error(f"❌ Security validation failed: {e}")
+        logger.error("🚨 Server startup aborted due to security configuration issues")
+        raise
     except Exception as e:
-        logger.error(f"Startup error: {str(e)}")
+        logger.error(f"❌ Startup error: {str(e)}")
+        raise
 
 @app.on_event("shutdown")
 async def shutdown_event():
