@@ -130,6 +130,37 @@ def validate_journal_entries(entries: List[JournalEntry]) -> tuple[bool, str]:
     
     return True, "Valid"
 
+async def get_company_base_currency(company_id: str) -> str:
+    """Get company's base currency"""
+    company = await companies_collection.find_one({"_id": company_id})
+    if company and company.get("settings", {}).get("base_currency"):
+        return company["settings"]["base_currency"]
+    return "USD"  # Default to USD
+
+async def convert_to_base_currency(
+    amount: Decimal, 
+    from_currency: str, 
+    company_id: str,
+    transaction_date: date
+) -> tuple[Decimal, Decimal]:
+    """Convert amount to company's base currency"""
+    base_currency = await get_company_base_currency(company_id)
+    
+    if from_currency == base_currency:
+        return amount, Decimal("1")
+    
+    # Import currency conversion function
+    from currency_service import get_exchange_rate
+    
+    exchange_rate = await get_exchange_rate(from_currency, base_currency, transaction_date)
+    if exchange_rate is None:
+        # If no rate found, use 1:1 (should be handled with proper error in production)
+        logger.warning(f"No exchange rate found for {from_currency} to {base_currency}, using 1:1")
+        return amount, Decimal("1")
+    
+    base_amount = amount * exchange_rate
+    return base_amount, exchange_rate
+
 async def create_auto_journal_entries(
     transaction: TransactionCreate,
     company_id: str
