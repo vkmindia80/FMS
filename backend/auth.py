@@ -278,7 +278,8 @@ async def register_user(user_data: UserRegister, request: Request):
         user_id=user_id,
         company_id=company_id,
         action="user_registered",
-        details={"email": user_data.email, "role": user_data.role}
+        details={"email": user_data.email, "role": user_data.role},
+        request=request
     )
     
     # Prepare user response
