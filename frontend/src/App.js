@@ -10,6 +10,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import DocumentsPage from './pages/documents/DocumentsPage';
 import TransactionsPage from './pages/transactions/TransactionsPage';
 import AccountsPage from './pages/accounts/AccountsPage';
+import ReportsPage from './pages/reports/ReportsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
