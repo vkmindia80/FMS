@@ -520,19 +520,27 @@ const TransactionsPage = () => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                   >
                     <option value="">Select a category</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Business Income">Business Income</option>
-                    <option value="Investment">Investment</option>
-                    <option value="Other Income">Other Income</option>
-                    <option value="Office Supplies">Office Supplies</option>
-                    <option value="Equipment">Equipment</option>
-                    <option value="Software">Software</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Food">Food</option>
-                    <option value="Other">Other</option>
+                    <optgroup label="Income Categories">
+                      <option value="salary">Salary</option>
+                      <option value="business_income">Business Income</option>
+                      <option value="investment_income">Investment Income</option>
+                      <option value="other_income">Other Income</option>
+                    </optgroup>
+                    <optgroup label="Expense Categories">
+                      <option value="office_supplies">Office Supplies</option>
+                      <option value="equipment">Equipment</option>
+                      <option value="software">Software</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="utilities">Utilities</option>
+                      <option value="rent">Rent</option>
+                      <option value="travel">Travel</option>
+                      <option value="meals">Meals</option>
+                      <option value="insurance">Insurance</option>
+                      <option value="professional_services">Professional Services</option>
+                      <option value="taxes">Taxes</option>
+                      <option value="interest">Interest</option>
+                      <option value="other_expense">Other Expense</option>
+                    </optgroup>
                   </select>
                 </div>
 
