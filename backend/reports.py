@@ -374,8 +374,6 @@ async def generate_general_ledger(
     
     return report_data
 
-    ending_cash: Decimal
-
 def get_period_dates(period: ReportPeriod, custom_start: Optional[date] = None, custom_end: Optional[date] = None):
     """Get start and end dates for report period"""
     today = date.today()
