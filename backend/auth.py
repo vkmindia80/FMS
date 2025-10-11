@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -13,6 +13,9 @@ from database import database, users_collection, companies_collection, audit_log
 import logging
 import random
 from faker import Faker
+from token_blacklist import token_blacklist
+from rate_limiter import rate_limiter
+from security_utils import validate_password_strength
 
 fake = Faker()
 
