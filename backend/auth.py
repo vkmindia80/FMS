@@ -211,7 +211,7 @@ async def log_audit_event(
         logger.error(f"Failed to log audit event: {e}")
 
 @auth_router.post("/register", response_model=Token)
-async def register_user(user_data: UserRegister):
+async def register_user(user_data: UserRegister, request: Request):
     """Register a new user and company"""
     
     # Check if user already exists
