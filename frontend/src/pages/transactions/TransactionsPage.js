@@ -3,6 +3,7 @@ import { CreditCardIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon, Magni
 import { transactionsAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
+// Transaction management page with full functionality
 const TransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
