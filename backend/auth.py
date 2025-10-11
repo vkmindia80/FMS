@@ -52,6 +52,14 @@ class UserRegister(BaseModel):
     company_name: Optional[str] = None
     company_type: CompanyType = CompanyType.INDIVIDUAL
     role: UserRole = UserRole.INDIVIDUAL
+    
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v):
+        is_valid, error_message = validate_password_strength(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        return v
 
 class UserLogin(BaseModel):
     email: EmailStr
