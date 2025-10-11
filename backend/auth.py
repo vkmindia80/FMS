@@ -214,6 +214,14 @@ async def log_audit_event(
 async def register_user(user_data: UserRegister, request: Request):
     """Register a new user and company"""
     
+    # Apply rate limiting to prevent registration spam/abuse
+    await rate_limiter.check_rate_limit(
+        request, 
+        max_requests=5,  # 5 registration attempts
+        window_seconds=300,  # per 5 minutes
+        endpoint_name="auth_register"
+    )
+    
     # Check if user already exists
     existing_user = await users_collection.find_one({"email": user_data.email})
     if existing_user:
