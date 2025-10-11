@@ -519,6 +519,32 @@ async def update_transaction(
     if update_data.status is not None:
         update_fields["status"] = update_data.status
     
+    # Handle currency updates
+    if update_data.currency is not None:
+        update_fields["currency"] = update_data.currency
+        
+        # If currency changed, recalculate base currency amount
+        if update_data.currency != transaction.get("currency", "USD"):
+            transaction_date = update_data.transaction_date or transaction["transaction_date"]
+            if isinstance(transaction_date, datetime):
+                transaction_date = transaction_date.date()
+            
+            amount = update_data.amount or Decimal(str(transaction["amount"]))
+            base_currency_amount, exchange_rate = await convert_to_base_currency(
+                amount,
+                update_data.currency,
+                current_user["company_id"],
+                transaction_date
+            )
+            
+            update_fields["base_currency_amount"] = float(base_currency_amount)
+            update_fields["exchange_rate"] = float(exchange_rate)
+    
+    if update_data.base_currency_amount is not None:
+        update_fields["base_currency_amount"] = float(update_data.base_currency_amount)
+    if update_data.exchange_rate is not None:
+        update_fields["exchange_rate"] = float(update_data.exchange_rate)
+    
     # Update transaction
     await transactions_collection.update_one(
         {"_id": transaction_id},
