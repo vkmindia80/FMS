@@ -1,8 +1,10 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Get backend URL from environment variable - use full URL for proper HTTPS handling
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+// Get backend URL from environment variable
+// Force HTTPS protocol to prevent mixed content issues
+const envUrl = process.env.REACT_APP_BACKEND_URL || '';
+const BACKEND_URL = envUrl.replace(/^http:/, 'https:');
 
 // Create axios instance with full backend URL
 const api = axios.create({
