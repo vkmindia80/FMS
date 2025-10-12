@@ -188,6 +188,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/admin/exchange-rates" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <ExchangeRatesPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/banking" 
             element={
               <ProtectedRoute>
