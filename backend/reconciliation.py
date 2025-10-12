@@ -153,6 +153,8 @@ def parse_ofx_statement(file_content: str) -> List[Dict[str, Any]]:
                     # OFX date format: YYYYMMDD or YYYYMMDDHHMMSS
                     date_str = date_elem.text[:8]
                     entry['date'] = datetime.strptime(date_str, '%Y%m%d').date()
+                else:
+                    continue  # Skip entries without date
                 
                 # Amount (TRNAMT)
                 amount_elem = txn.find('.//TRNAMT') or txn.find('.//trnamt')
