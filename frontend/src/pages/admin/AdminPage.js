@@ -1,9 +1,11 @@
 import React from 'react';
-import { UsersIcon, BuildingOfficeIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { UsersIcon, BuildingOfficeIcon, ClipboardDocumentListIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const adminSections = [
     {
@@ -11,18 +13,28 @@ const AdminPage = () => {
       description: 'Manage users and permissions',
       icon: UsersIcon,
       color: 'bg-primary-500',
+      path: null,
     },
     {
       name: 'Company Settings',
       description: 'Configure company-wide settings',
       icon: BuildingOfficeIcon,
       color: 'bg-success-500',
+      path: null,
+    },
+    {
+      name: 'Exchange Rates',
+      description: 'Manage currency exchange rates',
+      icon: CurrencyDollarIcon,
+      color: 'bg-blue-500',
+      path: '/admin/exchange-rates',
     },
     {
       name: 'Audit Logs',
       description: 'View system audit trail',
       icon: ClipboardDocumentListIcon,
       color: 'bg-warning-500',
+      path: null,
     },
   ];
 
