@@ -33,10 +33,18 @@ const BankingPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch connections');
+      }
+      
       const data = await response.json();
-      setConnections(data || []);
+      // Ensure data is always an array
+      setConnections(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching connections:', err);
+      setConnections([]); // Set empty array on error
+      setError('Failed to load bank connections');
     }
   };
 
