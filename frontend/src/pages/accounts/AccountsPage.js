@@ -174,10 +174,10 @@ const AccountsPage = () => {
     expenses: filteredAccounts.filter(a => a.account_category === 'expenses')
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: currency
     }).format(amount || 0);
   };
 
