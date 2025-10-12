@@ -210,7 +210,7 @@ async def update_integration_config(
         
         # Log audit event
         await log_audit_event(
-            user_id=current_user["user_id"],
+            user_id=current_user["_id"],
             company_id=current_user["company_id"],
             action="integration_config_updated",
             details={"updated_sections": list(config_update.model_dump(exclude_none=True).keys())}
