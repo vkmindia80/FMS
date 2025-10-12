@@ -165,6 +165,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/report-scheduling" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <ReportSchedulingPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/currency" 
             element={
               <ProtectedRoute>
