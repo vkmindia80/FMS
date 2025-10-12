@@ -190,40 +190,18 @@ const IntegrationPage = () => {
 
             {/* Banking Integration Tab */}
             <Tab.Panel>
-              <div className="text-center py-12">
-                <BuildingLibraryIcon className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-                  Banking Integration
-                </h3>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
-                  Bank account connections are managed in the Banking section.
-                </p>
-                <button
-                  onClick={() => (window.location.href = '/banking')}
-                  className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Go to Banking
-                </button>
-              </div>
+              <BankingIntegration
+                integrationStatus={integrationStatus}
+                onUpdate={fetchIntegrationStatus}
+              />
             </Tab.Panel>
 
             {/* Payment Integration Tab */}
             <Tab.Panel>
-              <div className="text-center py-12">
-                <CreditCardIcon className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-                  Payment Integration
-                </h3>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
-                  Payment processors are managed in the Payments section.
-                </p>
-                <button
-                  onClick={() => (window.location.href = '/payments')}
-                  className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Go to Payments
-                </button>
-              </div>
+              <PaymentIntegration
+                integrationStatus={integrationStatus}
+                onUpdate={fetchIntegrationStatus}
+              />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
