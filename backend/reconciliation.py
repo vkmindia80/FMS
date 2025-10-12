@@ -160,6 +160,8 @@ def parse_ofx_statement(file_content: str) -> List[Dict[str, Any]]:
                 amount_elem = txn.find('.//TRNAMT') or txn.find('.//trnamt')
                 if amount_elem is not None and amount_elem.text:
                     entry['amount'] = Decimal(amount_elem.text)
+                else:
+                    continue  # Skip entries without amount
                 
                 # Description (NAME or MEMO)
                 name_elem = txn.find('.//NAME') or txn.find('.//name')
