@@ -116,9 +116,16 @@ async def startup_event():
         await invoices_collection.create_index([("company_id", 1), ("invoice_date", -1)])
         await invoices_collection.create_index([("company_id", 1), ("payment_status", 1)])
         
+        # Phase 13: Initialize exchange rates and start scheduler
+        logger.info("💱 Initializing multi-currency support...")
+        from currency_tasks import initialize_exchange_rates, start_currency_scheduler
+        await initialize_exchange_rates()
+        start_currency_scheduler()
+        
         logger.info("✅ AFMS Backend Server started successfully!")
         logger.info(f"   - Token blacklist: {'✅ Active' if token_blacklist.client else '⚠️  Disabled (Redis unavailable)'}")
         logger.info(f"   - Rate limiting: {'✅ Active' if rate_limiter.enabled else '⚠️  Disabled (Redis unavailable)'}")
+        logger.info("   - Multi-currency: ✅ Active (daily rate updates at 2 AM UTC)")
         
     except ValueError as e:
         logger.error(f"❌ Security validation failed: {e}")
