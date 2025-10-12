@@ -585,6 +585,10 @@ Building a comprehensive, scalable finance management system from Individual use
 - ✅ `bank_transactions` - Synced transactions before import
 - ✅ `payment_transactions` - Payment processing records
 - ✅ `invoices_collection` - Invoice and AR management
+- ✅ **`payment_gateway_configs`** - Gateway configuration storage (NEW ✨)
+  - Flexible schema for any gateway type
+  - Secure credential storage
+  - Company-isolated configurations
 
 **Testing**: ✅ All core features tested and functional
 - Banking: Mock connection, sync, transaction import working
