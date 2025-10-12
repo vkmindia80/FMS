@@ -58,6 +58,20 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       badge: null,
     },
     {
+      name: 'Banking',
+      href: '/banking',
+      icon: BuildingOfficeIcon,
+      color: 'indigo',
+      badge: 'New',
+    },
+    {
+      name: 'Payments',
+      href: '/payments',
+      icon: CreditCardIcon,
+      color: 'emerald',
+      badge: 'New',
+    },
+    {
       name: 'Reports',
       href: '/reports',
       icon: ChartBarIcon,
@@ -69,7 +83,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       href: '/currency',
       icon: CurrencyDollarIcon,
       color: 'teal',
-      badge: 'New',
+      badge: null,
     },
   ];
 
