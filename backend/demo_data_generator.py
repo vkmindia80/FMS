@@ -1,6 +1,7 @@
 """
 Demo Data Generator for AFMS
 Generates realistic sample data including actual PDF files, images, and documents
+Enhanced with multi-currency support and comprehensive business scenarios
 """
 import os
 import uuid
@@ -22,6 +23,58 @@ fake = Faker()
 # Upload directory
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Multi-currency support
+CURRENCIES = {
+    'USD': {'symbol': '$', 'name': 'US Dollar'},
+    'EUR': {'symbol': '€', 'name': 'Euro'},
+    'GBP': {'symbol': '£', 'name': 'British Pound'},
+    'JPY': {'symbol': '¥', 'name': 'Japanese Yen'},
+    'CAD': {'symbol': 'C$', 'name': 'Canadian Dollar'},
+    'AUD': {'symbol': 'A$', 'name': 'Australian Dollar'},
+    'CHF': {'symbol': 'Fr', 'name': 'Swiss Franc'}
+}
+
+# Business scenarios for realistic demo data
+BUSINESS_SCENARIOS = {
+    'software_subscriptions': [
+        ('Microsoft 365', 'software', 299.99),
+        ('Adobe Creative Cloud', 'software', 599.88),
+        ('Salesforce CRM', 'software', 1500.00),
+        ('AWS Cloud Services', 'utilities', 2500.00),
+        ('GitHub Enterprise', 'software', 420.00),
+    ],
+    'office_expenses': [
+        ('Staples Office Supplies', 'office_supplies', 345.67),
+        ('WeWork Office Space', 'rent', 3500.00),
+        ('Comcast Business Internet', 'utilities', 199.99),
+        ('Office Depot Furniture', 'equipment', 1250.00),
+    ],
+    'marketing': [
+        ('Google Ads Campaign', 'marketing', 5000.00),
+        ('LinkedIn Advertising', 'marketing', 2500.00),
+        ('Mailchimp Email Marketing', 'marketing', 299.00),
+        ('Canva Pro Design', 'software', 119.99),
+    ],
+    'professional_services': [
+        ('Legal Consulting - Smith & Associates', 'legal_fees', 5000.00),
+        ('Accounting Services - CPA Firm', 'professional_fees', 2500.00),
+        ('Business Insurance Premium', 'insurance', 1800.00),
+        ('IT Consulting Services', 'consulting', 3500.00),
+    ],
+    'travel_expenses': [
+        ('American Airlines Flight', 'travel', 450.00),
+        ('Hilton Hotel Stay', 'lodging', 350.00),
+        ('Uber Business Travel', 'transportation', 85.00),
+        ('Conference Registration Fee', 'training', 899.00),
+    ],
+    'revenue_sources': [
+        ('Client Payment - Acme Corp', 'sales_revenue', 15000.00),
+        ('Consulting Services - TechStart Inc', 'service_income', 8500.00),
+        ('Software License - GlobalTech', 'licensing_revenue', 12000.00),
+        ('Project Milestone Payment', 'project_revenue', 25000.00),
+    ]
+}
 
 
 def generate_sample_receipt_image(filename: str, amount: float, vendor: str, date: datetime) -> str:
