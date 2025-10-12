@@ -168,7 +168,7 @@ const BankingPage = () => {
       const response = await fetch(`${BACKEND_URL}/api/banking/connections/${connectionId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('afms_access_token')}`
         }
       });
 
