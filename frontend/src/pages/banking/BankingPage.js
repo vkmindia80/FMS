@@ -49,7 +49,7 @@ const BankingPage = () => {
   };
 
   const fetchInstitutions = async () => {
-    try:
+    try {
       const response = await fetch(`${BACKEND_URL}/api/banking/institutions`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('afms_access_token')}`
