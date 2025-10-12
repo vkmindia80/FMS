@@ -51,10 +51,16 @@ const IntegrationPage = () => {
       color: 'green',
     },
     {
-      name: 'Payment Integration',
+      name: 'Payment Gateway Config',
       icon: CreditCardIcon,
-      description: 'Configure payment processors',
+      description: 'Configure payment gateway settings',
       color: 'orange',
+    },
+    {
+      name: 'Payment Transactions',
+      icon: CreditCardIcon,
+      description: 'View and process payments',
+      color: 'indigo',
     },
   ];
 
