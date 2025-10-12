@@ -55,8 +55,8 @@ const CurrencyConverter = ({
           fromCurrency,
           toCurrency,
           amount: parseFloat(amount),
-          convertedAmount: result.converted_amount,
-          exchangeRate: result.exchange_rate,
+          convertedAmount: parseFloat(result.converted_amount),
+          exchangeRate: parseFloat(result.exchange_rate),
           timestamp: new Date()
         };
         
