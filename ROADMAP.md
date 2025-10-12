@@ -1237,7 +1237,79 @@ The system includes a comprehensive demo data generator that creates:
 
 ## 🔧 **Recent Fixes & Updates (January 2025)**
 
-### Network Error & Transaction Bugs Fixed (October 11, 2025) - LATEST
+### Integration Center Consolidation (Latest) - COMPLETED
+**Feature:** Unified integration hub with Banking and Payments moved from sidebar
+
+**Changes Implemented:**
+1. ✅ **Sidebar Cleanup:**
+   - Removed "Banking" menu item from sidebar
+   - Removed "Payments" menu item from sidebar
+   - Reduced navigation items from 10 to 8
+   - Removed "New" badge from Integration item
+
+2. ✅ **New Integration Components:**
+   - Created `BankingIntegration.js` - Full banking functionality with modern card-based UI
+   - Created `PaymentIntegration.js` - Complete payment management with gateway status
+   - Both components embedded in Integration Center tabs
+
+3. ✅ **Integration Center Structure:**
+   - Tab 1: Email Configuration (existing)
+   - Tab 2: Report Scheduling (existing)
+   - Tab 3: Banking Integration (newly moved)
+   - Tab 4: Payment Integration (newly moved)
+
+**Benefits:**
+- Cleaner, more organized navigation
+- All integrations in single unified hub
+- Better user experience and discoverability
+- Consistent interface across all integration types
+
+**Files Modified:**
+- `/app/frontend/src/components/layout/Sidebar.js`
+- `/app/frontend/src/pages/integration/IntegrationPage.js`
+
+**Files Created:**
+- `/app/frontend/src/pages/integration/BankingIntegration.js`
+- `/app/frontend/src/pages/integration/PaymentIntegration.js`
+
+---
+
+### Email Toggle Functionality Fix - COMPLETED
+**Issues Identified:**
+1. Email toggle failing with 404 error when no integration config exists
+2. MongoDB ObjectId serialization causing "Failed to load email configuration" errors
+
+**Root Causes:**
+1. Toggle endpoint returned 404 if integration config didn't exist in database
+2. MongoDB ObjectId fields couldn't be serialized to JSON (TypeError: 'ObjectId' object is not iterable)
+
+**Solutions Implemented:**
+1. ✅ **Toggle Endpoint Fix:**
+   - Modified `/api/integrations/email/toggle` to auto-create default config when none exists
+   - Removed blocking 404 error check
+   - Initializes all sections (email, banking, payment) with sensible defaults
+   - Toggle now works WITHOUT requiring SMTP credentials first
+
+2. ✅ **ObjectId Serialization Fix:**
+   - Added ObjectId-to-string conversion in `/api/integrations/config` endpoint
+   - Fixed serialization error: `if "_id" in config: config["_id"] = str(config["_id"])`
+   - All API endpoints now return valid JSON
+
+3. ✅ **Testing Results:**
+   - All automated tests passed (10/10 scenarios)
+   - Toggle with no config: Creates default successfully
+   - Toggle existing config: Updates correctly
+   - ObjectId serialization: Converts to string properly
+   - JSON serialization: Works perfectly
+
+**Files Modified:**
+- `/app/backend/integrations.py` (lines 153-156, 232-305)
+
+**Result:** Email toggle fully functional. Users can now toggle email on/off at any time without configuration errors.
+
+---
+
+### Network Error & Transaction Bugs Fixed (October 11, 2025)
 **Issue Identified:** 
 1. Network Error preventing transactions from loading - "Mixed Content: HTTPS → HTTP" blocking
 2. "Add Transaction" button not functional
