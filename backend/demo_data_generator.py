@@ -418,3 +418,297 @@ def generate_csv_expense_report(filename: str) -> str:
             f.write(f"{date},{category},{description},{amount:.2f},{payment_method},{status}\n")
     
     return file_path
+
+
+
+async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
+    """
+    Generate comprehensive demo data with multi-currency support
+    Creates 300+ transactions, 100+ documents, and realistic business scenarios
+    """
+    from database import accounts_collection, transactions_collection, documents_collection
+    
+    logger.info(f"Starting enhanced demo data generation for company {company_id}")
+    
+    # Currency exchange rates (approximate)
+    exchange_rates = {
+        'USD': 1.0,
+        'EUR': 0.85,
+        'GBP': 0.73,
+        'JPY': 110.0,
+        'CAD': 1.25,
+        'AUD': 1.35,
+        'CHF': 0.92
+    }
+    
+    # Step 1: Create multi-currency accounts
+    logger.info("Creating multi-currency accounts...")
+    created_accounts = []
+    
+    account_definitions = [
+        # USD Accounts (Primary)
+        {'name': 'Business Checking (USD)', 'type': 'checking', 'currency': 'USD', 'balance': 125000.00},
+        {'name': 'Savings Account (USD)', 'type': 'savings', 'currency': 'USD', 'balance': 75000.00},
+        {'name': 'Petty Cash (USD)', 'type': 'cash', 'currency': 'USD', 'balance': 2500.00},
+        {'name': 'Business Credit Card', 'type': 'credit_card', 'currency': 'USD', 'balance': -8500.00},
+        
+        # EUR Accounts (European operations)
+        {'name': 'EUR Business Account', 'type': 'checking', 'currency': 'EUR', 'balance': 45000.00},
+        {'name': 'EUR Operating Account', 'type': 'current_asset', 'currency': 'EUR', 'balance': 25000.00},
+        
+        # GBP Accounts (UK operations)
+        {'name': 'GBP Trading Account', 'type': 'checking', 'currency': 'GBP', 'balance': 35000.00},
+        
+        # Revenue Accounts
+        {'name': 'Sales Revenue', 'type': 'revenue', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Service Income', 'type': 'service_income', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Consulting Revenue', 'type': 'other_income', 'currency': 'USD', 'balance': 0.00},
+        
+        # Expense Accounts
+        {'name': 'Software & Subscriptions', 'type': 'software', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Office Rent', 'type': 'rent', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Marketing Expenses', 'type': 'marketing', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Professional Fees', 'type': 'professional_fees', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Travel & Entertainment', 'type': 'travel', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Office Supplies', 'type': 'office_supplies', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Utilities', 'type': 'utilities', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Insurance', 'type': 'insurance', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Legal Fees', 'type': 'legal_fees', 'currency': 'USD', 'balance': 0.00},
+        {'name': 'Payroll Expenses', 'type': 'payroll', 'currency': 'USD', 'balance': 0.00},
+        
+        # Asset Accounts
+        {'name': 'Accounts Receivable', 'type': 'accounts_receivable', 'currency': 'USD', 'balance': 45000.00},
+        {'name': 'Equipment', 'type': 'equipment', 'currency': 'USD', 'balance': 25000.00},
+        {'name': 'Inventory', 'type': 'inventory', 'currency': 'USD', 'balance': 15000.00},
+        
+        # Liability Accounts
+        {'name': 'Accounts Payable', 'type': 'accounts_payable', 'currency': 'USD', 'balance': -12000.00},
+        {'name': 'Business Loan', 'type': 'long_term_liability', 'currency': 'USD', 'balance': -50000.00},
+    ]
+    
+    for acc_def in account_definitions:
+        account = {
+            'id': str(uuid.uuid4()),
+            'company_id': company_id,
+            'name': acc_def['name'],
+            'account_type': acc_def['type'],
+            'currency_code': acc_def['currency'],
+            'current_balance': acc_def['balance'],
+            'description': f"{acc_def['name']} - Demo Account",
+            'is_active': True,
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow()
+        }
+        
+        await accounts_collection.insert_one(account)
+        created_accounts.append(account)
+        logger.info(f"Created account: {acc_def['name']} ({acc_def['currency']})")
+    
+    # Get account IDs by type for transactions
+    checking_accounts = [a for a in created_accounts if a['account_type'] in ['checking', 'savings']]
+    expense_accounts = [a for a in created_accounts if a['account_type'] in [
+        'software', 'rent', 'marketing', 'professional_fees', 'travel', 
+        'office_supplies', 'utilities', 'insurance', 'legal_fees', 'payroll'
+    ]]
+    revenue_accounts = [a for a in created_accounts if a['account_type'] in [
+        'revenue', 'service_income', 'other_income'
+    ]]
+    
+    # Step 2: Generate transactions over 3 years
+    logger.info("Generating 300+ transactions over 3 years...")
+    created_transactions = []
+    created_documents = []
+    
+    start_date = datetime.now() - timedelta(days=365*3)  # 3 years ago
+    end_date = datetime.now()
+    
+    transaction_count = 0
+    document_count = 0
+    
+    # Generate revenue transactions (monthly recurring + one-time)
+    current_date = start_date
+    while current_date < end_date:
+        # Monthly recurring revenue (consistent)
+        for scenario_item in BUSINESS_SCENARIOS['revenue_sources'][:2]:
+            vendor, category, base_amount = scenario_item
+            amount = base_amount * random.uniform(0.9, 1.1)  # ±10% variation
+            
+            if random.random() > 0.1:  # 90% success rate
+                checking_acc = random.choice(checking_accounts)
+                revenue_acc = random.choice(revenue_accounts)
+                
+                transaction = {
+                    'id': str(uuid.uuid4()),
+                    'company_id': company_id,
+                    'transaction_date': current_date,
+                    'description': f"{vendor} - Monthly Payment",
+                    'transaction_type': 'income',
+                    'amount': amount,
+                    'currency_code': checking_acc['currency_code'],
+                    'category': category,
+                    'status': 'cleared',
+                    'is_reconciled': random.choice([True, False]),
+                    'created_by': user_id,
+                    'created_at': current_date,
+                    'journal_entries': [
+                        {'account_id': checking_acc['id'], 'debit': amount, 'credit': 0},
+                        {'account_id': revenue_acc['id'], 'debit': 0, 'credit': amount}
+                    ]
+                }
+                
+                await transactions_collection.insert_one(transaction)
+                created_transactions.append(transaction)
+                transaction_count += 1
+        
+        current_date += timedelta(days=30)  # Next month
+    
+    # Generate expense transactions (more frequent)
+    current_date = start_date
+    while current_date < end_date:
+        # Weekly expenses
+        for week in range(4):
+            num_expenses = random.randint(3, 8)  # 3-8 expenses per week
+            
+            for _ in range(num_expenses):
+                # Select random business scenario
+                scenario_type = random.choice(list(BUSINESS_SCENARIOS.keys()))
+                if scenario_type == 'revenue_sources':
+                    continue  # Skip revenue in expense generation
+                
+                scenario_items = BUSINESS_SCENARIOS[scenario_type]
+                vendor, category, base_amount = random.choice(scenario_items)
+                
+                amount = base_amount * random.uniform(0.7, 1.3)  # ±30% variation
+                
+                # Select accounts
+                checking_acc = random.choice(checking_accounts)
+                expense_acc = next((a for a in expense_accounts if category in a['account_type']), 
+                                 random.choice(expense_accounts))
+                
+                trans_date = current_date + timedelta(days=week*7 + random.randint(0, 6))
+                if trans_date > end_date:
+                    break
+                
+                transaction = {
+                    'id': str(uuid.uuid4()),
+                    'company_id': company_id,
+                    'transaction_date': trans_date,
+                    'description': vendor,
+                    'transaction_type': 'expense',
+                    'amount': amount,
+                    'currency_code': checking_acc['currency_code'],
+                    'category': category,
+                    'status': random.choice(['cleared', 'pending', 'cleared']),  # Mostly cleared
+                    'is_reconciled': random.choice([True, False, False]),  # Some reconciled
+                    'created_by': user_id,
+                    'created_at': trans_date,
+                    'journal_entries': [
+                        {'account_id': expense_acc['id'], 'debit': amount, 'credit': 0},
+                        {'account_id': checking_acc['id'], 'debit': 0, 'credit': amount}
+                    ]
+                }
+                
+                await transactions_collection.insert_one(transaction)
+                created_transactions.append(transaction)
+                transaction_count += 1
+                
+                # Generate document for some transactions (40% chance)
+                if random.random() < 0.4 and document_count < 100:
+                    doc_type = random.choice(['receipt', 'invoice', 'statement'])
+                    
+                    try:
+                        if doc_type == 'receipt':
+                            filename = f"receipt_{trans_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.png"
+                            file_path = generate_sample_receipt_image(
+                                filename, amount, vendor, trans_date
+                            )
+                        elif doc_type == 'invoice':
+                            filename = f"invoice_{trans_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.pdf"
+                            file_path = generate_sample_invoice_pdf(
+                                filename, amount, vendor, trans_date
+                            )
+                        else:  # statement
+                            filename = f"statement_{trans_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.csv"
+                            file_path = generate_csv_expense_report(filename)
+                        
+                        document = {
+                            'id': str(uuid.uuid4()),
+                            'company_id': company_id,
+                            'filename': filename,
+                            'file_path': file_path,
+                            'file_type': doc_type,
+                            'file_size': os.path.getsize(file_path),
+                            'upload_date': trans_date,
+                            'processing_status': 'completed',
+                            'confidence_score': random.uniform(0.85, 0.99),
+                            'extracted_data': {
+                                'amount': amount,
+                                'vendor': vendor,
+                                'date': trans_date.isoformat(),
+                                'category': category
+                            },
+                            'uploaded_by': user_id,
+                            'created_at': trans_date
+                        }
+                        
+                        await documents_collection.insert_one(document)
+                        created_documents.append(document)
+                        document_count += 1
+                        
+                    except Exception as e:
+                        logger.warning(f"Failed to generate document: {e}")
+        
+        current_date += timedelta(days=30)  # Next month
+    
+    # Generate additional bank statements for different periods
+    logger.info("Generating monthly bank statements...")
+    statement_date = start_date
+    while statement_date < end_date and document_count < 100:
+        try:
+            filename = f"bank_statement_{statement_date.strftime('%Y_%m')}.pdf"
+            file_path = generate_sample_bank_statement_pdf(
+                filename, "Demo Company Inc", statement_date
+            )
+            
+            document = {
+                'id': str(uuid.uuid4()),
+                'company_id': company_id,
+                'filename': filename,
+                'file_path': file_path,
+                'file_type': 'bank_statement',
+                'file_size': os.path.getsize(file_path),
+                'upload_date': statement_date,
+                'processing_status': 'completed',
+                'confidence_score': 0.95,
+                'extracted_data': {
+                    'statement_period': statement_date.strftime('%Y-%m'),
+                    'account_type': 'checking'
+                },
+                'uploaded_by': user_id,
+                'created_at': statement_date
+            }
+            
+            await documents_collection.insert_one(document)
+            created_documents.append(document)
+            document_count += 1
+            
+        except Exception as e:
+            logger.warning(f"Failed to generate bank statement: {e}")
+        
+        statement_date += timedelta(days=30)  # Monthly statements
+    
+    logger.info(f"Enhanced demo data generation complete!")
+    logger.info(f"Created {len(created_accounts)} accounts")
+    logger.info(f"Created {transaction_count} transactions")
+    logger.info(f"Created {document_count} documents")
+    
+    return {
+        'accounts_created': len(created_accounts),
+        'transactions_created': transaction_count,
+        'documents_created': document_count,
+        'currencies_used': list(set(a['currency_code'] for a in created_accounts)),
+        'date_range': {
+            'start': start_date.isoformat(),
+            'end': end_date.isoformat()
+        }
+    }
