@@ -74,6 +74,13 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       badge: 'New',
     },
     {
+      name: 'Reconciliation',
+      href: '/reconciliation',
+      icon: CheckCircleIcon,
+      color: 'purple',
+      badge: 'New',
+    },
+    {
       name: 'Reports',
       href: '/reports',
       icon: ChartBarIcon,
