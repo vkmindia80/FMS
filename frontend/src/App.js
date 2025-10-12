@@ -12,6 +12,8 @@ import TransactionsPage from './pages/transactions/TransactionsPage';
 import AccountsPage from './pages/accounts/AccountsPage';
 import ReportsPage from './pages/reports/ReportsPage';
 import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
+import BankingPage from './pages/banking/BankingPage';
+import PaymentsPage from './pages/payments/PaymentsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
