@@ -203,7 +203,15 @@ const IntegrationPage = () => {
               />
             </Tab.Panel>
 
-            {/* Payment Integration Tab */}
+            {/* Payment Gateway Configuration Tab */}
+            <Tab.Panel>
+              <PaymentGatewayManagement
+                integrationStatus={integrationStatus}
+                onUpdate={fetchIntegrationStatus}
+              />
+            </Tab.Panel>
+
+            {/* Payment Transactions Tab */}
             <Tab.Panel>
               <PaymentIntegration
                 integrationStatus={integrationStatus}
