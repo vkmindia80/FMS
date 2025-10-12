@@ -295,11 +295,11 @@ const ReportsPage = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Financial Reports</h1>
-          <p className="mt-2 text-gray-600">
-            Generate and export comprehensive financial statements
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Financial Reports</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Generate and export comprehensive financial statements with multi-currency support
           </p>
         </div>
       </div>
