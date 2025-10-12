@@ -58,6 +58,7 @@ from payments import router as payments_router
 from receivables import router as receivables_router
 from integrations import router as integrations_router
 from report_scheduling import router as scheduling_router
+from reconciliation import router as reconciliation_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
@@ -72,6 +73,7 @@ app.include_router(payments_router, prefix="/api/payments", tags=["Payment Proce
 app.include_router(receivables_router, prefix="/api/receivables", tags=["Accounts Receivable"])
 app.include_router(integrations_router, prefix="/api/integrations", tags=["Integrations"])
 app.include_router(scheduling_router, prefix="/api/report-scheduling", tags=["Report Scheduling"])
+app.include_router(reconciliation_router, prefix="/api/reconciliation", tags=["Reconciliation"])
 
 @app.on_event("startup")
 async def startup_event():
