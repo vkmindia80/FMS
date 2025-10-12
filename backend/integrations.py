@@ -321,7 +321,7 @@ async def test_email_config(
         if success:
             # Log audit event
             await log_audit_event(
-                user_id=current_user["user_id"],
+                user_id=current_user["_id"],
                 company_id=current_user["company_id"],
                 action="test_email_sent",
                 details={"recipient": test_request.recipient}
