@@ -196,12 +196,13 @@ async def send_smtp_email(
 
 def _send_smtp_sync(msg, recipients, config):
     """Synchronous SMTP send (runs in thread pool)"""
-    host = config.get('host', 'smtp.gmail.com')
-    port = config.get('port', 587)
-    username = config.get('username')
-    password = config.get('password')
-    use_tls = config.get('use_tls', True)
-    use_ssl = config.get('use_ssl', False)
+    # Use environment variables if config not provided
+    host = config.get('host', SMTP_HOST)
+    port = config.get('port', SMTP_PORT)
+    username = config.get('username', SMTP_USERNAME)
+    password = config.get('password', SMTP_PASSWORD)
+    use_tls = config.get('use_tls', SMTP_USE_TLS)
+    use_ssl = config.get('use_ssl', SMTP_USE_SSL)
     
     if use_ssl:
         server = smtplib.SMTP_SSL(host, port)
