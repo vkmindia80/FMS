@@ -244,7 +244,7 @@ async def toggle_email(
                 "$set": {
                     "email.enabled": toggle_request.enabled,
                     "updated_at": datetime.utcnow(),
-                    "updated_by": current_user["user_id"]
+                    "updated_by": current_user["_id"]
                 }
             }
         )
@@ -257,7 +257,7 @@ async def toggle_email(
         
         # Log audit event
         await log_audit_event(
-            user_id=current_user["user_id"],
+            user_id=current_user["_id"],
             company_id=current_user["company_id"],
             action="email_toggled",
             details={"enabled": toggle_request.enabled}
