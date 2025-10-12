@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { 
   CalendarIcon, 
@@ -8,22 +7,41 @@ import {
   DocumentArrowDownIcon,
   PlusIcon,
   TrashIcon,
-  PlayIcon,
-  PauseIcon
+  PlayIcon
 } from '@heroicons/react/24/outline';
 
 const ReportSchedulingPage = () => {
-  const { user } = useAuth();
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState(null);
   
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+  const loadSchedules = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/report-scheduling/schedules`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSchedules(data.schedules || []);
+      } else {
+        toast.error('Failed to load report schedules');
+      }
+    } catch (error) {
+      console.error('Error loading schedules:', error);
+      toast.error('Failed to load schedules');
+    } finally {
+      setLoading(false);
+    }
+  }, [BACKEND_URL]);
+
   useEffect(() => {
     loadSchedules();
-  }, []);
+  }, [loadSchedules]);
 
   const loadSchedules = async () => {
     try {
