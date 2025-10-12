@@ -19,6 +19,8 @@ const ReportsPage = () => {
   const [reportData, setReportData] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [displayCurrency, setDisplayCurrency] = useState('USD');
+  const [showCurrencyConversion, setShowCurrencyConversion] = useState(true);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
