@@ -196,6 +196,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/integration" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <IntegrationPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/settings" 
             element={
               <ProtectedRoute>
