@@ -1,10 +1,15 @@
 """
 Email Service
 Handles email sending with support for multiple providers
+Auto-detects provider based on environment variables:
+- SendGrid: SENDGRID_API_KEY
+- AWS SES: AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
+- SMTP/Gmail: SMTP_HOST + SMTP_USERNAME + SMTP_PASSWORD
 """
 
 import smtplib
 import logging
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -13,6 +18,47 @@ import aiohttp
 import asyncio
 
 logger = logging.getLogger(__name__)
+
+# ==================== Configuration ====================
+# Auto-detect email provider from environment variables
+
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+SMTP_HOST = os.getenv("SMTP_HOST")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
+SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
+
+FROM_EMAIL = os.getenv("FROM_EMAIL", "noreply@afms.com")
+FROM_NAME = os.getenv("FROM_NAME", "AFMS Reports")
+
+# Auto-detect provider
+EMAIL_PROVIDER = None
+if SENDGRID_API_KEY:
+    EMAIL_PROVIDER = "sendgrid"
+    logger.info("✅ Email provider: SendGrid")
+elif AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+    EMAIL_PROVIDER = "aws_ses"
+    logger.info("✅ Email provider: AWS SES")
+elif SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD:
+    EMAIL_PROVIDER = "smtp"
+    logger.info(f"✅ Email provider: SMTP ({SMTP_HOST})")
+else:
+    logger.warning("⚠️  No email provider configured")
+
+
+def is_email_configured() -> bool:
+    """Check if email is configured"""
+    return EMAIL_PROVIDER is not None
+
+
+def get_email_provider() -> Optional[str]:
+    """Get current email provider"""
+    return EMAIL_PROVIDER
 
 
 async def send_email(
