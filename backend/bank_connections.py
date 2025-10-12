@@ -362,7 +362,7 @@ async def import_bank_transactions(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Verify target account exists
         target_account = await accounts_collection.find_one({
