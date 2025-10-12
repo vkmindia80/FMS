@@ -1038,3 +1038,124 @@ Summary of Transactions:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate demo data: {str(e)}"
         )
+
+
+
+@auth_router.post("/generate-enhanced-demo-data")
+async def generate_enhanced_demo_data_endpoint():
+    """
+    Generate comprehensive demo data with multi-currency support
+    Creates 300+ transactions, 100+ documents over 3 years
+    """
+    from demo_data_generator import generate_enhanced_demo_data
+    from datetime import timedelta
+    
+    logger.info("Starting enhanced demo data generation...")
+    
+    # Demo user credentials
+    DEMO_EMAIL = "john.doe@testcompany.com"
+    DEMO_PASSWORD = "testpassword123"
+    
+    try:
+        # Find or create demo user
+        demo_user = await users_collection.find_one({"email": DEMO_EMAIL})
+        
+        if not demo_user:
+            # Create demo company
+            company_id = str(uuid.uuid4())
+            company_doc = {
+                "_id": company_id,
+                "name": "Global Enterprises Ltd.",
+                "type": CompanyType.SMALL_BUSINESS,
+                "created_at": datetime.utcnow(),
+                "is_active": True,
+                "settings": {
+                    "base_currency": "USD",
+                    "fiscal_year_start": "01-01",
+                    "date_format": "MM/DD/YYYY",
+                    "number_format": "US",
+                    "timezone": "UTC",
+                    "multi_currency_enabled": True
+                },
+                "subscription": {
+                    "plan": "enterprise",
+                    "status": "active",
+                    "expires_at": datetime.utcnow() + timedelta(days=365)
+                }
+            }
+            await companies_collection.insert_one(company_doc)
+            
+            # Create demo user
+            user_id = str(uuid.uuid4())
+            hashed_password = get_password_hash(DEMO_PASSWORD)
+            
+            user_doc = {
+                "_id": user_id,
+                "email": DEMO_EMAIL,
+                "password": hashed_password,
+                "full_name": "John Doe",
+                "role": UserRole.BUSINESS,
+                "company_id": company_id,
+                "is_active": True,
+                "created_at": datetime.utcnow(),
+                "last_login": None,
+                "preferences": {
+                    "theme": "light",
+                    "language": "en",
+                    "notifications": True
+                }
+            }
+            await users_collection.insert_one(user_doc)
+            
+            logger.info(f"Created demo user: {DEMO_EMAIL} and company: {company_id}")
+        else:
+            company_id = demo_user["company_id"]
+            user_id = demo_user["_id"]
+            logger.info(f"Using existing demo user: {DEMO_EMAIL}")
+        
+        # Clear existing demo data for this company
+        from database import accounts_collection, transactions_collection, documents_collection
+        
+        logger.info("Clearing existing demo data...")
+        await accounts_collection.delete_many({"company_id": company_id})
+        await transactions_collection.delete_many({"company_id": company_id})
+        await documents_collection.delete_many({"company_id": company_id})
+        
+        # Generate enhanced demo data
+        logger.info("Generating enhanced demo data...")
+        result = await generate_enhanced_demo_data(None, company_id, user_id)
+        
+        # Log audit event
+        await log_audit_event(
+            user_id=user_id,
+            company_id=company_id,
+            action="enhanced_demo_data_generated",
+            details={
+                "accounts_created": result['accounts_created'],
+                "transactions_created": result['transactions_created'],
+                "documents_created": result['documents_created'],
+                "currencies": result['currencies_used']
+            }
+        )
+        
+        logger.info("Enhanced demo data generation completed successfully")
+        
+        return {
+            "success": True,
+            "message": "Enhanced demo data generated successfully",
+            "data": {
+                "demo_user": {
+                    "email": DEMO_EMAIL,
+                    "password": DEMO_PASSWORD,
+                    "company_name": "Global Enterprises Ltd."
+                },
+                "statistics": result
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating enhanced demo data: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate enhanced demo data: {str(e)}"
+        )
