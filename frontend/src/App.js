@@ -14,6 +14,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
 import BankingPage from './pages/banking/BankingPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
+import IntegrationPage from './pages/integration/IntegrationPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
