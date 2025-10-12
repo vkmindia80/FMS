@@ -244,7 +244,7 @@ async def get_exchange_rate(
     inverse_rate_doc = await exchange_rates_collection.find_one({
         "base_currency": to_currency,
         "target_currency": from_currency,
-        "date": rate_date,
+        "date": rate_datetime,
         "is_active": True
     })
     
