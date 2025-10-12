@@ -408,8 +408,13 @@ const AccountsPage = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                   {account.account_number || '-'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
-                                  {formatCurrency(account.current_balance)}
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {formatCurrency(account.current_balance, account.currency_code || 'USD')}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {account.currency_code || 'USD'}
+                                  </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center">
                                   {account.is_active ? (
