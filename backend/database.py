@@ -18,3 +18,11 @@ transactions_collection = database.transactions
 documents_collection = database.documents
 audit_logs_collection = database.audit_logs
 exchange_rates_collection = database.exchange_rates
+
+# Phase 6: Banking & Payment Integration Collections
+bank_connections_collection = database.bank_connections
+bank_transactions_collection = database.bank_transactions
+payment_transactions_collection = database.payment_transactions
+invoices_collection = database.invoices
+bills_collection = database.bills
+payment_schedules_collection = database.payment_schedules
