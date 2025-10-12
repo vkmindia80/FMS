@@ -182,7 +182,7 @@ async def update_exchange_rates_from_api(base_currency: str = "USD") -> Dict[str
                 "target_currency": target_currency,
                 "rate": float(rate_decimal),
                 "inverse_rate": float(inverse_rate),
-                "date": current_date,
+                "date": datetime.combine(current_date, datetime.min.time()),  # Convert date to datetime
                 "source": "exchangerate-api.com",
                 "last_updated": datetime.utcnow(),
                 "is_active": True
