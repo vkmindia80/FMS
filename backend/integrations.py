@@ -236,24 +236,56 @@ async def toggle_email(
 ):
     """
     Toggle email functionality on/off
+    Creates default integration config if none exists
     """
     try:
-        result = await integrations_collection.update_one(
-            {"company_id": current_user["company_id"]},
-            {
-                "$set": {
-                    "email.enabled": toggle_request.enabled,
-                    "updated_at": datetime.utcnow(),
-                    "updated_by": current_user["_id"]
-                }
-            }
-        )
+        # Check if config exists
+        existing_config = await integrations_collection.find_one({
+            "company_id": current_user["company_id"]
+        })
         
-        if result.matched_count == 0:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Integration configuration not found. Please configure email settings first."
+        if existing_config:
+            # Update existing config
+            result = await integrations_collection.update_one(
+                {"company_id": current_user["company_id"]},
+                {
+                    "$set": {
+                        "email.enabled": toggle_request.enabled,
+                        "updated_at": datetime.utcnow(),
+                        "updated_by": current_user["_id"]
+                    }
+                }
             )
+        else:
+            # Create new config with defaults
+            default_config = {
+                "company_id": current_user["company_id"],
+                "email": {
+                    "provider": "smtp",
+                    "enabled": toggle_request.enabled,
+                    "smtp_config": None,
+                    "sendgrid_config": None,
+                    "aws_config": None
+                },
+                "banking": {
+                    "plaid_enabled": False,
+                    "plaid_environment": "sandbox",
+                    "connected_accounts": 0,
+                    "last_sync": None
+                },
+                "payment": {
+                    "stripe_enabled": False,
+                    "stripe_environment": "test",
+                    "paypal_enabled": False,
+                    "square_enabled": False,
+                    "total_transactions": 0
+                },
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+                "updated_by": current_user["_id"]
+            }
+            
+            result = await integrations_collection.insert_one(default_config)
         
         # Log audit event
         await log_audit_event(
