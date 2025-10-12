@@ -208,6 +208,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/reconciliation" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <ReconciliationPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/settings" 
             element={
               <ProtectedRoute>
