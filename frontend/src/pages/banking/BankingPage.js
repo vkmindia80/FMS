@@ -144,11 +144,18 @@ const BankingPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      
       const data = await response.json();
-      setTransactions(data || []);
+      setTransactions(Array.isArray(data) ? data : []);
       setSelectedConnection(connectionId);
     } catch (err) {
       console.error('Error fetching transactions:', err);
+      setTransactions([]);
+      setError('Failed to load transactions');
     }
   };
 
