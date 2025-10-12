@@ -100,6 +100,22 @@ async def startup_event():
         await exchange_rates_collection.create_index([("date", -1)])
         await exchange_rates_collection.create_index([("is_active", 1)])
         
+        # Phase 6: Banking & Payment indexes
+        from database import (
+            bank_connections_collection, 
+            bank_transactions_collection, 
+            payment_transactions_collection,
+            invoices_collection
+        )
+        await bank_connections_collection.create_index([("company_id", 1), ("status", 1)])
+        await bank_connections_collection.create_index("connection_id", unique=True)
+        await bank_transactions_collection.create_index([("company_id", 1), ("date", -1)])
+        await bank_transactions_collection.create_index([("connection_id", 1), ("imported", 1)])
+        await payment_transactions_collection.create_index([("company_id", 1), ("created_at", -1)])
+        await payment_transactions_collection.create_index("session_id")
+        await invoices_collection.create_index([("company_id", 1), ("invoice_date", -1)])
+        await invoices_collection.create_index([("company_id", 1), ("payment_status", 1)])
+        
         logger.info("✅ AFMS Backend Server started successfully!")
         logger.info(f"   - Token blacklist: {'✅ Active' if token_blacklist.client else '⚠️  Disabled (Redis unavailable)'}")
         logger.info(f"   - Rate limiting: {'✅ Active' if rate_limiter.enabled else '⚠️  Disabled (Redis unavailable)'}")
