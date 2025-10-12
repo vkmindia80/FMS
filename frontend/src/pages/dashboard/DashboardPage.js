@@ -501,11 +501,68 @@ const DashboardPage = () => {
         </motion.div>
       </div>
 
+      {/* Currency Tools Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Currency Converter Widget */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
+          <CurrencyConverter 
+            embedded={true}
+            showHistory={true}
+          />
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          <div className="space-y-3">
+            <button className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all group">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-lg bg-blue-500">
+                  <PlusIcon className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-medium text-gray-900 dark:text-white">New Transaction</span>
+              </div>
+              <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+            </button>
+            
+            <button className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all group">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-lg bg-green-500">
+                  <DocumentTextIcon className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-medium text-gray-900 dark:text-white">Upload Document</span>
+              </div>
+              <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
+            </button>
+            
+            <button className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-900/30 dark:hover:to-pink-900/30 transition-all group">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-lg bg-purple-500">
+                  <ChartBarIcon className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-medium text-gray-900 dark:text-white">View Reports</span>
+              </div>
+              <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
       {/* Recent Transactions */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.5 }}
         className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
       >
         <div className="flex items-center justify-between mb-6">
