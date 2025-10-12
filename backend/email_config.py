@@ -520,6 +520,135 @@ async def delete_email_configuration(current_user: dict = Depends(get_current_us
         'message': 'Email configuration deleted successfully'
     }
 
+
+@router.get("/status")
+async def get_email_status():
+    """Get current email provider status from environment variables (no auth required for admin)"""
+    from email_service import is_email_configured, get_email_provider, FROM_EMAIL, FROM_NAME
+    from email_service import SMTP_HOST, SMTP_PORT, SENDGRID_API_KEY, AWS_ACCESS_KEY_ID
+    
+    provider = get_email_provider()
+    
+    result = {
+        "configured": is_email_configured(),
+        "provider": provider,
+        "from_email": FROM_EMAIL,
+        "from_name": FROM_NAME
+    }
+    
+    # Add provider-specific info
+    if provider == "smtp":
+        result["smtp_host"] = SMTP_HOST
+        result["smtp_port"] = SMTP_PORT
+        result["note"] = "Using SMTP/Gmail configuration from environment variables"
+    elif provider == "sendgrid":
+        result["api_key_configured"] = bool(SENDGRID_API_KEY)
+        result["note"] = "Using SendGrid configuration from environment variables"
+    elif provider == "aws_ses":
+        result["aws_configured"] = bool(AWS_ACCESS_KEY_ID)
+        result["note"] = "Using AWS SES configuration from environment variables"
+    else:
+        result["note"] = "No email provider configured. Please set email credentials in .env file"
+    
+    return result
+
+
+@router.post("/test-env")
+async def test_email_from_env(
+    test_email: EmailStr,
+    current_user: dict = Depends(get_current_user)
+):
+    """Test email using environment variable configuration"""
+    from email_service import is_email_configured, send_email as send_email_simple
+    
+    if not is_email_configured():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No email provider configured in environment variables. Please update .env file with email credentials."
+        )
+    
+    # Use simplified email function that auto-detects provider
+    # For now, use the existing send_email function
+    from email_service import get_email_provider
+    provider = get_email_provider()
+    
+    # Create minimal config
+    email_config = {'provider': provider}
+    
+    if provider == 'smtp':
+        from email_service import SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_USE_TLS, FROM_EMAIL, FROM_NAME
+        email_config['smtp_config'] = {
+            'host': SMTP_HOST,
+            'port': SMTP_PORT,
+            'username': SMTP_USERNAME,
+            'password': SMTP_PASSWORD,
+            'use_tls': SMTP_USE_TLS,
+            'from_email': FROM_EMAIL,
+            'from_name': FROM_NAME
+        }
+    elif provider == 'sendgrid':
+        from email_service import SENDGRID_API_KEY, FROM_EMAIL, FROM_NAME
+        email_config['sendgrid_config'] = {
+            'api_key': SENDGRID_API_KEY,
+            'from_email': FROM_EMAIL,
+            'from_name': FROM_NAME
+        }
+    
+    # Send test email
+    from email_service import send_email
+    
+    test_result = await send_email(
+        to_email=test_email,
+        subject="✅ AFMS Email Test from Environment Config",
+        body="Your AFMS email is working! This test used credentials from your .env file.",
+        email_config=email_config,
+        html_body=f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px; background: #f9fafb;">
+                <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h2 style="color: #10b981; margin-top: 0;">✅ Email Test Successful!</h2>
+                    <p>Your AFMS email configuration is working correctly.</p>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <p style="margin: 5px 0;"><strong>Provider:</strong> {provider.upper()}</p>
+                        <p style="margin: 5px 0;"><strong>Configured via:</strong> Environment Variables (.env file)</p>
+                        <p style="margin: 5px 0;"><strong>Test Time:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+                    </div>
+                    <p>You can now use automated report scheduling and email delivery!</p>
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                        This is an automated test from AFMS - Advanced Finance Management System
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+    )
+    
+    # Audit log
+    await log_audit_event(
+        user_id=current_user['_id'],
+        company_id=current_user['company_id'],
+        action='email_env_test_sent',
+        details={
+            'test_email': test_email,
+            'provider': provider,
+            'status': 'success' if test_result else 'failed'
+        }
+    )
+    
+    if test_result:
+        return {
+            'success': True,
+            'message': f'Test email sent successfully to {test_email}',
+            'provider': provider,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Failed to send test email via {provider}. Please check your .env configuration.'
+        )
+
 # ==================== Helper Functions ====================
 
 async def get_company_email_config(company_id: str) -> Optional[Dict[str, Any]]:
