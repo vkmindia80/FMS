@@ -491,7 +491,7 @@ async def delete_invoice(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Mark as voided instead of deleting
         result = await invoices_collection.update_one(
