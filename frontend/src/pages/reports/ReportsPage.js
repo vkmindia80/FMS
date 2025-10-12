@@ -12,7 +12,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import CurrencySelector from '../../components/common/CurrencySelector';
 
 const ReportsPage = () => {
-  const { token } = useAuth();
+  const { getAccessToken } = useAuth();
   const [selectedReport, setSelectedReport] = useState(null);
   const [period, setPeriod] = useState('current_month');
   const [loading, setLoading] = useState(false);
