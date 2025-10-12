@@ -553,10 +553,19 @@ Building a comprehensive, scalable finance management system from Individual use
 - ✅ Conflict resolution for duplicate transactions (deduplication by transaction_id)
 - ⚠️ Real-time transaction feeds (webhook infrastructure ready, needs production config)
 
-#### API Endpoints Implemented (24 total)
+#### API Endpoints Implemented (32 total)
 - ✅ POST/GET/DELETE `/api/banking/*` - Bank connection management (7 endpoints)
 - ✅ POST/GET `/api/payments/*` - Payment processing (7 endpoints)
 - ✅ POST/GET/PUT/DELETE `/api/receivables/*` - Invoice management (8 endpoints)
+- ✅ **NEW: POST/GET/PUT/DELETE `/api/integrations/payment/gateways`** - Gateway configuration (8 endpoints)
+  - GET `/api/integrations/payment/gateways` - List all gateways
+  - POST `/api/integrations/payment/gateways` - Create gateway
+  - GET `/api/integrations/payment/gateways/{id}` - Get gateway details
+  - PUT `/api/integrations/payment/gateways/{id}` - Update gateway
+  - DELETE `/api/integrations/payment/gateways/{id}` - Delete gateway
+  - POST `/api/integrations/payment/gateways/{id}/toggle` - Enable/disable gateway
+  - POST `/api/integrations/payment/gateways/{id}/test` - Test connection
+  - POST `/api/integrations/payment/test-connection` - Test before save
 
 #### Frontend Pages Implemented
 - ✅ BankingPage (`/banking`) - Bank connections, transaction sync, viewer
