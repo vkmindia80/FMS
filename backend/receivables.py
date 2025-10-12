@@ -58,7 +58,7 @@ async def create_invoice(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Calculate totals
         subtotal = sum(item.amount for item in invoice_data.line_items)
