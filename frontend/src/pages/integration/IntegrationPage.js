@@ -15,6 +15,7 @@ import EmailConfiguration from './EmailConfiguration';
 import ReportScheduling from './ReportScheduling';
 import BankingIntegration from './BankingIntegration';
 import PaymentIntegration from './PaymentIntegration';
+import PaymentGatewayManagement from './PaymentGatewayManagement';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
