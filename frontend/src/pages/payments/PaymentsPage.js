@@ -30,10 +30,17 @@ const PaymentsPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch payments');
+      }
+      
       const data = await response.json();
-      setPayments(data.payments || []);
+      setPayments(Array.isArray(data.payments) ? data.payments : []);
     } catch (err) {
       console.error('Error fetching payments:', err);
+      setPayments([]);
+      setError('Failed to load payment history');
     }
   };
 
