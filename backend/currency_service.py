@@ -226,11 +226,14 @@ async def get_exchange_rate(
     if rate_date is None:
         rate_date = date.today()
     
+    # Convert date to datetime for MongoDB query
+    rate_datetime = datetime.combine(rate_date, datetime.min.time()) if isinstance(rate_date, date) else rate_date
+    
     # Try to find direct rate
     rate_doc = await exchange_rates_collection.find_one({
         "base_currency": from_currency,
         "target_currency": to_currency,
-        "date": rate_date,
+        "date": rate_datetime,
         "is_active": True
     })
     
