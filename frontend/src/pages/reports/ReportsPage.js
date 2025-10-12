@@ -115,7 +115,7 @@ const ReportsPage = () => {
 
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${getAccessToken()}`
         }
       });
 
