@@ -48,7 +48,7 @@ async def connect_bank_account(
     Connect a bank account using Plaid or Mock banking
     """
     try:
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         company_id = current_user["company_id"]
         
         if connection_data.provider == "plaid":
