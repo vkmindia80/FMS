@@ -43,28 +43,6 @@ const ReportSchedulingPage = () => {
     loadSchedules();
   }, [loadSchedules]);
 
-  const loadSchedules = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${BACKEND_URL}/api/report-scheduling/schedules`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSchedules(data.schedules || []);
-      } else {
-        toast.error('Failed to load report schedules');
-      }
-    } catch (error) {
-      console.error('Error loading schedules:', error);
-      toast.error('Failed to load schedules');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCreateSchedule = async (scheduleData) => {
     try {
       const token = localStorage.getItem('token');
