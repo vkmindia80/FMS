@@ -55,10 +55,16 @@ const BankingPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch institutions');
+      }
+      
       const data = await response.json();
-      setInstitutions(data.institutions || []);
+      setInstitutions(Array.isArray(data.institutions) ? data.institutions : []);
     } catch (err) {
       console.error('Error fetching institutions:', err);
+      setInstitutions([]);
     }
   };
 
