@@ -10,14 +10,14 @@ from datetime import datetime
 import logging
 import uuid
 
-from database import db
+from database import database
 from auth import get_current_user, log_audit_event
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 # MongoDB collection
-payment_gateway_configs_collection = db.payment_gateway_configs
+payment_gateway_configs_collection = database.payment_gateway_configs
 
 
 # ==================== Models ====================
