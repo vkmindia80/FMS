@@ -173,6 +173,28 @@ function AppContent() {
           />
           
           <Route 
+            path="/banking" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <BankingPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/payments" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <PaymentsPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/settings" 
             element={
               <ProtectedRoute>
