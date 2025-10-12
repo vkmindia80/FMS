@@ -968,6 +968,15 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
         "processing_status": "processing"
     })
     
+    # Multi-currency summary
+    base_currency = await get_company_base_currency(current_user["company_id"])
+    
+    # Get currencies used in transactions
+    currencies_used = await transactions_collection.distinct(
+        "currency",
+        {"company_id": current_user["company_id"], "status": {"$ne": "void"}}
+    )
+    
     return {
         "summary": {
             "current_month_revenue": current_month_pl.total_revenue,
@@ -979,7 +988,9 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
             "cash_balance": sum(
                 account["balance"] for account in current_bs.asset_accounts
                 if "cash" in account["account_name"].lower() or "checking" in account["account_name"].lower()
-            )
+            ),
+            "base_currency": base_currency,
+            "currencies_in_use": currencies_used or [base_currency]
         },
         "counts": {
             "total_transactions": total_transactions,
