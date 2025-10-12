@@ -139,6 +139,14 @@ async def startup_event():
 async def shutdown_event():
     """Clean up on shutdown"""
     logger.info("Shutting down AFMS Backend Server...")
+    
+    # Stop currency scheduler
+    try:
+        from currency_tasks import stop_currency_scheduler
+        stop_currency_scheduler()
+    except Exception as e:
+        logger.error(f"Error stopping currency scheduler: {e}")
+    
     client.close()
 
 @app.get("/api/health")
