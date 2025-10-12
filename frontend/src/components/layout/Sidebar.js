@@ -86,6 +86,13 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       color: 'teal',
       badge: null,
     },
+    {
+      name: 'Integration',
+      href: '/integration',
+      icon: PuzzlePieceIcon,
+      color: 'violet',
+      badge: 'New',
+    },
   ];
 
   const bottomItems = [
