@@ -210,7 +210,7 @@ async def test_full_reconciliation_workflow():
                 'company_id': company_id,
                 'description': 'Amazon Purchase',
                 'amount': 125.50,
-                'transaction_date': date(2025, 10, 2),
+                'transaction_date': datetime(2025, 10, 2),
                 'status': 'pending',
                 'is_reconciled': False,
                 'created_at': datetime.utcnow()
@@ -220,7 +220,7 @@ async def test_full_reconciliation_workflow():
                 'company_id': company_id,
                 'description': 'Salary Deposit',
                 'amount': 3000.00,
-                'transaction_date': date(2025, 10, 3),
+                'transaction_date': datetime(2025, 10, 3),
                 'status': 'pending',
                 'is_reconciled': False,
                 'created_at': datetime.utcnow()
