@@ -174,7 +174,7 @@ const CurrencyConverter = ({
                 <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <InformationCircleIcon className="w-4 h-4" />
                   <span>
-                    1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
+                    1 {fromCurrency} = {parseFloat(exchangeRate).toFixed(4)} {toCurrency}
                   </span>
                 </div>
               )}
