@@ -48,7 +48,7 @@ const PaymentsPage = () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/payments/gateways`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('afms_access_token')}`
         }
       });
       
