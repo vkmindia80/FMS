@@ -150,6 +150,10 @@ async def get_integration_config(
                 }
             }
         
+        # Convert ObjectId to string for JSON serialization
+        if "_id" in config:
+            config["_id"] = str(config["_id"])
+        
         # Remove sensitive password field for security
         if config.get("email") and config["email"].get("smtp_config"):
             config["email"]["smtp_config"]["password"] = "••••••••"
