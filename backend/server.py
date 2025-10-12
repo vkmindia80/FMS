@@ -59,6 +59,7 @@ from receivables import router as receivables_router
 from integrations import router as integrations_router
 from report_scheduling import router as scheduling_router
 from reconciliation import router as reconciliation_router
+from email_config import router as email_config_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
