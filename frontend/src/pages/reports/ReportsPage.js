@@ -313,19 +313,17 @@ const ReportsPage = () => {
               setSelectedReport(report.id);
               setReportData(null);
             }}
-            className={`card hover:shadow-md transition-shadow cursor-pointer ${
-              selectedReport === report.id ? 'ring-2 ring-blue-500' : ''
+            className={`bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer p-4 ${
+              selectedReport === report.id ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
             }`}
           >
-            <div className="card-body">
-              <div className="flex flex-col items-center text-center">
-                <div className={`rounded-lg p-3 ${report.color}`}>
-                  <report.icon className="h-6 w-6 text-white" />
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-sm font-medium text-gray-900">{report.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{report.description}</p>
-                </div>
+            <div className="flex flex-col items-center text-center">
+              <div className={`rounded-lg p-3 ${report.color}`}>
+                <report.icon className="h-6 w-6 text-white" />
+              </div>
+              <div className="mt-3">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">{report.name}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{report.description}</p>
               </div>
             </div>
           </div>
