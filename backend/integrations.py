@@ -180,7 +180,7 @@ async def update_integration_config(
         update_data = {
             "company_id": current_user["company_id"],
             "updated_at": datetime.utcnow(),
-            "updated_by": current_user["user_id"]
+            "updated_by": current_user["_id"]
         }
         
         # Update email config if provided
