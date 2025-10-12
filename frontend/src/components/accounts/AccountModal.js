@@ -195,6 +195,16 @@ const AccountModal = ({ isOpen, onClose, onSave, account, accountTypes }) => {
                 />
               </div>
 
+              {/* Currency Selection */}
+              <div>
+                <CurrencySelector
+                  label="Currency *"
+                  selectedCurrency={formData.currency_code}
+                  onCurrencyChange={(currency) => setFormData(prev => ({ ...prev, currency_code: currency }))}
+                  size="medium"
+                />
+              </div>
+
               {/* Opening Balance - Only for new accounts */}
               {!account && (
                 <div>
