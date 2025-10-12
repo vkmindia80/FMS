@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import CurrencySelector from '../common/CurrencySelector';
 
 const AccountModal = ({ isOpen, onClose, onSave, account, accountTypes }) => {
   const [formData, setFormData] = useState({
