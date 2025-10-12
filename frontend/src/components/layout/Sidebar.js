@@ -19,6 +19,7 @@ import {
   QuestionMarkCircleIcon,
   Bars3Icon,
   XMarkIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
