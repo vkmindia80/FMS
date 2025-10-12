@@ -286,7 +286,7 @@ async def process_payment(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Process payment
         metadata = payment_request.metadata or {}
