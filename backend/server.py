@@ -75,6 +75,7 @@ app.include_router(receivables_router, prefix="/api/receivables", tags=["Account
 app.include_router(integrations_router, prefix="/api/integrations", tags=["Integrations"])
 app.include_router(scheduling_router, prefix="/api/report-scheduling", tags=["Report Scheduling"])
 app.include_router(reconciliation_router, prefix="/api/reconciliation", tags=["Reconciliation"])
+app.include_router(email_config_router, prefix="/api/email", tags=["Email Configuration"])
 
 @app.on_event("startup")
 async def startup_event():
