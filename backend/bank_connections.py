@@ -469,7 +469,7 @@ async def disconnect_bank(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         result = await bank_connections_collection.update_one(
             {"connection_id": connection_id, "company_id": company_id},
