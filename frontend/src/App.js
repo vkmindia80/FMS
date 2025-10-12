@@ -11,6 +11,7 @@ import DocumentsPage from './pages/documents/DocumentsPage';
 import TransactionsPage from './pages/transactions/TransactionsPage';
 import AccountsPage from './pages/accounts/AccountsPage';
 import ReportsPage from './pages/reports/ReportsPage';
+import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -114,7 +115,6 @@ function AppContent() {
             } 
           />
           
-          {/* Placeholder routes for navigation items */}
           <Route 
             path="/documents" 
             element={
@@ -154,6 +154,17 @@ function AppContent() {
               <ProtectedRoute>
                 <DashboardLayout>
                   <ReportsPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/currency" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <CurrencyManagementPage />
                 </DashboardLayout>
               </ProtectedRoute>
             } 
