@@ -60,6 +60,7 @@ from integrations import router as integrations_router
 from report_scheduling import router as scheduling_router
 from reconciliation import router as reconciliation_router
 from email_config import router as email_config_router
+from payment_gateway_config import router as payment_gateway_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
@@ -76,6 +77,7 @@ app.include_router(integrations_router, prefix="/api/integrations", tags=["Integ
 app.include_router(scheduling_router, prefix="/api/report-scheduling", tags=["Report Scheduling"])
 app.include_router(reconciliation_router, prefix="/api/reconciliation", tags=["Reconciliation"])
 app.include_router(email_config_router, prefix="/api/email", tags=["Email Configuration"])
+app.include_router(payment_gateway_router, prefix="/api/integrations/payment", tags=["Payment Gateway Config"])
 
 @app.on_event("startup")
 async def startup_event():
