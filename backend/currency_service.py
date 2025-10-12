@@ -68,8 +68,8 @@ class CurrencyCode(str, Enum):
 
 class ExchangeRateResponse(BaseModel):
     id: str
-    base_currency: CurrencyCode
-    target_currency: CurrencyCode
+    base_currency: str  # Allow any currency code
+    target_currency: str  # Allow any currency code
     rate: Decimal
     inverse_rate: Decimal
     date: date
