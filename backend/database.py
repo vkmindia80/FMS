@@ -26,3 +26,8 @@ payment_transactions_collection = database.payment_transactions
 invoices_collection = database.invoices
 bills_collection = database.bills
 payment_schedules_collection = database.payment_schedules
+
+# Phase 14: Report Scheduling & Integration Collections
+integrations_collection = database.integrations
+report_schedules_collection = database.report_schedules
+scheduled_report_history_collection = database.scheduled_report_history
