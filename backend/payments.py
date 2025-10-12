@@ -46,7 +46,7 @@ async def create_checkout_session(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Get Stripe gateway
         stripe_gateway = payment_service.get_gateway("stripe")
