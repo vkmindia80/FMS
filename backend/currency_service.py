@@ -377,6 +377,7 @@ async def create_exchange_rate(
         )
     
     rate_date = rate_data.date or date.today()
+    rate_datetime = datetime.combine(rate_date, datetime.min.time())
     rate_id = f"{rate_data.base_currency}_{rate_data.target_currency}_{rate_date}"
     
     # Calculate inverse rate
@@ -389,7 +390,7 @@ async def create_exchange_rate(
         "target_currency": rate_data.target_currency,
         "rate": float(rate_data.rate),
         "inverse_rate": float(inverse_rate),
-        "date": rate_date,
+        "date": rate_datetime,
         "source": rate_data.source,
         "last_updated": datetime.utcnow(),
         "is_active": True,
@@ -400,7 +401,7 @@ async def create_exchange_rate(
     existing_rate = await exchange_rates_collection.find_one({
         "base_currency": rate_data.base_currency,
         "target_currency": rate_data.target_currency,
-        "date": rate_date
+        "date": rate_datetime
     })
     
     if existing_rate:
