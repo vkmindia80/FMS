@@ -44,8 +44,8 @@ const CurrencyConverter = ({
         to_currency: toCurrency
       });
 
-      setConvertedAmount(result.converted_amount);
-      setExchangeRate(result.exchange_rate);
+      setConvertedAmount(parseFloat(result.converted_amount));
+      setExchangeRate(parseFloat(result.exchange_rate));
       setLastUpdated(new Date(result.conversion_timestamp));
 
       // Add to history
