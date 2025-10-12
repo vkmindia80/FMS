@@ -51,10 +51,16 @@ const PaymentsPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch gateways');
+      }
+      
       const data = await response.json();
-      setGateways(data.gateways || []);
+      setGateways(Array.isArray(data.gateways) ? data.gateways : []);
     } catch (err) {
       console.error('Error fetching gateways:', err);
+      setGateways([]);
     }
   };
 
