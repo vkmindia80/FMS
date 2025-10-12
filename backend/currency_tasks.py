@@ -49,7 +49,8 @@ async def initialize_exchange_rates():
         else:
             # Check if rates are up to date (today's date)
             today = date.today()
-            today_rate_count = await exchange_rates_collection.count_documents({"date": today})
+            today_datetime = datetime.combine(today, datetime.min.time())
+            today_rate_count = await exchange_rates_collection.count_documents({"date": today_datetime})
             
             if today_rate_count == 0:
                 logger.info("📊 Exchange rates are outdated. Updating...")
