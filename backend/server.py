@@ -120,6 +120,18 @@ async def startup_event():
         await invoices_collection.create_index([("company_id", 1), ("invoice_date", -1)])
         await invoices_collection.create_index([("company_id", 1), ("payment_status", 1)])
         
+        # Phase 14: Integration & Report Scheduling indexes
+        from database import (
+            integrations_collection,
+            report_schedules_collection,
+            scheduled_report_history_collection
+        )
+        await integrations_collection.create_index("company_id", unique=True)
+        await report_schedules_collection.create_index([("company_id", 1), ("enabled", 1)])
+        await report_schedules_collection.create_index("schedule_id", unique=True)
+        await report_schedules_collection.create_index([("next_run", 1), ("enabled", 1)])
+        await scheduled_report_history_collection.create_index([("schedule_id", 1), ("executed_at", -1)])
+        
         # Phase 13: Initialize exchange rates and start scheduler
         logger.info("💱 Initializing multi-currency support...")
         from currency_tasks import initialize_exchange_rates, start_currency_scheduler
