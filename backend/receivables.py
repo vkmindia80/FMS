@@ -288,7 +288,7 @@ async def send_invoice(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         result = await invoices_collection.update_one(
             {"invoice_id": invoice_id, "company_id": company_id},
