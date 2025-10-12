@@ -932,6 +932,109 @@ async def generate_cash_flow_report(
     
     return report_data
 
+@reports_router.get("/multi-currency-summary")
+async def get_multi_currency_summary(
+    period: ReportPeriod = ReportPeriod.CURRENT_MONTH,
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get multi-currency transaction summary with conversion to base currency"""
+    
+    # Get period dates
+    period_start, period_end = get_period_dates(period, start_date, end_date)
+    
+    # Get base currency
+    base_currency = await get_company_base_currency(current_user["company_id"])
+    
+    # Get all transactions in the period grouped by currency
+    pipeline = [
+        {
+            "$match": {
+                "company_id": current_user["company_id"],
+                "transaction_date": {"$gte": period_start, "$lte": period_end},
+                "status": {"$ne": "void"}
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "currency": "$currency",
+                    "transaction_type": "$transaction_type"
+                },
+                "total_amount": {"$sum": "$amount"},
+                "total_base_amount": {"$sum": "$base_currency_amount"},
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id.currency": 1, "_id.transaction_type": 1}
+        }
+    ]
+    
+    results = await transactions_collection.aggregate(pipeline).to_list(length=None)
+    
+    # Organize results by currency
+    currency_summary = {}
+    total_income_base = Decimal("0")
+    total_expense_base = Decimal("0")
+    
+    for result in results:
+        currency = result["_id"]["currency"] or base_currency
+        txn_type = result["_id"]["transaction_type"]
+        
+        if currency not in currency_summary:
+            currency_summary[currency] = {
+                "currency": currency,
+                "income": Decimal("0"),
+                "expense": Decimal("0"),
+                "income_base": Decimal("0"),
+                "expense_base": Decimal("0"),
+                "transaction_count": 0
+            }
+        
+        amount = Decimal(str(result["total_amount"]))
+        base_amount = Decimal(str(result["total_base_amount"]))
+        
+        if txn_type == "income":
+            currency_summary[currency]["income"] += amount
+            currency_summary[currency]["income_base"] += base_amount
+            total_income_base += base_amount
+        elif txn_type == "expense":
+            currency_summary[currency]["expense"] += amount
+            currency_summary[currency]["expense_base"] += base_amount
+            total_expense_base += base_amount
+        
+        currency_summary[currency]["transaction_count"] += result["count"]
+    
+    # Log audit event
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="multi_currency_report_generated",
+        details={
+            "period_start": period_start.isoformat(),
+            "period_end": period_end.isoformat(),
+            "currencies": list(currency_summary.keys()),
+            "base_currency": base_currency
+        }
+    )
+    
+    return {
+        "report_name": f"Multi-Currency Summary - {period_start.date()} to {period_end.date()}",
+        "period_start": period_start.date() if isinstance(period_start, datetime) else period_start,
+        "period_end": period_end.date() if isinstance(period_end, datetime) else period_end,
+        "base_currency": base_currency,
+        "generated_at": datetime.utcnow(),
+        "currency_breakdown": list(currency_summary.values()),
+        "totals_in_base_currency": {
+            "total_income": total_income_base,
+            "total_expense": total_expense_base,
+            "net_income": total_income_base - total_expense_base,
+            "currency": base_currency
+        }
+    }
+
 @reports_router.get("/dashboard-summary")
 async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
     """Get summary data for dashboard"""
