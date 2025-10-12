@@ -39,7 +39,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 
 1. **Navigate to the application:**
    ```
-   https://email-toggle-fix.preview.emergentagent.com/login
+   https://gateway-controls.preview.emergentagent.com/login
    ```
 
 2. **Click "Demo Login" button** (blue button in the demo account section)
@@ -103,7 +103,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 ```bash
 # From backend
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  "https://email-toggle-fix.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
+  "https://gateway-controls.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
 ```
 
 ### All Export Formats Working
