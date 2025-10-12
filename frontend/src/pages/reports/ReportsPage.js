@@ -105,6 +105,11 @@ const ReportsPage = () => {
           url += `&start_date=${startDate}&end_date=${endDate}`;
         }
       }
+      
+      // Add currency parameter for multi-currency reporting
+      if (displayCurrency !== 'USD') {
+        url += `&display_currency=${displayCurrency}`;
+      }
 
       console.log('Generating report:', url);
 
