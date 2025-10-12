@@ -31,6 +31,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import CurrencyConverter from '../../components/common/CurrencyConverter';
 
 const DashboardPage = () => {
   const { user } = useAuth();
