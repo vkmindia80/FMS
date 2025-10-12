@@ -253,8 +253,8 @@ async def get_exchange_rate(
     
     # Try via USD (cross-currency calculation)
     if from_currency != "USD" and to_currency != "USD":
-        from_to_usd = await get_exchange_rate(from_currency, "USD", rate_date)
-        usd_to_target = await get_exchange_rate("USD", to_currency, rate_date)
+        from_to_usd = await get_exchange_rate(from_currency, "USD", rate_date.date() if isinstance(rate_date, datetime) else rate_date)
+        usd_to_target = await get_exchange_rate("USD", to_currency, rate_date.date() if isinstance(rate_date, datetime) else rate_date)
         
         if from_to_usd and usd_to_target:
             return from_to_usd * usd_to_target
