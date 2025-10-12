@@ -159,49 +159,134 @@ const ReportsPage = () => {
     }
   };
 
+  const formatCurrency = (amount, currency = displayCurrency) => {
+    if (amount === null || amount === undefined) return '-';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
+
   const renderReportData = () => {
     if (!reportData) return null;
 
     return (
-      <div className="mt-6 bg-white rounded-lg shadow p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">{reportData.report_name}</h3>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => generateReport('pdf')}
-              className="btn-secondary flex items-center"
-              disabled={loading}
-            >
-              <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-              PDF
-            </button>
-            <button
-              onClick={() => generateReport('excel')}
-              className="btn-secondary flex items-center"
-              disabled={loading}
-            >
-              <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-              Excel
-            </button>
-            <button
-              onClick={() => generateReport('csv')}
-              className="btn-secondary flex items-center"
-              disabled={loading}
-            >
-              <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-              CSV
-            </button>
+      <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        {/* Report Header */}
+        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {reportData.report_name}
+              </h3>
+              <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>Generated: {new Date(reportData.generated_at).toLocaleString()}</span>
+                {reportData.period && <span>Period: {reportData.period}</span>}
+                {displayCurrency !== 'USD' && (
+                  <span className="flex items-center text-blue-600 dark:text-blue-400">
+                    <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+                    Displayed in {displayCurrency}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => generateReport('pdf')}
+                className="btn-secondary flex items-center text-sm"
+                disabled={loading}
+              >
+                <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
+                PDF
+              </button>
+              <button
+                onClick={() => generateReport('excel')}
+                className="btn-secondary flex items-center text-sm"
+                disabled={loading}
+              >
+                <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
+                Excel
+              </button>
+              <button
+                onClick={() => generateReport('csv')}
+                className="btn-secondary flex items-center text-sm"
+                disabled={loading}
+              >
+                <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
+                CSV
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="text-sm text-gray-600 mb-4">
-          Generated: {new Date(reportData.generated_at).toLocaleString()}
-        </div>
+        {/* Report Summary/Totals */}
+        {(reportData.total_revenue !== undefined || reportData.net_income !== undefined || reportData.total_assets !== undefined) && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {reportData.total_revenue !== undefined && (
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <div className="text-sm text-green-600 dark:text-green-400 font-medium">Total Revenue</div>
+                <div className="text-2xl font-bold text-green-700 dark:text-green-300 mt-1">
+                  {formatCurrency(reportData.total_revenue)}
+                </div>
+              </div>
+            )}
+            {reportData.total_expenses !== undefined && (
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div className="text-sm text-red-600 dark:text-red-400 font-medium">Total Expenses</div>
+                <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
+                  {formatCurrency(reportData.total_expenses)}
+                </div>
+              </div>
+            )}
+            {reportData.net_income !== undefined && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Net Income</div>
+                <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 mt-1">
+                  {formatCurrency(reportData.net_income)}
+                </div>
+              </div>
+            )}
+            {reportData.total_assets !== undefined && (
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4">
+                <div className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">Total Assets</div>
+                <div className="text-2xl font-bold text-indigo-700 dark:text-indigo-300 mt-1">
+                  {formatCurrency(reportData.total_assets)}
+                </div>
+              </div>
+            )}
+            {reportData.total_liabilities !== undefined && (
+              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+                <div className="text-sm text-orange-600 dark:text-orange-400 font-medium">Total Liabilities</div>
+                <div className="text-2xl font-bold text-orange-700 dark:text-orange-300 mt-1">
+                  {formatCurrency(reportData.total_liabilities)}
+                </div>
+              </div>
+            )}
+            {reportData.total_equity !== undefined && (
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Total Equity</div>
+                <div className="text-2xl font-bold text-purple-700 dark:text-purple-300 mt-1">
+                  {formatCurrency(reportData.total_equity)}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
+        {/* Detailed Report Data */}
         <div className="overflow-x-auto">
-          <pre className="text-sm bg-gray-50 p-4 rounded border">
-            {JSON.stringify(reportData, null, 2)}
-          </pre>
+          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <details open>
+              <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                View Detailed Report Data (JSON)
+              </summary>
+              <pre className="text-xs text-gray-600 dark:text-gray-400 overflow-auto max-h-96">
+                {JSON.stringify(reportData, null, 2)}
+              </pre>
+            </details>
+          </div>
         </div>
       </div>
     );
