@@ -13,6 +13,8 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import EmailConfiguration from './EmailConfiguration';
 import ReportScheduling from './ReportScheduling';
+import BankingIntegration from './BankingIntegration';
+import PaymentIntegration from './PaymentIntegration';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
