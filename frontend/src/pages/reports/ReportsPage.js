@@ -332,13 +332,13 @@ const ReportsPage = () => {
 
       {/* Report Generator */}
       {selectedReport && (
-        <div className="card">
-          <div className="card-header">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Generate {reports.find(r => r.id === selectedReport)?.name}
             </h2>
           </div>
-          <div className="card-body space-y-4">
+          <div className="p-6 space-y-4">
             {reports.find(r => r.id === selectedReport)?.hasPeriod && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
