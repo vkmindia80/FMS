@@ -15,6 +15,7 @@ import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
 import BankingPage from './pages/banking/BankingPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import IntegrationPage from './pages/integration/IntegrationPage';
+import ReconciliationPage from './pages/reconciliation/ReconciliationPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
