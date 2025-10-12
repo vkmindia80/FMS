@@ -5,9 +5,11 @@ import {
   DocumentTextIcon,
   TableCellsIcon,
   ArrowDownTrayIcon,
-  CalendarIcon 
+  CalendarIcon,
+  CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
+import CurrencySelector from '../../components/common/CurrencySelector';
 
 const ReportsPage = () => {
   const { token } = useAuth();
