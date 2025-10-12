@@ -175,14 +175,17 @@ async def update_exchange_rates_from_api(base_currency: str = "USD") -> Dict[str
             rate_decimal = Decimal(str(rate_value))
             inverse_rate = Decimal("1") / rate_decimal if rate_decimal > 0 else Decimal("0")
             
+            # Convert date to datetime for MongoDB
+            current_datetime = datetime.combine(current_date, datetime.min.time())
+            
             # Create exchange rate document
             rate_doc = {
-                "_id": f"{base_currency}_{target_currency}_{current_date}",
+                "_id": f"{base_currency}_{target_currency}_{current_date.isoformat()}",
                 "base_currency": base_currency,
                 "target_currency": target_currency,
                 "rate": float(rate_decimal),
                 "inverse_rate": float(inverse_rate),
-                "date": datetime.combine(current_date, datetime.min.time()),  # Convert date to datetime
+                "date": current_datetime,
                 "source": "exchangerate-api.com",
                 "last_updated": datetime.utcnow(),
                 "is_active": True
@@ -193,7 +196,7 @@ async def update_exchange_rates_from_api(base_currency: str = "USD") -> Dict[str
                 {
                     "base_currency": base_currency,
                     "target_currency": target_currency,
-                    "date": current_date
+                    "date": current_datetime
                 },
                 {"$set": rate_doc},
                 upsert=True
