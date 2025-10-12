@@ -303,6 +303,42 @@ const ReportsPage = () => {
               </div>
             )}
 
+            {/* Currency Selection for Multi-Currency Reporting */}
+            <div className="border-t pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <CurrencySelector
+                    label={
+                      <span className="flex items-center">
+                        <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+                        Display Currency
+                      </span>
+                    }
+                    selectedCurrency={displayCurrency}
+                    onCurrencyChange={setDisplayCurrency}
+                    size="medium"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    All amounts will be displayed in this currency
+                  </p>
+                </div>
+                
+                <div className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showCurrencyConversion}
+                      onChange={(e) => setShowCurrencyConversion(e.target.checked)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">
+                      Show multi-currency breakdown
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => generateReport('json')}
