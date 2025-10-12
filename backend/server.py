@@ -53,6 +53,9 @@ from accounts import accounts_router
 from reports import reports_router
 from admin import admin_router
 from currency_service import currency_router
+from bank_connections import router as banking_router
+from payments import router as payments_router
+from receivables import router as receivables_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
@@ -62,6 +65,9 @@ app.include_router(accounts_router, prefix="/api/accounts", tags=["Accounts"])
 app.include_router(reports_router, prefix="/api/reports", tags=["Reports"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Administration"])
 app.include_router(currency_router, prefix="/api/currency", tags=["Currency"])
+app.include_router(banking_router, prefix="/api/banking", tags=["Banking & Connections"])
+app.include_router(payments_router, prefix="/api/payments", tags=["Payment Processing"])
+app.include_router(receivables_router, prefix="/api/receivables", tags=["Accounts Receivable"])
 
 @app.on_event("startup")
 async def startup_event():
