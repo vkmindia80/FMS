@@ -54,9 +54,13 @@ const AdminPage = () => {
       </div>
 
       {/* Admin Sections */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {adminSections.map((section) => (
-          <div key={section.name} className="card hover:shadow-md transition-shadow cursor-pointer">
+          <div 
+            key={section.name} 
+            onClick={() => section.path && navigate(section.path)}
+            className={`card hover:shadow-md transition-shadow ${section.path ? 'cursor-pointer' : 'cursor-default opacity-75'}`}
+          >
             <div className="card-body">
               <div className="flex items-center">
                 <div className={`rounded-lg p-3 ${section.color}`}>
