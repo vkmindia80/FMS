@@ -60,20 +60,6 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       badge: null,
     },
     {
-      name: 'Banking',
-      href: '/banking',
-      icon: BuildingOfficeIcon,
-      color: 'indigo',
-      badge: 'New',
-    },
-    {
-      name: 'Payments',
-      href: '/payments',
-      icon: CreditCardIcon,
-      color: 'emerald',
-      badge: 'New',
-    },
-    {
       name: 'Reconciliation',
       href: '/reconciliation',
       icon: CheckCircleIcon,
@@ -99,7 +85,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       href: '/integration',
       icon: PuzzlePieceIcon,
       color: 'violet',
-      badge: 'New',
+      badge: null,
     },
   ];
 
