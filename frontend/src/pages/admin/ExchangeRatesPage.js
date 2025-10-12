@@ -28,6 +28,7 @@ const ExchangeRatesPage = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterBaseCurrency]);
 
   const loadData = async () => {
