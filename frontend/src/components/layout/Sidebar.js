@@ -62,6 +62,13 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       href: '/reports',
       icon: ChartBarIcon,
       color: 'red',
+      badge: null,
+    },
+    {
+      name: 'Currency',
+      href: '/currency',
+      icon: CurrencyDollarIcon,
+      color: 'teal',
       badge: 'New',
     },
   ];
