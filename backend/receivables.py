@@ -211,7 +211,7 @@ async def update_invoice(
     """
     try:
         company_id = current_user["company_id"]
-        user_id = current_user["user_id"]
+        user_id = current_user["_id"]
         
         # Get existing invoice
         invoice = await invoices_collection.find_one({
