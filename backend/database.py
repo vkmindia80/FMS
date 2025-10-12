@@ -31,3 +31,7 @@ payment_schedules_collection = database.payment_schedules
 integrations_collection = database.integrations
 report_schedules_collection = database.report_schedules
 scheduled_report_history_collection = database.scheduled_report_history
+
+# Phase 15: Reconciliation Collections
+reconciliation_sessions_collection = database.reconciliation_sessions
+reconciliation_matches_collection = database.reconciliation_matches
