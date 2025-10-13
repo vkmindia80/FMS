@@ -244,9 +244,10 @@ Building a comprehensive, scalable finance management system from Individual use
 - Async file operations
 - MongoDB aggregation pipelines
 - Chunked file reading
+- ✅ Redis installed for caching (security features operational)
 
 **Missing:**
-- No caching layer (Redis mentioned but not configured)
+- Query result caching (Redis available but not configured for queries)
 - No background job queue (Celery mentioned but not used)
 - No query result pagination in some endpoints
 - No connection pooling configuration explicit
