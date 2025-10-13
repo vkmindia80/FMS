@@ -153,10 +153,16 @@ async def startup_event():
         await initialize_exchange_rates()
         start_currency_scheduler()
         
+        # Phase 14: Initialize report scheduler
+        logger.info("📅 Initializing report scheduler...")
+        from report_scheduler_worker import initialize_report_scheduler
+        initialize_report_scheduler()
+        
         logger.info("✅ AFMS Backend Server started successfully!")
         logger.info(f"   - Token blacklist: {'✅ Active' if token_blacklist.client else '⚠️  Disabled (Redis unavailable)'}")
         logger.info(f"   - Rate limiting: {'✅ Active' if rate_limiter.enabled else '⚠️  Disabled (Redis unavailable)'}")
         logger.info("   - Multi-currency: ✅ Active (daily rate updates at 2 AM UTC)")
+        logger.info("   - Report scheduling: ✅ Active (checks every minute for due reports)")
         
     except ValueError as e:
         logger.error(f"❌ Security validation failed: {e}")
