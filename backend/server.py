@@ -27,9 +27,18 @@ app = FastAPI(
 )
 
 # CORS middleware - MUST be added before mounting and including routers
+# Get allowed origins from environment variable (comma-separated)
+CORS_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "*")
+if CORS_ORIGINS == "*":
+    logger.warning("⚠️  CORS configured to allow ALL origins (*) - Not recommended for production")
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [origin.strip() for origin in CORS_ORIGINS.split(",")]
+    logger.info(f"✅ CORS configured for origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
