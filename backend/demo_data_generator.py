@@ -2,6 +2,22 @@
 Demo Data Generator for AFMS
 Generates realistic sample data including actual PDF files, images, and documents
 Enhanced with multi-currency support and comprehensive business scenarios
+
+ENHANCED VERSION (January 2026):
+- Generates ~1000 transactions over 12 months (rolling from today)
+- Generates ~300 documents (receipts, invoices, statements, etc.)
+- Creates 12 monthly bank reconciliation sessions with CSV files
+- Comprehensive reconciliation scenarios:
+  * Matched transactions (70%)
+  * Outstanding checks/deposits (15%)
+  * Bank-only items - fees, interest (10%)
+  * Partial matches requiring manual review (5%)
+- Enhanced module coverage:
+  * Accounts Receivable (30-40 invoices)
+  * Accounts Payable (25-35 bills)
+  * Payment transactions (40-60 records)
+  * Bank connections (2-4 connections)
+- Realistic business patterns with monthly and quarterly cycles
 """
 import os
 import uuid
