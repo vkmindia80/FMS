@@ -38,6 +38,8 @@ class ReportPeriod(str, Enum):
     CUSTOM = "custom"
 
 class ProfitLossReport(BaseModel):
+    model_config = {"json_encoders": {Decimal: float}}
+    
     report_id: str
     company_id: str
     report_name: str
