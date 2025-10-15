@@ -1156,8 +1156,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         is_paid = random.random() < 0.6  # 60% paid
         paid_amount = amount if is_paid else (amount * random.uniform(0, 0.5) if random.random() < 0.3 else 0)
         
+        invoice_id = str(uuid.uuid4())
         invoice = {
-            'id': str(uuid.uuid4()),
+            '_id': invoice_id,
+            'id': invoice_id,
             'invoice_number': f"INV-{invoice_date.strftime('%Y%m')}-{random.randint(1000, 9999)}",
             'company_id': company_id,
             'customer_name': fake.company(),
