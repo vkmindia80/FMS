@@ -1243,6 +1243,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         
         bank_connection = {
             'id': str(uuid.uuid4()),
+            'connection_id': f"conn_{uuid.uuid4().hex[:16]}",  # Add unique connection_id
             'company_id': company_id,
             'user_id': user_id,
             'institution_name': random.choice([
