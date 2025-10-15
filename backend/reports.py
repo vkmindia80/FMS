@@ -373,8 +373,9 @@ async def generate_general_ledger(
         
         for txn in transactions:
             for entry in txn.get("journal_entries", []):
-                debit = Decimal(str(entry.get("debit_amount", 0)))
-                credit = Decimal(str(entry.get("credit_amount", 0)))
+                # Support both debit_amount/credit_amount and debit/credit field names
+                debit = Decimal(str(entry.get("debit_amount") or entry.get("debit", 0)))
+                credit = Decimal(str(entry.get("credit_amount") or entry.get("credit", 0)))
                 
                 # Update running balance based on account category
                 if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
