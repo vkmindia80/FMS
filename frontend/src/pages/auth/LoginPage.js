@@ -83,15 +83,23 @@ const LoginPage = () => {
   };
 
   const handleDemoLogin = async () => {
-    // Fill the form data first
-    setFormData(prev => ({
-      ...prev,
-      email: DEMO_CREDENTIALS.email,
-      password: DEMO_CREDENTIALS.password
-    }));
-    
-    // Automatically submit the login
-    await login(DEMO_CREDENTIALS.email, DEMO_CREDENTIALS.password);
+    try {
+      // First, ensure demo user exists
+      await authAPI.createDemoUser();
+      
+      // Fill the form data
+      setFormData(prev => ({
+        ...prev,
+        email: DEMO_CREDENTIALS.email,
+        password: DEMO_CREDENTIALS.password
+      }));
+      
+      // Automatically submit the login
+      await login(DEMO_CREDENTIALS.email, DEMO_CREDENTIALS.password);
+    } catch (error) {
+      console.error('Error in demo login:', error);
+      toast.error('Failed to initialize demo login. Please try again.');
+    }
   };
 
   const handleSocialLogin = (provider) => {
