@@ -1313,8 +1313,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     logger.info(f"  - Accounts: {len(created_accounts)}")
     logger.info(f"  - Transactions: {transaction_count}")
     logger.info(f"  - Documents: {document_count + additional_docs}")
-    logger.info(f"  - Reconciliation Sessions: {reconciliation_count}")
-    logger.info(f"  - Invoices: {invoice_count}")
+    logger.info(f"  - Reconciliation Sessions: {reconciliation_count} (12 monthly sessions)")
+    logger.info(f"  - Bank Statement Files: {len(bank_statement_files)} CSV files")
+    logger.info(f"  - Invoices (AR): {invoice_count}")
+    logger.info(f"  - Bills (AP): {bills_count}")
     logger.info(f"  - Payment Transactions: {payment_count}")
     logger.info(f"  - Bank Connections: {bank_connection_count}")
     logger.info(f"  - Currencies: {list(set(a['currency_code'] for a in created_accounts))}")
@@ -1326,24 +1328,28 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         'transactions_created': transaction_count,
         'documents_created': document_count + additional_docs,
         'reconciliation_sessions_created': reconciliation_count,
+        'bank_statement_files_created': len(bank_statement_files),
         'invoices_created': invoice_count,
+        'bills_created': bills_count,
         'payment_transactions_created': payment_count,
         'bank_connections_created': bank_connection_count,
         'currencies_used': list(set(a['currency_code'] for a in created_accounts)),
         'date_range': {
             'start': start_date.isoformat(),
             'end': end_date.isoformat(),
-            'span_years': 3
+            'span_months': 12
         },
         'summary': {
             'accounts': len(created_accounts),
             'transactions': transaction_count,
             'documents': document_count + additional_docs,
             'reconciliation_sessions': reconciliation_count,
+            'bank_statement_files': bank_statement_files,
             'invoices': invoice_count,
+            'bills': bills_count,
             'payment_transactions': payment_count,
             'bank_connections': bank_connection_count,
-            'date_span_months': 36
+            'date_span_months': 12
         },
         'details': {
             'account_types': list(set(a['account_type'] for a in created_accounts)),
@@ -1351,11 +1357,14 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
             'features_covered': [
                 'Multi-currency accounts and transactions',
                 'Document upload and processing',
-                'Bank reconciliation sessions',
+                '12 monthly bank reconciliation sessions',
+                'Bank statement CSV files for import testing',
                 'Accounts receivable invoices',
+                'Accounts payable bills',
                 'Payment transactions',
                 'Bank connections',
-                '3 years of historical data'
+                'Varied reconciliation scenarios (matched, unmatched, outstanding, bank fees)',
+                '12 months of historical data (rolling)'
             ]
         }
     }
