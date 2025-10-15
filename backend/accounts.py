@@ -22,6 +22,8 @@ class AccountType(str, Enum):
     INVENTORY = "inventory"
     PREPAID_EXPENSES = "prepaid_expenses"
     FIXED_ASSETS = "fixed_assets"
+    EQUIPMENT = "equipment"
+    CURRENT_ASSET = "current_asset"
     OTHER_ASSETS = "other_assets"
     
     # Liabilities
@@ -29,6 +31,7 @@ class AccountType(str, Enum):
     CREDIT_CARD = "credit_card"
     SHORT_TERM_DEBT = "short_term_debt"
     LONG_TERM_DEBT = "long_term_debt"
+    LONG_TERM_LIABILITY = "long_term_liability"
     ACCRUED_EXPENSES = "accrued_expenses"
     OTHER_LIABILITIES = "other_liabilities"
     
@@ -50,6 +53,16 @@ class AccountType(str, Enum):
     INTEREST_EXPENSE = "interest_expense"
     TAX_EXPENSE = "tax_expense"
     OTHER_EXPENSES = "other_expenses"
+    OFFICE_SUPPLIES = "office_supplies"
+    TRAVEL = "travel"
+    UTILITIES = "utilities"
+    RENT = "rent"
+    INSURANCE = "insurance"
+    PROFESSIONAL_FEES = "professional_fees"
+    LEGAL_FEES = "legal_fees"
+    MARKETING = "marketing"
+    SOFTWARE = "software"
+    PAYROLL = "payroll"
 
 class AccountCategory(str, Enum):
     ASSETS = "assets"
