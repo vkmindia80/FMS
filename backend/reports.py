@@ -120,6 +120,8 @@ class CashFlowReport(BaseModel):
 
 
 class TrialBalanceReport(BaseModel):
+    model_config = {"json_encoders": {Decimal: float}}
+    
     report_id: str
     company_id: str
     report_name: str
@@ -132,6 +134,8 @@ class TrialBalanceReport(BaseModel):
     is_balanced: bool
 
 class GeneralLedgerReport(BaseModel):
+    model_config = {"json_encoders": {Decimal: float}}
+    
     report_id: str
     company_id: str
     report_name: str
