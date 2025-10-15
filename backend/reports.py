@@ -277,7 +277,66 @@ async def generate_general_ledger(
     account_ledgers = []
     
     for account in accounts:
-        # Get all transactions affecting this account
+        # Calculate opening balance (balance before period start)
+        account_category = AccountCategory(account.get("account_category", "assets"))
+        opening_balance_pipeline = [
+            {
+                "$match": {
+                    "company_id": current_user["company_id"],
+                    "transaction_date": {"$lt": period_start},
+                    "status": {"$ne": "void"},
+                    "journal_entries.account_id": account["_id"]
+                }
+            },
+            {
+                "$unwind": "$journal_entries"
+            },
+            {
+                "$match": {
+                    "journal_entries.account_id": account["_id"]
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_debits": {
+                        "$sum": {
+                            "$ifNull": [
+                                "$journal_entries.debit_amount",
+                                0
+                            ]
+                        }
+                    },
+                    "total_credits": {
+                        "$sum": {
+                            "$ifNull": [
+                                "$journal_entries.credit_amount",
+                                0
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+        
+        opening_result = await transactions_collection.aggregate(opening_balance_pipeline).to_list(length=1)
+        
+        # Calculate opening balance based on account category
+        if opening_result:
+            opening_debits = Decimal(str(opening_result[0]["total_debits"]))
+            opening_credits = Decimal(str(opening_result[0]["total_credits"]))
+            
+            if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
+                opening_balance = opening_debits - opening_credits
+            else:
+                opening_balance = opening_credits - opening_debits
+            
+            # Add account's opening balance from account setup
+            opening_balance += Decimal(str(account.get("opening_balance", 0)))
+        else:
+            opening_balance = Decimal(str(account.get("opening_balance", 0)))
+        
+        # Get all transactions affecting this account in the period
         pipeline = [
             {
                 "$match": {
@@ -308,8 +367,8 @@ async def generate_general_ledger(
         
         transactions = await transactions_collection.aggregate(pipeline).to_list(length=None)
         
-        # Calculate running balance
-        running_balance = Decimal("0")
+        # Calculate running balance starting from opening balance
+        running_balance = opening_balance
         transaction_list = []
         
         for txn in transactions:
@@ -318,7 +377,6 @@ async def generate_general_ledger(
                 credit = Decimal(str(entry.get("credit_amount", 0)))
                 
                 # Update running balance based on account category
-                account_category = AccountCategory(account.get("account_category", "assets"))
                 if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
                     running_balance += (debit - credit)
                 else:
@@ -328,19 +386,20 @@ async def generate_general_ledger(
                     "date": txn["transaction_date"].strftime('%Y-%m-%d') if isinstance(txn["transaction_date"], datetime) else str(txn["transaction_date"]),
                     "description": entry.get("description", txn.get("description", "")),
                     "reference": txn.get("reference_number", ""),
-                    "debit": debit,
-                    "credit": credit,
-                    "balance": running_balance
+                    "debit": float(debit),
+                    "credit": float(credit),
+                    "balance": float(running_balance)
                 })
         
-        if transaction_list:  # Only include accounts with transactions
+        # Only include accounts with opening balance or transactions
+        if opening_balance != 0 or transaction_list:
             account_ledgers.append({
                 "account_id": account["_id"],
                 "account_number": account.get("account_number", ""),
                 "account_name": account["name"],
                 "account_type": account["account_type"],
-                "opening_balance": Decimal("0"),  # Simplified - would need to calculate from period start
-                "closing_balance": running_balance,
+                "opening_balance": float(opening_balance),
+                "closing_balance": float(running_balance),
                 "transactions": transaction_list
             })
     
