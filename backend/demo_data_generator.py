@@ -1238,7 +1238,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     
     # Generate 2-4 bank connections
     for i in range(random.randint(2, 4)):
-        connection_date = fake.date_between(start_date=start_date, end_date=end_date)
+        connection_date_obj = fake.date_between(start_date=start_date, end_date=end_date)
+        connection_date = datetime.combine(connection_date_obj, datetime.min.time()) if isinstance(connection_date_obj, type(start_date.date())) else connection_date_obj
         
         bank_connection = {
             'id': str(uuid.uuid4()),
