@@ -642,12 +642,12 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         'revenue', 'service_income', 'other_income'
     ]]
     
-    # Step 2: Generate transactions over 3 years
-    logger.info("Generating 300+ transactions over 3 years...")
+    # Step 2: Generate transactions over 12 months
+    logger.info("Generating 1000+ transactions over 12 months...")
     created_transactions = []
     created_documents = []
     
-    start_date = datetime.now() - timedelta(days=365*2)  # 2 years ago
+    start_date = datetime.now() - timedelta(days=365)  # 12 months ago
     end_date = datetime.now()
     
     transaction_count = 0
