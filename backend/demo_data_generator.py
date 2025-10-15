@@ -984,8 +984,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     from database import invoices_collection
     invoice_count = 0
     
-    # Generate 10-15 invoices
-    for i in range(random.randint(10, 15)):
+    # Generate 15-20 invoices
+    for i in range(random.randint(15, 20)):
         invoice_date = fake.date_between(start_date=start_date, end_date=end_date)
         due_date = invoice_date + timedelta(days=30)
         amount = random.uniform(1000, 25000)
@@ -1010,7 +1010,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                         'Software Development',
                         'Monthly Retainer',
                         'Project Milestone',
-                        'Technical Support'
+                        'Technical Support',
+                        'Annual License Fee',
+                        'Professional Services',
+                        'Implementation Services'
                     ]),
                     'quantity': random.randint(1, 100),
                     'unit_price': round(amount / random.randint(1, 10), 2),
@@ -1032,6 +1035,88 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         
         await invoices_collection.insert_one(invoice)
         invoice_count += 1
+    
+    # ==================== ENHANCED: Generate Payment Transactions ====================
+    logger.info("Generating payment transactions...")
+    from database import payment_transactions_collection
+    payment_count = 0
+    
+    # Generate 15-25 payment transactions
+    for i in range(random.randint(15, 25)):
+        payment_date = fake.date_between(start_date=start_date, end_date=end_date)
+        amount = random.uniform(100, 10000)
+        
+        payment_status = random.choices(
+            ['completed', 'pending', 'failed', 'refunded'],
+            weights=[0.7, 0.15, 0.1, 0.05]
+        )[0]
+        
+        payment = {
+            'id': str(uuid.uuid4()),
+            'company_id': company_id,
+            'transaction_id': f"txn_{uuid.uuid4().hex[:16]}",
+            'amount': round(amount, 2),
+            'currency': random.choice(['USD', 'EUR', 'GBP']),
+            'status': payment_status,
+            'payment_method': random.choice(['credit_card', 'debit_card', 'bank_transfer', 'wire_transfer']),
+            'gateway': random.choice(['stripe', 'paypal', 'square', 'manual']),
+            'customer_name': fake.name(),
+            'customer_email': fake.email(),
+            'description': random.choice([
+                'Invoice payment',
+                'Service payment',
+                'Subscription renewal',
+                'One-time payment',
+                'Consulting fee'
+            ]),
+            'metadata': {
+                'invoice_id': f"INV-{random.randint(1000, 9999)}",
+                'customer_id': f"cust_{uuid.uuid4().hex[:8]}"
+            },
+            'created_at': payment_date,
+            'updated_at': payment_date
+        }
+        
+        await payment_transactions_collection.insert_one(payment)
+        payment_count += 1
+    
+    # ==================== ENHANCED: Generate Bank Connections ====================
+    logger.info("Generating bank connection records...")
+    from database import bank_connections_collection
+    bank_connection_count = 0
+    
+    # Generate 2-4 bank connections
+    for i in range(random.randint(2, 4)):
+        connection_date = fake.date_between(start_date=start_date, end_date=end_date)
+        
+        bank_connection = {
+            'id': str(uuid.uuid4()),
+            'company_id': company_id,
+            'user_id': user_id,
+            'institution_name': random.choice([
+                'Chase Bank',
+                'Bank of America',
+                'Wells Fargo',
+                'Citibank',
+                'Capital One'
+            ]),
+            'institution_id': f"ins_{uuid.uuid4().hex[:12]}",
+            'account_name': random.choice([
+                'Business Checking',
+                'Business Savings',
+                'Money Market Account',
+                'Line of Credit'
+            ]),
+            'account_mask': str(random.randint(1000, 9999)),
+            'account_type': random.choice(['checking', 'savings', 'credit']),
+            'status': random.choice(['active', 'active', 'inactive']),
+            'last_synced': connection_date + timedelta(days=random.randint(0, 30)),
+            'created_at': connection_date,
+            'updated_at': connection_date
+        }
+        
+        await bank_connections_collection.insert_one(bank_connection)
+        bank_connection_count += 1
     
     logger.info(f"✅ Enhanced demo data generation complete!")
     logger.info(f"📊 Summary:")
