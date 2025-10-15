@@ -303,7 +303,7 @@ async def generate_general_ledger(
                         "$sum": {
                             "$ifNull": [
                                 "$journal_entries.debit_amount",
-                                0
+                                {"$ifNull": ["$journal_entries.debit", 0]}
                             ]
                         }
                     },
@@ -311,7 +311,7 @@ async def generate_general_ledger(
                         "$sum": {
                             "$ifNull": [
                                 "$journal_entries.credit_amount",
-                                0
+                                {"$ifNull": ["$journal_entries.credit", 0]}
                             ]
                         }
                     }
