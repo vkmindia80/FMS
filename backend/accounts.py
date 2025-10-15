@@ -109,12 +109,14 @@ def get_account_category(account_type: AccountType) -> AccountCategory:
         AccountType.CASH, AccountType.CHECKING, AccountType.SAVINGS,
         AccountType.ACCOUNTS_RECEIVABLE, AccountType.INVENTORY,
         AccountType.PREPAID_EXPENSES, AccountType.FIXED_ASSETS,
+        AccountType.EQUIPMENT, AccountType.CURRENT_ASSET,
         AccountType.OTHER_ASSETS
     }
     
     liability_types = {
         AccountType.ACCOUNTS_PAYABLE, AccountType.CREDIT_CARD,
         AccountType.SHORT_TERM_DEBT, AccountType.LONG_TERM_DEBT,
+        AccountType.LONG_TERM_LIABILITY,
         AccountType.ACCRUED_EXPENSES, AccountType.OTHER_LIABILITIES
     }
     
@@ -131,7 +133,11 @@ def get_account_category(account_type: AccountType) -> AccountCategory:
     expense_types = {
         AccountType.COST_OF_GOODS_SOLD, AccountType.OPERATING_EXPENSES,
         AccountType.ADMINISTRATIVE_EXPENSES, AccountType.INTEREST_EXPENSE,
-        AccountType.TAX_EXPENSE, AccountType.OTHER_EXPENSES
+        AccountType.TAX_EXPENSE, AccountType.OTHER_EXPENSES,
+        AccountType.OFFICE_SUPPLIES, AccountType.TRAVEL, AccountType.UTILITIES,
+        AccountType.RENT, AccountType.INSURANCE, AccountType.PROFESSIONAL_FEES,
+        AccountType.LEGAL_FEES, AccountType.MARKETING, AccountType.SOFTWARE,
+        AccountType.PAYROLL
     }
     
     if account_type in asset_types:
