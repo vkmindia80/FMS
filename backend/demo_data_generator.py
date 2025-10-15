@@ -825,7 +825,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
             )
             
             document = {
-                'id': str(uuid.uuid4()),
+                '_id': doc_id,
+                'id': doc_id,
                 'company_id': company_id,
                 'filename': filename,
                 'file_path': file_path,
