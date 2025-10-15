@@ -170,8 +170,23 @@ async def calculate_account_balance(account_id: str, company_id: str) -> Decimal
         {
             "$group": {
                 "_id": None,
-                "total_debits": {"$sum": "$journal_entries.debit_amount"},
-                "total_credits": {"$sum": "$journal_entries.credit_amount"}
+                # Support both old field names (debit/credit) and new field names (debit_amount/credit_amount)
+                "total_debits": {
+                    "$sum": {
+                        "$ifNull": [
+                            "$journal_entries.debit_amount",
+                            {"$ifNull": ["$journal_entries.debit", 0]}
+                        ]
+                    }
+                },
+                "total_credits": {
+                    "$sum": {
+                        "$ifNull": [
+                            "$journal_entries.credit_amount",
+                            {"$ifNull": ["$journal_entries.credit", 0]}
+                        ]
+                    }
+                }
             }
         }
     ]
