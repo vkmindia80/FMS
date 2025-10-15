@@ -694,6 +694,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                     'is_reconciled': random.choice([True, False]),
                     'created_by': user_id,
                     'created_at': current_date,
+                    'from_account_id': checking_acc['id'],  # Added for reconciliation matching
                     'journal_entries': [
                         {'account_id': checking_acc['id'], 'debit': amount, 'credit': 0},
                         {'account_id': revenue_acc['id'], 'debit': 0, 'credit': amount}
