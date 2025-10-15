@@ -22,7 +22,7 @@ const ReconciliationPage = () => {
 
   const fetchAccounts = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${BACKEND_URL}/api/accounts/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
