@@ -578,7 +578,10 @@ const DashboardPage = () => {
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
-          <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors">
+          <button 
+            onClick={() => navigate('/transactions')}
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors"
+          >
             View all →
           </button>
         </div>
