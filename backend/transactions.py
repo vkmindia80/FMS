@@ -31,6 +31,8 @@ class TransactionCategory(str, Enum):
     BUSINESS_INCOME = "business_income"
     INVESTMENT_INCOME = "investment_income"
     OTHER_INCOME = "other_income"
+    SALES_REVENUE = "sales_revenue"
+    SERVICE_INCOME = "service_income"
     
     # Expense categories
     OFFICE_SUPPLIES = "office_supplies"
@@ -40,11 +42,17 @@ class TransactionCategory(str, Enum):
     RENT = "rent"
     INSURANCE = "insurance"
     PROFESSIONAL_SERVICES = "professional_services"
+    PROFESSIONAL_FEES = "professional_fees"
+    LEGAL_FEES = "legal_fees"
+    CONSULTING = "consulting"
     MARKETING = "marketing"
     EQUIPMENT = "equipment"
     SOFTWARE = "software"
     TAXES = "taxes"
     INTEREST = "interest"
+    LODGING = "lodging"
+    TRAINING = "training"
+    TRANSPORTATION = "transportation"
     OTHER_EXPENSE = "other_expense"
 
 class JournalEntry(BaseModel):
