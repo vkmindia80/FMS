@@ -631,8 +631,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     ]
     
     for acc_def in account_definitions:
+        account_id = str(uuid.uuid4())
         account = {
-            'id': str(uuid.uuid4()),
+            '_id': account_id,
+            'id': account_id,
             'company_id': company_id,
             'name': acc_def['name'],
             'account_type': acc_def['type'],
