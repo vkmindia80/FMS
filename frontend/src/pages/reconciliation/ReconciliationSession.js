@@ -128,7 +128,7 @@ const ReconciliationSession = ({ session, onClose, onUpdate, onError, onSuccess 
 
   const loadReport = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${BACKEND_URL}/api/reconciliation/report/${session._id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
