@@ -505,8 +505,22 @@ async def generate_profit_loss_report(
             {
                 "$group": {
                     "_id": None,
-                    "total_credits": {"$sum": "$journal_entries.credit_amount"},
-                    "total_debits": {"$sum": "$journal_entries.debit_amount"}
+                    "total_credits": {
+                        "$sum": {
+                            "$ifNull": [
+                                "$journal_entries.credit_amount",
+                                {"$ifNull": ["$journal_entries.credit", 0]}
+                            ]
+                        }
+                    },
+                    "total_debits": {
+                        "$sum": {
+                            "$ifNull": [
+                                "$journal_entries.debit_amount",
+                                {"$ifNull": ["$journal_entries.debit", 0]}
+                            ]
+                        }
+                    }
                 }
             }
         ]
