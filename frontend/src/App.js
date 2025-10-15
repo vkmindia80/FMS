@@ -14,7 +14,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 import ReportSchedulingPage from './pages/reports/ReportSchedulingPage';
 import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
 import ExchangeRatesPage from './pages/admin/ExchangeRatesPage';
-import ReportSchedulingPage from './pages/admin/ReportSchedulingPage';
+import ReportSchedulingManagementPage from './pages/admin/ReportSchedulingManagementPage';
 import BankingPage from './pages/banking/BankingPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import IntegrationPage from './pages/integration/IntegrationPage';
