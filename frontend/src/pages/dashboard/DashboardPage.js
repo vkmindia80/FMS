@@ -99,7 +99,7 @@ const DashboardPage = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/auth/generate-demo-data`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/auth/generate-enhanced-demo-data`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal
