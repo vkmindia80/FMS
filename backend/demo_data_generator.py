@@ -1123,8 +1123,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                 'id': doc_id,
                 'company_id': company_id,
                 'filename': filename,
+                'original_filename': filename,  # Added required field
                 'file_path': file_path,
                 'file_type': doc_type,
+                'document_type': doc_type,  # Added required field matching DocumentType enum
                 'file_size': os.path.getsize(file_path),
                 'upload_date': doc_date,
                 'processing_status': random.choice(['completed', 'completed', 'processing', 'review_required']),
