@@ -42,7 +42,7 @@ const ReconciliationPage = () => {
 
   const fetchSessions = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${BACKEND_URL}/api/reconciliation/sessions`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
