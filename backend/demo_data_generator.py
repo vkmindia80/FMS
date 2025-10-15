@@ -1404,7 +1404,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         },
         'details': {
             'account_types': list(set(a['account_type'] for a in created_accounts)),
-            'document_types': ['receipt', 'invoice', 'purchase_order', 'bank_statement', 'expense_report', 'contract'],
+            'document_types': ['receipt', 'invoice', 'bank_statement', 'other (purchase_order, expense_report, contract)'],
             'features_covered': [
                 'Multi-currency accounts and transactions',
                 'Document upload and processing',
