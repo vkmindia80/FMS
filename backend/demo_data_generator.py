@@ -566,16 +566,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     
     logger.info(f"Starting enhanced demo data generation for company {company_id}")
     
-    # Currency exchange rates (approximate)
-    exchange_rates = {
-        'USD': 1.0,
-        'EUR': 0.85,
-        'GBP': 0.73,
-        'JPY': 110.0,
-        'CAD': 1.25,
-        'AUD': 1.35,
-        'CHF': 0.92
-    }
+    # Multi-currency exchange rates (for reference)
+    # Note: Actual rates will be fetched from currency service
     
     # Step 1: Create multi-currency accounts
     logger.info("Creating multi-currency accounts...")
