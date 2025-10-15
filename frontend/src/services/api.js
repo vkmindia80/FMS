@@ -1,13 +1,11 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Use window location to construct backend URL dynamically
-// This ensures protocol (http/https) matches the current page
-const protocol = typeof window !== 'undefined' ? window.location.protocol : 'https:';
-const hostname = typeof window !== 'undefined' ? window.location.hostname : 'link-resolver-2.preview.emergentagent.com';
-const BACKEND_URL = `${protocol}//${hostname}`;
+// Use REACT_APP_BACKEND_URL from environment variables
+// This is configured in .env file and properly mapped by Kubernetes
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
-// Create axios instance with dynamically constructed URL
+// Create axios instance with backend URL from environment
 const api = axios.create({
   baseURL: `${BACKEND_URL}/api`,
   timeout: 30000,
