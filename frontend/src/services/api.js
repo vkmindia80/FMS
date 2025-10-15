@@ -96,6 +96,9 @@ export const authAPI = {
   refreshToken: (refreshToken) =>
     api.post('/auth/refresh', { refresh_token: refreshToken }).then((res) => res.data),
   
+  createDemoUser: () =>
+    api.post('/auth/create-demo-user').then((res) => res.data),
+  
   generateDemoData: () =>
     api.post('/auth/generate-enhanced-demo-data', {}, { timeout: 120000 }).then((res) => res.data),
 };
