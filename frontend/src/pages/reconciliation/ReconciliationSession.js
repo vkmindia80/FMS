@@ -97,7 +97,7 @@ const ReconciliationSession = ({ session, onClose, onUpdate, onError, onSuccess 
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${BACKEND_URL}/api/reconciliation/complete`, {
         method: 'POST',
         headers: {
