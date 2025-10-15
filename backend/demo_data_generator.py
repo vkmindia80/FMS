@@ -690,12 +690,12 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         
         current_date += timedelta(days=30)  # Next month
     
-    # Generate expense transactions (more frequent)
+    # Generate expense transactions (more frequent - targeting ~850 expenses)
     current_date = start_date
     while current_date < end_date:
-        # Weekly expenses
+        # More frequent expenses - 18-25 per week to reach ~1000 total
         for week in range(4):
-            num_expenses = random.randint(3, 8)  # 3-8 expenses per week
+            num_expenses = random.randint(18, 25)  # Increased from 3-8
             
             for _ in range(num_expenses):
                 # Select random business scenario
@@ -730,6 +730,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                     'is_reconciled': random.choice([True, False, False]),  # Some reconciled
                     'created_by': user_id,
                     'created_at': trans_date,
+                    'from_account_id': checking_acc['id'],  # Added for reconciliation matching
                     'journal_entries': [
                         {'account_id': expense_acc['id'], 'debit': amount, 'credit': 0},
                         {'account_id': checking_acc['id'], 'debit': 0, 'credit': amount}
@@ -740,8 +741,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                 created_transactions.append(transaction)
                 transaction_count += 1
                 
-                # Generate document for some transactions (40% chance)
-                if random.random() < 0.4 and document_count < 100:
+                # Generate document for more transactions (30% chance, targeting ~300 docs)
+                if random.random() < 0.3 and document_count < 250:
                     doc_type = random.choice(['receipt', 'invoice', 'statement'])
                     
                     try:
