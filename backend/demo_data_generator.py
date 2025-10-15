@@ -697,18 +697,233 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         
         statement_date += timedelta(days=30)  # Monthly statements
     
-    logger.info(f"Enhanced demo data generation complete!")
-    logger.info(f"Created {len(created_accounts)} accounts")
-    logger.info(f"Created {transaction_count} transactions")
-    logger.info(f"Created {document_count} documents")
+    # ==================== ENHANCED: Generate Reconciliation Data ====================
+    logger.info("Generating reconciliation sessions and bank statement data...")
+    reconciliation_count = 0
+    
+    from database import reconciliation_sessions_collection, reconciliation_matches_collection
+    
+    # Generate 3-5 reconciliation sessions for recent months
+    num_sessions = random.randint(3, 5)
+    recon_start_date = end_date - timedelta(days=150)  # Last 5 months
+    
+    for i in range(num_sessions):
+        session_date = recon_start_date + timedelta(days=30 * i)
+        
+        # Get transactions from that month for matching
+        month_start = session_date.replace(day=1)
+        month_end = (month_start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        
+        month_transactions = [
+            t for t in created_transactions 
+            if month_start <= t['transaction_date'] <= month_end 
+            and t['from_account_id'] == checking_acc['id']
+        ]
+        
+        if len(month_transactions) < 3:
+            continue
+        
+        # Create bank entries (simulate bank statement)
+        bank_entries = []
+        for idx, trans in enumerate(month_transactions[:20]):  # Max 20 per session
+            # Add some variation to simulate real bank data
+            amount_variation = trans['amount'] + random.uniform(-0.05, 0.05)
+            date_variation = trans['transaction_date'] + timedelta(days=random.randint(-1, 1))
+            
+            bank_entry = {
+                'id': f"bank_{uuid.uuid4().hex[:12]}",
+                'date': date_variation.strftime('%Y-%m-%d'),
+                'description': trans['description'][:50],
+                'amount': -round(amount_variation, 2),  # Negative for expenses
+                'balance': 10000 + random.uniform(-5000, 5000),
+                'reference': f"REF{random.randint(10000, 99999)}",
+                'matched': random.random() < 0.8,  # 80% matched
+                'matched_transaction_id': trans['id'] if random.random() < 0.8 else None
+            }
+            bank_entries.append(bank_entry)
+        
+        # Create reconciliation session
+        session_id = str(uuid.uuid4())
+        opening_balance = 15000.00 + random.uniform(-2000, 2000)
+        closing_balance = opening_balance + sum(entry['amount'] for entry in bank_entries)
+        
+        recon_session = {
+            '_id': session_id,
+            'company_id': company_id,
+            'user_id': user_id,
+            'account_id': checking_acc['id'],
+            'account_name': checking_acc['name'],
+            'statement_date': month_end,
+            'opening_balance': round(opening_balance, 2),
+            'closing_balance': round(closing_balance, 2),
+            'auto_match': True,
+            'filename': f"bank_statement_{session_date.strftime('%Y_%m')}.csv",
+            'status': random.choice(['completed', 'in_progress', 'completed']),
+            'bank_entries': bank_entries,
+            'total_bank_entries': len(bank_entries),
+            'matched_count': sum(1 for e in bank_entries if e['matched']),
+            'unmatched_count': sum(1 for e in bank_entries if not e['matched']),
+            'created_at': session_date,
+            'updated_at': session_date + timedelta(hours=2),
+            'completed_at': session_date + timedelta(hours=2) if random.random() < 0.7 else None,
+            'completed_by': user_id if random.random() < 0.7 else None,
+            'notes': f"Monthly reconciliation for {session_date.strftime('%B %Y')}"
+        }
+        
+        await reconciliation_sessions_collection.insert_one(recon_session)
+        reconciliation_count += 1
+        
+        # Create match records for matched entries
+        for entry in bank_entries:
+            if entry['matched'] and entry['matched_transaction_id']:
+                match_record = {
+                    '_id': str(uuid.uuid4()),
+                    'session_id': session_id,
+                    'bank_entry_id': entry['id'],
+                    'system_transaction_id': entry['matched_transaction_id'],
+                    'confidence_score': random.uniform(0.85, 0.99),
+                    'match_type': random.choice(['automatic', 'manual']),
+                    'matched_at': session_date + timedelta(hours=1),
+                    'matched_by': user_id
+                }
+                await reconciliation_matches_collection.insert_one(match_record)
+    
+    # ==================== ENHANCED: Generate More Document Variety ====================
+    logger.info("Generating additional document types...")
+    additional_docs = 0
+    
+    document_types = [
+        ('receipt', 'png', generate_sample_receipt_image),
+        ('invoice', 'pdf', generate_sample_invoice_pdf),
+        ('contract', 'pdf', generate_sample_bank_statement_pdf),
+        ('tax_document', 'pdf', generate_sample_invoice_pdf),
+    ]
+    
+    # Generate 20 more diverse documents
+    for i in range(20):
+        doc_type, extension, generator_func = random.choice(document_types)
+        doc_date = fake.date_between(start_date=start_date, end_date=end_date)
+        amount = random.uniform(100, 5000)
+        vendor = fake.company()
+        
+        try:
+            if doc_type == 'receipt':
+                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+                file_path = generator_func(filename, amount, vendor, doc_date)
+            elif doc_type in ['invoice', 'tax_document']:
+                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+                file_path = generator_func(filename, amount, vendor, doc_date)
+            else:  # contract, bank statement
+                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+                file_path = generator_func(filename, "Demo Company Inc", doc_date)
+            
+            document = {
+                'id': str(uuid.uuid4()),
+                'company_id': company_id,
+                'filename': filename,
+                'file_path': file_path,
+                'file_type': doc_type,
+                'file_size': os.path.getsize(file_path),
+                'upload_date': doc_date,
+                'processing_status': random.choice(['completed', 'completed', 'processing', 'review_required']),
+                'confidence_score': random.uniform(0.75, 0.99),
+                'extracted_data': {
+                    'amount': amount,
+                    'vendor': vendor,
+                    'date': doc_date.isoformat(),
+                    'category': random.choice(['office_supplies', 'utilities', 'rent', 'software'])
+                },
+                'uploaded_by': user_id,
+                'created_at': doc_date,
+                'tags': random.sample(['important', 'tax', 'recurring', 'archived', 'pending_review'], k=random.randint(0, 2))
+            }
+            
+            await documents_collection.insert_one(document)
+            additional_docs += 1
+            
+        except Exception as e:
+            logger.warning(f"Failed to generate additional document: {e}")
+    
+    # ==================== ENHANCED: Generate Invoices for Receivables ====================
+    logger.info("Generating receivable invoices...")
+    from database import invoices_collection
+    invoice_count = 0
+    
+    # Generate 10-15 invoices
+    for i in range(random.randint(10, 15)):
+        invoice_date = fake.date_between(start_date=start_date, end_date=end_date)
+        due_date = invoice_date + timedelta(days=30)
+        amount = random.uniform(1000, 25000)
+        
+        # Determine if paid
+        is_paid = random.random() < 0.6  # 60% paid
+        paid_amount = amount if is_paid else (amount * random.uniform(0, 0.5) if random.random() < 0.3 else 0)
+        
+        invoice = {
+            'id': str(uuid.uuid4()),
+            'invoice_number': f"INV-{invoice_date.strftime('%Y%m')}-{random.randint(1000, 9999)}",
+            'company_id': company_id,
+            'customer_name': fake.company(),
+            'customer_email': fake.email(),
+            'issue_date': invoice_date,
+            'due_date': due_date,
+            'currency': random.choice(['USD', 'EUR', 'GBP']),
+            'line_items': [
+                {
+                    'description': random.choice([
+                        'Consulting Services',
+                        'Software Development',
+                        'Monthly Retainer',
+                        'Project Milestone',
+                        'Technical Support'
+                    ]),
+                    'quantity': random.randint(1, 100),
+                    'unit_price': round(amount / random.randint(1, 10), 2),
+                    'amount': round(amount, 2)
+                }
+            ],
+            'subtotal': round(amount, 2),
+            'tax_rate': 0.0,
+            'tax_amount': 0.0,
+            'total_amount': round(amount, 2),
+            'amount_paid': round(paid_amount, 2),
+            'amount_due': round(amount - paid_amount, 2),
+            'status': 'paid' if is_paid else ('partial' if paid_amount > 0 else 'outstanding'),
+            'notes': fake.sentence(),
+            'created_by': user_id,
+            'created_at': invoice_date,
+            'updated_at': invoice_date
+        }
+        
+        await invoices_collection.insert_one(invoice)
+        invoice_count += 1
+    
+    logger.info(f"✅ Enhanced demo data generation complete!")
+    logger.info(f"📊 Summary:")
+    logger.info(f"  - Accounts: {len(created_accounts)}")
+    logger.info(f"  - Transactions: {transaction_count}")
+    logger.info(f"  - Documents: {document_count + additional_docs}")
+    logger.info(f"  - Reconciliation Sessions: {reconciliation_count}")
+    logger.info(f"  - Invoices: {invoice_count}")
+    logger.info(f"  - Currencies: {list(set(a['currency_code'] for a in created_accounts))}")
     
     return {
         'accounts_created': len(created_accounts),
         'transactions_created': transaction_count,
-        'documents_created': document_count,
+        'documents_created': document_count + additional_docs,
+        'reconciliation_sessions_created': reconciliation_count,
+        'invoices_created': invoice_count,
         'currencies_used': list(set(a['currency_code'] for a in created_accounts)),
         'date_range': {
             'start': start_date.isoformat(),
             'end': end_date.isoformat()
+        },
+        'summary': {
+            'accounts': len(created_accounts),
+            'transactions': transaction_count,
+            'documents': document_count + additional_docs,
+            'reconciliation_sessions': reconciliation_count,
+            'invoices': invoice_count,
+            'date_span_months': 24
         }
     }
