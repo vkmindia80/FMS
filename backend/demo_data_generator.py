@@ -195,7 +195,7 @@ def generate_sample_invoice_pdf(filename: str, amount: float, vendor: str, date:
     styles = getSampleStyleSheet()
     
     # Title
-    title = Paragraph(f"<b><font size=24>INVOICE</font></b>", styles['Title'])
+    title = Paragraph("<b><font size=24>INVOICE</font></b>", styles['Title'])
     story.append(title)
     story.append(Spacer(1, 0.3 * inch))
     
@@ -302,7 +302,7 @@ def generate_sample_bank_statement_pdf(filename: str, company_name: str, date: d
     styles = getSampleStyleSheet()
     
     # Title
-    title = Paragraph(f"<b><font size=20>BANK STATEMENT</font></b>", styles['Title'])
+    title = Paragraph("<b><font size=20>BANK STATEMENT</font></b>", styles['Title'])
     story.append(title)
     story.append(Spacer(1, 0.2 * inch))
     
@@ -403,7 +403,7 @@ def generate_purchase_order_pdf(filename: str, amount: float, vendor: str, date:
     styles = getSampleStyleSheet()
     
     # Title
-    title = Paragraph(f"<b><font size=24>PURCHASE ORDER</font></b>", styles['Title'])
+    title = Paragraph("<b><font size=24>PURCHASE ORDER</font></b>", styles['Title'])
     story.append(title)
     story.append(Spacer(1, 0.2 * inch))
     
@@ -1118,8 +1118,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         await bank_connections_collection.insert_one(bank_connection)
         bank_connection_count += 1
     
-    logger.info(f"✅ Enhanced demo data generation complete!")
-    logger.info(f"📊 Summary:")
+    logger.info("✅ Enhanced demo data generation complete!")
+    logger.info("📊 Summary:")
     logger.info(f"  - Accounts: {len(created_accounts)}")
     logger.info(f"  - Transactions: {transaction_count}")
     logger.info(f"  - Documents: {document_count + additional_docs}")
