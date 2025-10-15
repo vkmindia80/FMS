@@ -826,77 +826,209 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         
         statement_date += timedelta(days=30)  # Monthly statements
     
-    # ==================== ENHANCED: Generate Reconciliation Data ====================
-    logger.info("Generating reconciliation sessions and bank statement data...")
+    # ==================== ENHANCED: Generate 12 Monthly Reconciliation Sessions ====================
+    logger.info("Generating 12 monthly reconciliation sessions with comprehensive bank statement data...")
     reconciliation_count = 0
+    bank_statement_files = []
     
     from database import reconciliation_sessions_collection, reconciliation_matches_collection
     
-    # Generate 3-5 reconciliation sessions for recent months
-    num_sessions = random.randint(3, 5)
-    recon_start_date = end_date - timedelta(days=150)  # Last 5 months
-    
-    for i in range(num_sessions):
-        session_date = recon_start_date + timedelta(days=30 * i)
+    # Generate 12 monthly reconciliation sessions (one for each month)
+    for month_offset in range(12):
+        session_date = start_date + timedelta(days=30 * month_offset)
         
-        # Get transactions from that month for matching
+        # Get month boundaries
         month_start = session_date.replace(day=1)
-        month_end = (month_start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        if month_start.month == 12:
+            month_end = month_start.replace(year=month_start.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            month_end = month_start.replace(month=month_start.month + 1, day=1) - timedelta(days=1)
         
+        # Get checking account for this reconciliation
+        primary_checking = next((a for a in checking_accounts if 'Business Checking (USD)' in a['name']), checking_accounts[0])
+        
+        # Get transactions from that month
         month_transactions = [
             t for t in created_transactions 
             if month_start <= t['transaction_date'] <= month_end 
-            and t['from_account_id'] == checking_acc['id']
+            and t.get('from_account_id') == primary_checking['id']
+            and t['transaction_type'] in ['expense', 'income']
         ]
         
-        if len(month_transactions) < 3:
+        logger.info(f"Month {month_offset + 1}: Found {len(month_transactions)} transactions for reconciliation")
+        
+        if len(month_transactions) < 5:
+            logger.info(f"Skipping month {month_offset + 1} - not enough transactions")
             continue
         
-        # Create bank entries (simulate bank statement)
+        # Create bank entries with various scenarios
         bank_entries = []
-        for idx, trans in enumerate(month_transactions[:20]):  # Max 20 per session
-            # Add some variation to simulate real bank data
-            amount_variation = trans['amount'] + random.uniform(-0.05, 0.05)
-            date_variation = trans['transaction_date'] + timedelta(days=random.randint(-1, 1))
+        running_balance = 15000.00 + random.uniform(-3000, 3000)
+        
+        # Scenario 1: Matched transactions (70% of system transactions)
+        matched_trans = random.sample(month_transactions, min(int(len(month_transactions) * 0.7), len(month_transactions)))
+        
+        for trans in matched_trans:
+            # Add slight variation to simulate real bank data
+            amount_variation = random.uniform(-0.10, 0.10) if random.random() < 0.15 else 0
+            date_variation = random.randint(-2, 2) if random.random() < 0.20 else 0
+            
+            trans_amount = trans['amount']
+            bank_amount = -(trans_amount + amount_variation)  # Negative for expenses
+            
+            if trans['transaction_type'] == 'income':
+                bank_amount = abs(bank_amount)  # Positive for income
+            
+            running_balance += bank_amount
             
             bank_entry = {
                 'id': f"bank_{uuid.uuid4().hex[:12]}",
-                'date': date_variation.strftime('%Y-%m-%d'),
+                'date': (trans['transaction_date'] + timedelta(days=date_variation)).strftime('%Y-%m-%d'),
                 'description': trans['description'][:50],
-                'amount': -round(amount_variation, 2),  # Negative for expenses
-                'balance': 10000 + random.uniform(-5000, 5000),
+                'amount': round(bank_amount, 2),
+                'balance': round(running_balance, 2),
                 'reference': f"REF{random.randint(10000, 99999)}",
-                'matched': random.random() < 0.8,  # 80% matched
-                'matched_transaction_id': trans['id'] if random.random() < 0.8 else None
+                'matched': True,
+                'matched_transaction_id': trans['id']
             }
             bank_entries.append(bank_entry)
         
+        # Scenario 2: Outstanding checks/deposits (15% - in system but not in bank yet)
+        # These will be unmatched in bank statement
+        outstanding_trans = [t for t in month_transactions if t not in matched_trans][:int(len(month_transactions) * 0.15)]
+        
+        # Scenario 3: Bank-only items (10% - fees, interest, corrections)
+        num_bank_only = random.randint(2, 5)
+        for _ in range(num_bank_only):
+            bank_only_type = random.choice(['bank_fee', 'interest', 'service_charge', 'atm_fee'])
+            
+            if bank_only_type == 'interest':
+                bank_amount = random.uniform(5, 50)
+                description = "Interest Earned"
+            else:
+                bank_amount = -random.uniform(5, 35)
+                description = random.choice([
+                    "Monthly Service Charge",
+                    "Wire Transfer Fee",
+                    "ATM Fee",
+                    "Overdraft Fee",
+                    "Account Maintenance Fee"
+                ])
+            
+            running_balance += bank_amount
+            
+            bank_entry = {
+                'id': f"bank_{uuid.uuid4().hex[:12]}",
+                'date': (month_start + timedelta(days=random.randint(1, 28))).strftime('%Y-%m-%d'),
+                'description': description,
+                'amount': round(bank_amount, 2),
+                'balance': round(running_balance, 2),
+                'reference': f"REF{random.randint(10000, 99999)}",
+                'matched': False,
+                'matched_transaction_id': None
+            }
+            bank_entries.append(bank_entry)
+        
+        # Scenario 4: Partial matches (5% - similar but need manual review)
+        num_partial = min(int(len(month_transactions) * 0.05), 3)
+        partial_trans = outstanding_trans[:num_partial]
+        
+        for trans in partial_trans:
+            # Create slightly different entry
+            amount_variation = random.uniform(0.50, 5.00)
+            trans_amount = trans['amount']
+            bank_amount = -(trans_amount + amount_variation)
+            
+            if trans['transaction_type'] == 'income':
+                bank_amount = abs(bank_amount)
+            
+            running_balance += bank_amount
+            
+            # Modify description slightly
+            desc_words = trans['description'].split()
+            if len(desc_words) > 2:
+                modified_desc = ' '.join(desc_words[:2]) + " ***"
+            else:
+                modified_desc = trans['description'][:20] + "..."
+            
+            bank_entry = {
+                'id': f"bank_{uuid.uuid4().hex[:12]}",
+                'date': (trans['transaction_date'] + timedelta(days=random.randint(1, 3))).strftime('%Y-%m-%d'),
+                'description': modified_desc,
+                'amount': round(bank_amount, 2),
+                'balance': round(running_balance, 2),
+                'reference': f"REF{random.randint(10000, 99999)}",
+                'matched': False,  # Will need manual matching
+                'matched_transaction_id': None
+            }
+            bank_entries.append(bank_entry)
+        
+        # Sort bank entries by date
+        bank_entries.sort(key=lambda x: x['date'])
+        
+        # Recalculate balances in chronological order
+        opening_balance = 15000.00 + random.uniform(-3000, 3000)
+        running_balance = opening_balance
+        for entry in bank_entries:
+            running_balance += entry['amount']
+            entry['balance'] = round(running_balance, 2)
+        
+        # Generate CSV file for this month's statement
+        csv_filename = f"bank_statement_{session_date.strftime('%Y_%m')}.csv"
+        csv_filepath = os.path.join(UPLOAD_DIR, csv_filename)
+        
+        try:
+            import csv as csv_module
+            with open(csv_filepath, 'w', newline='') as csvfile:
+                fieldnames = ['Date', 'Description', 'Debit', 'Credit', 'Balance', 'Reference']
+                writer = csv_module.DictWriter(csvfile, fieldnames=fieldnames)
+                
+                writer.writeheader()
+                for entry in bank_entries:
+                    writer.writerow({
+                        'Date': entry['date'],
+                        'Description': entry['description'],
+                        'Debit': f"{-entry['amount']:.2f}" if entry['amount'] < 0 else '',
+                        'Credit': f"{entry['amount']:.2f}" if entry['amount'] > 0 else '',
+                        'Balance': f"{entry['balance']:.2f}",
+                        'Reference': entry['reference']
+                    })
+            
+            bank_statement_files.append(csv_filename)
+            logger.info(f"Generated CSV bank statement: {csv_filename}")
+            
+        except Exception as e:
+            logger.warning(f"Failed to generate CSV bank statement: {e}")
+        
         # Create reconciliation session
         session_id = str(uuid.uuid4())
-        opening_balance = 15000.00 + random.uniform(-2000, 2000)
-        closing_balance = opening_balance + sum(entry['amount'] for entry in bank_entries)
+        closing_balance = bank_entries[-1]['balance'] if bank_entries else opening_balance
+        
+        # Determine session status (most recent 3 months might be in progress)
+        is_recent = month_offset >= 9  # Last 3 months
+        session_status = random.choice(['in_progress', 'completed']) if is_recent else 'completed'
         
         recon_session = {
             '_id': session_id,
             'company_id': company_id,
             'user_id': user_id,
-            'account_id': checking_acc['id'],
-            'account_name': checking_acc['name'],
+            'account_id': primary_checking['id'],
+            'account_name': primary_checking['name'],
             'statement_date': month_end,
             'opening_balance': round(opening_balance, 2),
             'closing_balance': round(closing_balance, 2),
             'auto_match': True,
-            'filename': f"bank_statement_{session_date.strftime('%Y_%m')}.csv",
-            'status': random.choice(['completed', 'in_progress', 'completed']),
+            'filename': csv_filename,
+            'status': session_status,
             'bank_entries': bank_entries,
             'total_bank_entries': len(bank_entries),
             'matched_count': sum(1 for e in bank_entries if e['matched']),
             'unmatched_count': sum(1 for e in bank_entries if not e['matched']),
             'created_at': session_date,
             'updated_at': session_date + timedelta(hours=2),
-            'completed_at': session_date + timedelta(hours=2) if random.random() < 0.7 else None,
-            'completed_by': user_id if random.random() < 0.7 else None,
-            'notes': f"Monthly reconciliation for {session_date.strftime('%B %Y')}"
+            'completed_at': session_date + timedelta(hours=2) if session_status == 'completed' else None,
+            'completed_by': user_id if session_status == 'completed' else None,
+            'notes': f"Monthly reconciliation for {session_date.strftime('%B %Y')} - {len(bank_entries)} entries"
         }
         
         await reconciliation_sessions_collection.insert_one(recon_session)
@@ -905,17 +1037,23 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         # Create match records for matched entries
         for entry in bank_entries:
             if entry['matched'] and entry['matched_transaction_id']:
+                # Determine confidence score based on how exact the match is
+                confidence = random.uniform(0.95, 0.99) if abs(entry['amount']) > 0 else 1.0
+                
                 match_record = {
                     '_id': str(uuid.uuid4()),
                     'session_id': session_id,
                     'bank_entry_id': entry['id'],
                     'system_transaction_id': entry['matched_transaction_id'],
-                    'confidence_score': random.uniform(0.85, 0.99),
-                    'match_type': random.choice(['automatic', 'manual']),
+                    'confidence_score': confidence,
+                    'match_type': 'automatic' if confidence > 0.97 else 'manual',
                     'matched_at': session_date + timedelta(hours=1),
                     'matched_by': user_id
                 }
                 await reconciliation_matches_collection.insert_one(match_record)
+    
+    logger.info(f"✅ Generated {reconciliation_count} monthly reconciliation sessions")
+    logger.info(f"✅ Generated {len(bank_statement_files)} CSV bank statement files")
     
     # ==================== ENHANCED: Generate More Document Variety ====================
     logger.info("Generating additional document types...")
