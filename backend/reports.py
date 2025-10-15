@@ -173,27 +173,33 @@ async def generate_trial_balance(
         account_category = AccountCategory(account.get("account_category", "assets"))
         
         # Determine debit or credit balance based on account category
-        # Assets and Expenses have debit balances
-        # Liabilities, Equity, and Income have credit balances
+        # calculate_account_balance returns:
+        # - For Assets/Expenses: positive = debit balance (normal), negative = credit balance (abnormal)
+        # - For Liabilities/Equity/Income: positive = credit balance (normal), negative = debit balance (abnormal)
+        
         if account_category in [AccountCategory.ASSETS, AccountCategory.EXPENSES]:
+            # For Assets/Expenses: positive balance goes to debit column
             debit_balance = balance if balance > 0 else Decimal("0")
             credit_balance = abs(balance) if balance < 0 else Decimal("0")
         else:
+            # For Liabilities/Equity/Income: positive balance goes to credit column
             debit_balance = abs(balance) if balance < 0 else Decimal("0")
             credit_balance = balance if balance > 0 else Decimal("0")
         
-        total_debits += debit_balance
-        total_credits += credit_balance
-        
-        account_balances.append({
-            "account_id": account["_id"],
-            "account_number": account.get("account_number", ""),
-            "account_name": account["name"],
-            "account_type": account["account_type"],
-            "account_category": account_category,
-            "debit_balance": debit_balance,
-            "credit_balance": credit_balance
-        })
+        # Only include accounts with non-zero balances
+        if debit_balance > 0 or credit_balance > 0:
+            total_debits += debit_balance
+            total_credits += credit_balance
+            
+            account_balances.append({
+                "account_id": account["_id"],
+                "account_number": account.get("account_number", ""),
+                "account_name": account["name"],
+                "account_type": account["account_type"],
+                "account_category": account_category.value,
+                "debit_balance": float(debit_balance),
+                "credit_balance": float(credit_balance)
+            })
     
     # Check if balanced
     is_balanced = abs(total_debits - total_credits) < Decimal("0.01")
