@@ -463,7 +463,18 @@ async def generate_profit_loss_report(
             AccountType.ADMINISTRATIVE_EXPENSES.value,
             AccountType.INTEREST_EXPENSE.value,
             AccountType.TAX_EXPENSE.value,
-            AccountType.OTHER_EXPENSES.value
+            AccountType.OTHER_EXPENSES.value,
+            # Specific expense types
+            AccountType.OFFICE_SUPPLIES.value,
+            AccountType.TRAVEL.value,
+            AccountType.UTILITIES.value,
+            AccountType.RENT.value,
+            AccountType.INSURANCE.value,
+            AccountType.PROFESSIONAL_FEES.value,
+            AccountType.LEGAL_FEES.value,
+            AccountType.MARKETING.value,
+            AccountType.SOFTWARE.value,
+            AccountType.PAYROLL.value
         ]},
         "is_active": True
     }).to_list(length=None)
