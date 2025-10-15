@@ -61,6 +61,8 @@ class ProfitLossReport(BaseModel):
     net_income: Decimal
 
 class BalanceSheetReport(BaseModel):
+    model_config = {"json_encoders": {Decimal: float}}
+    
     report_id: str
     company_id: str
     report_name: str
