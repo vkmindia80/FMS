@@ -204,7 +204,7 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <DashboardLayout>
-                  <ReportSchedulingPage />
+                  <ReportSchedulingManagementPage />
                 </DashboardLayout>
               </ProtectedRoute>
             } 
