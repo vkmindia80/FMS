@@ -824,6 +824,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                 filename, "Demo Company Inc", statement_date
             )
             
+            doc_id = str(uuid.uuid4())
             document = {
                 '_id': doc_id,
                 'id': doc_id,
