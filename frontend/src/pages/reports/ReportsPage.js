@@ -169,6 +169,453 @@ const ReportsPage = () => {
     }).format(amount);
   };
 
+  const exportJSON = () => {
+    if (!reportData) return;
+    
+    const dataStr = JSON.stringify(reportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${selectedReport}_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const renderProfitLossTable = () => {
+    return (
+      <div className="space-y-6">
+        {/* Revenue Section */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Revenue</h4>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {reportData.revenue_accounts?.map((account, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(account.amount)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-green-50 dark:bg-green-900/20 font-semibold">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="2">Total Revenue</td>
+                  <td className="px-4 py-3 text-sm text-right text-green-700 dark:text-green-300">{formatCurrency(reportData.total_revenue)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Expenses Section */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Expenses</h4>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {reportData.expense_accounts?.map((account, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(account.amount)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-red-50 dark:bg-red-900/20 font-semibold">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="2">Total Expenses</td>
+                  <td className="px-4 py-3 text-sm text-right text-red-700 dark:text-red-300">{formatCurrency(reportData.total_expenses)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="border-t-2 border-gray-300 dark:border-gray-600 pt-4">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <tbody className="bg-white dark:bg-gray-800">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">Gross Profit</td>
+                  <td className="px-4 py-3 text-sm text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(reportData.gross_profit)}</td>
+                </tr>
+                <tr className="bg-blue-50 dark:bg-blue-900/20">
+                  <td className="px-4 py-3 text-base font-bold text-gray-900 dark:text-white">Net Income</td>
+                  <td className="px-4 py-3 text-base text-right font-bold text-blue-700 dark:text-blue-300">{formatCurrency(reportData.net_income)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBalanceSheetTable = () => {
+    return (
+      <div className="space-y-6">
+        {/* Assets Section */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Assets</h4>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {reportData.asset_accounts?.map((account, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-center">
+                      <span className={`px-2 py-1 rounded text-xs ${account.is_current ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
+                        {account.is_current ? 'Current' : 'Non-Current'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-indigo-50 dark:bg-indigo-900/20 font-semibold">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="3">Total Assets</td>
+                  <td className="px-4 py-3 text-sm text-right text-indigo-700 dark:text-indigo-300">{formatCurrency(reportData.total_assets)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Liabilities Section */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Liabilities</h4>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {reportData.liability_accounts?.map((account, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-center">
+                      <span className={`px-2 py-1 rounded text-xs ${account.is_current ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
+                        {account.is_current ? 'Current' : 'Long-Term'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-orange-50 dark:bg-orange-900/20 font-semibold">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="3">Total Liabilities</td>
+                  <td className="px-4 py-3 text-sm text-right text-orange-700 dark:text-orange-300">{formatCurrency(reportData.total_liabilities)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Equity Section */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Equity</h4>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {reportData.equity_accounts?.map((account, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-purple-50 dark:bg-purple-900/20 font-semibold">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="2">Total Equity</td>
+                  <td className="px-4 py-3 text-sm text-right text-purple-700 dark:text-purple-300">{formatCurrency(reportData.total_equity)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Balance Check */}
+        {reportData.is_balanced !== undefined && (
+          <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Balance Status:</span>
+              {reportData.is_balanced ? (
+                <span className="text-green-600 dark:text-green-400 font-semibold">✓ Balanced</span>
+              ) : (
+                <span className="text-red-600 dark:text-red-400 font-semibold">⚠ Out of Balance</span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderCashFlowTable = () => {
+    return (
+      <div className="space-y-6">
+        {/* Operating Activities */}
+        {reportData.operating_activities && reportData.operating_activities.length > 0 && (
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Cash Flows from Operating Activities</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {reportData.operating_activities.map((activity, idx) => (
+                    <tr key={idx}>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{activity.description}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(activity.amount)}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-green-50 dark:bg-green-900/20 font-semibold">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">Net Cash from Operating Activities</td>
+                    <td className="px-4 py-3 text-sm text-right text-green-700 dark:text-green-300">{formatCurrency(reportData.operating_cash_flow)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Investing Activities */}
+        {reportData.investing_activities && reportData.investing_activities.length > 0 && (
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Cash Flows from Investing Activities</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {reportData.investing_activities.map((activity, idx) => (
+                    <tr key={idx}>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{activity.description}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(activity.amount)}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-blue-50 dark:bg-blue-900/20 font-semibold">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">Net Cash from Investing Activities</td>
+                    <td className="px-4 py-3 text-sm text-right text-blue-700 dark:text-blue-300">{formatCurrency(reportData.investing_cash_flow)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Financing Activities */}
+        {reportData.financing_activities && reportData.financing_activities.length > 0 && (
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Cash Flows from Financing Activities</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {reportData.financing_activities.map((activity, idx) => (
+                    <tr key={idx}>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{activity.description}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(activity.amount)}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-purple-50 dark:bg-purple-900/20 font-semibold">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">Net Cash from Financing Activities</td>
+                    <td className="px-4 py-3 text-sm text-right text-purple-700 dark:text-purple-300">{formatCurrency(reportData.financing_cash_flow)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Summary */}
+        <div className="border-t-2 border-gray-300 dark:border-gray-600 pt-4">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr>
+                  <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">Net Change in Cash</td>
+                  <td className="px-4 py-3 text-sm text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(reportData.net_change_in_cash)}</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Beginning Cash Balance</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-gray-300">{formatCurrency(reportData.beginning_cash)}</td>
+                </tr>
+                <tr className="bg-blue-50 dark:bg-blue-900/20">
+                  <td className="px-4 py-3 text-base font-bold text-gray-900 dark:text-white">Ending Cash Balance</td>
+                  <td className="px-4 py-3 text-base text-right font-bold text-blue-700 dark:text-blue-300">{formatCurrency(reportData.ending_cash)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTrialBalanceTable = () => {
+    return (
+      <div className="space-y-4">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Name</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debit</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {reportData.accounts?.map((account, idx) => (
+                <tr key={idx}>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{account.account_number || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{account.account_name}</td>
+                  <td className="px-4 py-3 text-sm text-center text-gray-600 dark:text-gray-400 capitalize">{account.account_category}</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
+                    {account.debit_balance > 0 ? formatCurrency(account.debit_balance) : '-'}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
+                    {account.credit_balance > 0 ? formatCurrency(account.credit_balance) : '-'}
+                  </td>
+                </tr>
+              ))}
+              <tr className="bg-gray-100 dark:bg-gray-700 font-bold">
+                <td className="px-4 py-3 text-sm text-gray-900 dark:text-white" colSpan="3">TOTALS</td>
+                <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-white">{formatCurrency(reportData.total_debits)}</td>
+                <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-white">{formatCurrency(reportData.total_credits)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Balance Status */}
+        {reportData.is_balanced !== undefined && (
+          <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Trial Balance Status:</span>
+              {reportData.is_balanced ? (
+                <span className="text-green-600 dark:text-green-400 font-semibold">✓ Balanced</span>
+              ) : (
+                <span className="text-red-600 dark:text-red-400 font-semibold">⚠ Out of Balance</span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderGeneralLedgerTable = () => {
+    return (
+      <div className="space-y-8">
+        {reportData.accounts?.map((account, accountIdx) => (
+          <div key={accountIdx} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              {account.account_number && `${account.account_number} - `}{account.account_name}
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debit</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {account.transactions && account.transactions.length > 0 ? (
+                    account.transactions.map((txn, txnIdx) => (
+                      <tr key={txnIdx}>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.date}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.description}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{txn.reference || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
+                          {txn.debit > 0 ? formatCurrency(txn.debit) : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
+                          {txn.credit > 0 ? formatCurrency(txn.credit) : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(txn.balance)}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        No transactions found for this account in the selected period
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {account.closing_balance !== undefined && (
+              <div className="mt-3 flex justify-end">
+                <div className="bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Closing Balance: </span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(account.closing_balance)}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderReportData = () => {
     if (!reportData) return null;
 
@@ -216,6 +663,14 @@ const ReportsPage = () => {
               >
                 <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
                 CSV
+              </button>
+              <button
+                onClick={exportJSON}
+                className="btn-secondary flex items-center text-sm"
+                disabled={loading}
+              >
+                <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
+                JSON
               </button>
             </div>
           </div>
@@ -275,18 +730,15 @@ const ReportsPage = () => {
           </div>
         )}
 
-        {/* Detailed Report Data */}
-        <div className="overflow-x-auto">
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-            <details open>
-              <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                View Detailed Report Data (JSON)
-              </summary>
-              <pre className="text-xs text-gray-600 dark:text-gray-400 overflow-auto max-h-96">
-                {JSON.stringify(reportData, null, 2)}
-              </pre>
-            </details>
-          </div>
+        {/* Detailed Report Data - Tabular Format */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detailed Report</h3>
+          {/* Render appropriate table based on report type */}
+          {reportData.revenue_accounts && renderProfitLossTable()}
+          {reportData.asset_accounts && renderBalanceSheetTable()}
+          {(reportData.operating_cash_flow !== undefined) && renderCashFlowTable()}
+          {reportData.total_debits !== undefined && renderTrialBalanceTable()}
+          {reportData.accounts && !reportData.total_debits && renderGeneralLedgerTable()}
         </div>
       </div>
     );
