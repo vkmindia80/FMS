@@ -54,7 +54,7 @@ const ReconciliationSession = ({ session, onClose, onUpdate, onError, onSuccess 
   const handleUnmatch = async (bankEntryId) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       const response = await fetch(`${BACKEND_URL}/api/reconciliation/unmatch`, {
         method: 'POST',
         headers: {
