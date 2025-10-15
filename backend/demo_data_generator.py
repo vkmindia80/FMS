@@ -1249,6 +1249,65 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         await bank_connections_collection.insert_one(bank_connection)
         bank_connection_count += 1
     
+    # ==================== NEW: Generate Bills Payable (AP) ====================
+    logger.info("Generating bills payable (AP)...")
+    from database import bills_collection
+    bills_count = 0
+    
+    # Generate 25-35 bills for AP testing
+    for i in range(random.randint(25, 35)):
+        bill_date = fake.date_between(start_date=start_date, end_date=end_date)
+        due_date = bill_date + timedelta(days=random.choice([15, 30, 45, 60]))
+        amount = random.uniform(500, 15000)
+        
+        # Determine if paid
+        is_paid = random.random() < 0.55  # 55% paid
+        paid_amount = amount if is_paid else (amount * random.uniform(0, 0.5) if random.random() < 0.25 else 0)
+        
+        bill = {
+            'id': str(uuid.uuid4()),
+            'bill_number': f"BILL-{bill_date.strftime('%Y%m')}-{random.randint(1000, 9999)}",
+            'company_id': company_id,
+            'vendor_name': fake.company(),
+            'vendor_email': fake.email(),
+            'bill_date': bill_date,
+            'due_date': due_date,
+            'currency': random.choice(['USD', 'EUR', 'GBP']),
+            'category': random.choice(['office_supplies', 'utilities', 'rent', 'software', 'professional_services', 'insurance']),
+            'line_items': [
+                {
+                    'description': random.choice([
+                        'Office Supplies',
+                        'Equipment Rental',
+                        'Professional Services',
+                        'Software License',
+                        'Maintenance Fee',
+                        'Consulting Services',
+                        'Monthly Service Fee'
+                    ]),
+                    'quantity': random.randint(1, 50),
+                    'unit_price': round(amount / random.randint(1, 10), 2),
+                    'amount': round(amount, 2)
+                }
+            ],
+            'subtotal': round(amount, 2),
+            'tax_rate': 0.0,
+            'tax_amount': 0.0,
+            'total_amount': round(amount, 2),
+            'amount_paid': round(paid_amount, 2),
+            'amount_due': round(amount - paid_amount, 2),
+            'status': 'paid' if is_paid else ('partial' if paid_amount > 0 else 'outstanding'),
+            'notes': fake.sentence(),
+            'created_by': user_id,
+            'created_at': bill_date,
+            'updated_at': bill_date
+        }
+        
+        await bills_collection.insert_one(bill)
+        bills_count += 1
+    
+    logger.info(f"✅ Generated {bills_count} bills payable")
+    
     logger.info("✅ Enhanced demo data generation complete!")
     logger.info("📊 Summary:")
     logger.info(f"  - Accounts: {len(created_accounts)}")
