@@ -1099,12 +1099,14 @@ Based on the current system status (~90% complete), here are the recommended nex
 
 To get to production quickly, focus on these in order:
 
-1. **Week 1**: Connect gateway config to payment flows (HIGH PRIORITY)
-2. **Week 2**: Security hardening + frontend testing
-3. **Week 3**: Performance optimization + monitoring setup
-4. **Week 4**: Production deployment + documentation
+1. **Day 1**: Deploy Redis + Celery workers for background jobs (5-6 hours)
+2. **Day 2**: Configure email provider for automated reports (2-4 hours)
+3. **Week 1**: Connect payment gateway config to actual payment flows (3-5 days)
+4. **Week 2**: Comprehensive testing suite (unit + integration + E2E)
+5. **Week 3**: Performance optimization + load testing
+6. **Week 4**: Production deployment + monitoring setup
 
-**Result**: Fully production-ready payment gateway system in 4 weeks!
+**Result**: Fully production-ready system with automated reports and payments in 4 weeks!
 
 ---
 
