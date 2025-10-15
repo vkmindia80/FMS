@@ -738,8 +738,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                 if trans_date > end_date:
                     break
                 
+                trans_id = str(uuid.uuid4())
                 transaction = {
-                    'id': str(uuid.uuid4()),
+                    '_id': trans_id,
+                    'id': trans_id,
                     'company_id': company_id,
                     'transaction_date': trans_date,
                     'description': vendor,
