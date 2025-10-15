@@ -1,5 +1,11 @@
 import React from 'react';
-import { UsersIcon, BuildingOfficeIcon, ClipboardDocumentListIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { 
+  UsersIcon, 
+  BuildingOfficeIcon, 
+  ClipboardDocumentListIcon, 
+  CurrencyDollarIcon,
+  CalendarDaysIcon 
+} from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +27,13 @@ const AdminPage = () => {
       icon: BuildingOfficeIcon,
       color: 'bg-success-500',
       path: null,
+    },
+    {
+      name: 'Report Scheduling',
+      description: 'Automate report generation & delivery',
+      icon: CalendarDaysIcon,
+      color: 'bg-purple-500',
+      path: '/admin/report-scheduling',
     },
     {
       name: 'Exchange Rates',
