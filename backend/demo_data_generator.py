@@ -1115,8 +1115,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     from database import invoices_collection
     invoice_count = 0
     
-    # Generate 15-20 invoices
-    for i in range(random.randint(15, 20)):
+    # Generate 30-40 invoices for comprehensive testing
+    for i in range(random.randint(30, 40)):
         invoice_date = fake.date_between(start_date=start_date, end_date=end_date)
         due_date = invoice_date + timedelta(days=30)
         amount = random.uniform(1000, 25000)
