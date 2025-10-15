@@ -394,6 +394,142 @@ def generate_sample_bank_statement_pdf(filename: str, company_name: str, date: d
     return file_path
 
 
+def generate_purchase_order_pdf(filename: str, amount: float, vendor: str, date: datetime) -> str:
+    """Generate a sample purchase order PDF"""
+    
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    doc = SimpleDocTemplate(file_path, pagesize=letter)
+    story = []
+    styles = getSampleStyleSheet()
+    
+    # Title
+    title = Paragraph(f"<b><font size=24>PURCHASE ORDER</font></b>", styles['Title'])
+    story.append(title)
+    story.append(Spacer(1, 0.2 * inch))
+    
+    # PO Number and Date
+    po_number = f"PO-{random.randint(10000, 99999)}"
+    po_info = f"""
+    <b>PO Number:</b> {po_number}<br/>
+    <b>Date:</b> {date.strftime('%B %d, %Y')}<br/>
+    <b>Required By:</b> {(date + timedelta(days=14)).strftime('%B %d, %Y')}
+    """
+    story.append(Paragraph(po_info, styles['Normal']))
+    story.append(Spacer(1, 0.3 * inch))
+    
+    # Vendor info
+    vendor_section = f"""
+    <b>Vendor:</b><br/>
+    {vendor}<br/>
+    {fake.address().replace(chr(10), ', ')}
+    """
+    story.append(Paragraph(vendor_section, styles['Normal']))
+    story.append(Spacer(1, 0.3 * inch))
+    
+    # Items
+    items_data = [['Item', 'Description', 'Qty', 'Unit Price', 'Total']]
+    num_items = random.randint(2, 6)
+    
+    for i in range(num_items):
+        item_name = random.choice(['Software License', 'Hardware Equipment', 'Office Supplies', 'Consulting Services', 'Maintenance Contract'])
+        qty = random.randint(1, 20)
+        unit_price = random.uniform(50, 2000)
+        total = qty * unit_price
+        
+        items_data.append([
+            str(i + 1),
+            item_name,
+            str(qty),
+            f"${unit_price:.2f}",
+            f"${total:.2f}"
+        ])
+    
+    items_table = Table(items_data, colWidths=[0.5*inch, 3*inch, 0.7*inch, 1*inch, 1*inch])
+    items_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    
+    story.append(items_table)
+    story.append(Spacer(1, 0.3 * inch))
+    
+    # Total
+    total_text = Paragraph(f"<b>Total Amount: ${amount:.2f}</b>", styles['Normal'])
+    story.append(total_text)
+    
+    doc.build(story)
+    return file_path
+
+
+def generate_bank_statement_csv(filename: str, account_name: str, date: datetime) -> str:
+    """Generate a sample bank statement CSV for reconciliation"""
+    import csv
+    
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    
+    # Generate transactions for the month
+    start_date = date.replace(day=1)
+    end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    
+    transactions = []
+    balance = 10000.00 + random.uniform(-2000, 5000)
+    
+    current_date = start_date
+    while current_date <= end_date:
+        # Generate 0-3 transactions per day
+        num_trans = random.choices([0, 1, 2, 3], weights=[0.3, 0.4, 0.2, 0.1])[0]
+        
+        for _ in range(num_trans):
+            trans_type = random.choice(['debit', 'debit', 'credit'])  # More debits than credits
+            
+            if trans_type == 'debit':
+                amount = -random.uniform(50, 2000)
+                description = random.choice([
+                    'ACH DEBIT - UTILITY PAYMENT',
+                    'CHECK #' + str(random.randint(1000, 9999)),
+                    'DEBIT CARD PURCHASE',
+                    'WIRE TRANSFER OUT',
+                    'ACH PAYMENT',
+                    'SUBSCRIPTION SERVICE',
+                    'OFFICE SUPPLIES'
+                ])
+            else:
+                amount = random.uniform(500, 10000)
+                description = random.choice([
+                    'ACH CREDIT - CUSTOMER PAYMENT',
+                    'WIRE TRANSFER IN',
+                    'DEPOSIT',
+                    'ACH CREDIT',
+                    'DIRECT DEPOSIT'
+                ])
+            
+            balance += amount
+            
+            transactions.append({
+                'Date': current_date.strftime('%m/%d/%Y'),
+                'Description': description,
+                'Debit': f"{-amount:.2f}" if amount < 0 else '',
+                'Credit': f"{amount:.2f}" if amount > 0 else '',
+                'Balance': f"{balance:.2f}"
+            })
+        
+        current_date += timedelta(days=1)
+    
+    # Write CSV
+    with open(file_path, 'w', newline='') as csvfile:
+        fieldnames = ['Date', 'Description', 'Debit', 'Credit', 'Balance']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(transactions)
+    
+    return file_path
+
+
 def generate_csv_expense_report(filename: str) -> str:
     """Generate a sample CSV expense report"""
     
