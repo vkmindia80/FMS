@@ -1277,7 +1277,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     
     # Generate 25-35 bills for AP testing
     for i in range(random.randint(25, 35)):
-        bill_date = fake.date_between(start_date=start_date, end_date=end_date)
+        bill_date_obj = fake.date_between(start_date=start_date, end_date=end_date)
+        bill_date = datetime.combine(bill_date_obj, datetime.min.time()) if isinstance(bill_date_obj, type(start_date.date())) else bill_date_obj
         due_date = bill_date + timedelta(days=random.choice([15, 30, 45, 60]))
         amount = random.uniform(500, 15000)
         
