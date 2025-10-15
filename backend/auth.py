@@ -1040,6 +1040,109 @@ Summary of Transactions:
         )
 
 
+@auth_router.post("/create-demo-user")
+async def create_demo_user():
+    """
+    Create demo user and company if they don't exist
+    Fast operation - only creates user/company without generating data
+    """
+    from datetime import timedelta
+    
+    # Demo user credentials
+    DEMO_EMAIL = "john.doe@testcompany.com"
+    DEMO_PASSWORD = "testpassword123"
+    
+    try:
+        # Check if demo user already exists
+        demo_user = await users_collection.find_one({"email": DEMO_EMAIL})
+        
+        if demo_user:
+            logger.info(f"Demo user already exists: {DEMO_EMAIL}")
+            return {
+                "success": True,
+                "message": "Demo user already exists",
+                "data": {
+                    "email": DEMO_EMAIL,
+                    "password": DEMO_PASSWORD,
+                    "exists": True
+                }
+            }
+        
+        # Create demo company
+        company_id = str(uuid.uuid4())
+        company_doc = {
+            "_id": company_id,
+            "name": "Global Enterprises Ltd.",
+            "type": CompanyType.SMALL_BUSINESS,
+            "created_at": datetime.utcnow(),
+            "is_active": True,
+            "settings": {
+                "base_currency": "USD",
+                "fiscal_year_start": "01-01",
+                "date_format": "MM/DD/YYYY",
+                "number_format": "US",
+                "timezone": "UTC",
+                "multi_currency_enabled": True
+            },
+            "subscription": {
+                "plan": "enterprise",
+                "status": "active",
+                "expires_at": datetime.utcnow() + timedelta(days=365)
+            }
+        }
+        await companies_collection.insert_one(company_doc)
+        
+        # Create demo user
+        user_id = str(uuid.uuid4())
+        hashed_password = get_password_hash(DEMO_PASSWORD)
+        
+        user_doc = {
+            "_id": user_id,
+            "email": DEMO_EMAIL,
+            "password": hashed_password,
+            "full_name": "John Doe",
+            "role": UserRole.BUSINESS,
+            "company_id": company_id,
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "last_login": None,
+            "preferences": {
+                "theme": "light",
+                "language": "en",
+                "notifications": True
+            }
+        }
+        await users_collection.insert_one(user_doc)
+        
+        logger.info(f"Created demo user: {DEMO_EMAIL} and company: {company_id}")
+        
+        # Log audit event
+        await log_audit_event(
+            user_id=user_id,
+            company_id=company_id,
+            action="demo_user_created",
+            details={"email": DEMO_EMAIL}
+        )
+        
+        return {
+            "success": True,
+            "message": "Demo user created successfully",
+            "data": {
+                "email": DEMO_EMAIL,
+                "password": DEMO_PASSWORD,
+                "exists": False,
+                "user_id": user_id,
+                "company_id": company_id
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating demo user: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create demo user: {str(e)}"
+        )
+
 
 @auth_router.post("/generate-enhanced-demo-data")
 async def generate_enhanced_demo_data_endpoint():
