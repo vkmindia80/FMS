@@ -929,29 +929,28 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     additional_docs = 0
     
     document_types = [
-        ('receipt', 'png', generate_sample_receipt_image),
-        ('invoice', 'pdf', generate_sample_invoice_pdf),
-        ('contract', 'pdf', generate_sample_bank_statement_pdf),
-        ('tax_document', 'pdf', generate_sample_invoice_pdf),
+        ('receipt', 'png', lambda f, a, v, d: generate_sample_receipt_image(f, a, v, d), True),
+        ('invoice', 'pdf', lambda f, a, v, d: generate_sample_invoice_pdf(f, a, v, d), True),
+        ('purchase_order', 'pdf', lambda f, a, v, d: generate_purchase_order_pdf(f, a, v, d), True),
+        ('bank_statement', 'csv', lambda f, a, v, d: generate_bank_statement_csv(f, v, d), False),
+        ('expense_report', 'csv', lambda f, a, v, d: generate_csv_expense_report(f), False),
+        ('contract', 'pdf', lambda f, a, v, d: generate_sample_bank_statement_pdf(f, v, d), False),
     ]
     
-    # Generate 20 more diverse documents
-    for i in range(20):
-        doc_type, extension, generator_func = random.choice(document_types)
+    # Generate 30 more diverse documents
+    for i in range(30):
+        doc_type, extension, generator_func, needs_amount = random.choice(document_types)
         doc_date = fake.date_between(start_date=start_date, end_date=end_date)
         amount = random.uniform(100, 5000)
         vendor = fake.company()
         
         try:
-            if doc_type == 'receipt':
-                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+            filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+            
+            if needs_amount:
                 file_path = generator_func(filename, amount, vendor, doc_date)
-            elif doc_type in ['invoice', 'tax_document']:
-                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
+            else:
                 file_path = generator_func(filename, amount, vendor, doc_date)
-            else:  # contract, bank statement
-                filename = f"{doc_type}_{doc_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.{extension}"
-                file_path = generator_func(filename, "Demo Company Inc", doc_date)
             
             document = {
                 'id': str(uuid.uuid4()),
