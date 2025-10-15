@@ -1088,7 +1088,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     # Generate 50 more diverse documents to reach ~300 total
     for i in range(50):
         doc_type, extension, generator_func, needs_amount = random.choice(document_types)
-        doc_date = fake.date_between(start_date=start_date, end_date=end_date)
+        doc_date_obj = fake.date_between(start_date=start_date, end_date=end_date)
+        doc_date = datetime.combine(doc_date_obj, datetime.min.time()) if isinstance(doc_date_obj, type(start_date.date())) else doc_date_obj
         amount = random.uniform(100, 5000)
         vendor = fake.company()
         
