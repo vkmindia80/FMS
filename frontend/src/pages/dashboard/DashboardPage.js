@@ -37,6 +37,7 @@ import CurrencyConverter from '../../components/common/CurrencyConverter';
 const DashboardPage = () => {
   const { user } = useAuth();
   const { darkMode, currentScheme } = useTheme();
+  const navigate = useNavigate();
   const [showAmounts, setShowAmounts] = useState(true);
   const [timeframe, setTimeframe] = useState('7d');
   const [loading, setLoading] = useState(true);
