@@ -116,23 +116,34 @@ const LoginPage = () => {
       
       if (response.success) {
         const { data } = response;
-        toast.success(
-          `Demo data generated successfully!\n\n` +
-          `📊 ${data.accounts_created} accounts created\n` +
-          `💰 ${data.transactions_created} transactions generated\n` +
-          `📄 ${data.documents_created} documents created\n` +
-          `📅 Date range: ${data.date_range}\n\n` +
-          `You can now login with:\n` +
-          `Email: ${data.demo_user}\n` +
-          `Password: testpassword123`,
-          {
-            duration: 10000,
-            style: {
-              minWidth: '400px',
-              whiteSpace: 'pre-line'
-            }
+        const stats = data.statistics || {};
+        const demoUser = data.demo_user || {};
+        
+        // Build comprehensive success message
+        const message = [
+          '✅ Comprehensive Demo Data Generated!\n',
+          `📊 ${stats.accounts_created || 0} accounts (multi-currency)`,
+          `💰 ${stats.transactions_created || 0} transactions`,
+          `📄 ${stats.documents_created || 0} documents`,
+          `🏦 ${stats.reconciliation_sessions_created || 0} reconciliation sessions`,
+          `💳 ${stats.invoices_created || 0} invoices (AR)`,
+          `💵 ${stats.bills_created || 0} bills (AP)`,
+          `💸 ${stats.payment_transactions_created || 0} payment transactions`,
+          `🏧 ${stats.bank_connections_created || 0} bank connections`,
+          `\n📅 12 months of financial data`,
+          `\nLogin credentials:`,
+          `Email: ${demoUser.email || 'john.doe@testcompany.com'}`,
+          `Password: ${demoUser.password || 'testpassword123'}`
+        ].join('\n');
+        
+        toast.success(message, {
+          duration: 12000,
+          style: {
+            minWidth: '450px',
+            whiteSpace: 'pre-line',
+            fontSize: '14px'
           }
-        );
+        });
       }
     } catch (error) {
       // Dismiss loading toast
