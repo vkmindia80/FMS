@@ -39,7 +39,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 
 1. **Navigate to the application:**
    ```
-   https://dev-orchestrator.preview.emergentagent.com/login
+   https://login-repair-55.preview.emergentagent.com/login
    ```
 
 2. **Click "Demo Login" button** (blue button in the demo account section)
@@ -103,7 +103,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 ```bash
 # From backend
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  "https://dev-orchestrator.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
+  "https://login-repair-55.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
 ```
 
 ### All Export Formats Working
