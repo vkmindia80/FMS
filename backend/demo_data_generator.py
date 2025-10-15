@@ -1305,8 +1305,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
         is_paid = random.random() < 0.55  # 55% paid
         paid_amount = amount if is_paid else (amount * random.uniform(0, 0.5) if random.random() < 0.25 else 0)
         
+        bill_id = str(uuid.uuid4())
         bill = {
-            'id': str(uuid.uuid4()),
+            '_id': bill_id,
+            'id': bill_id,
             'bill_number': f"BILL-{bill_date.strftime('%Y%m')}-{random.randint(1000, 9999)}",
             'company_id': company_id,
             'vendor_name': fake.company(),
