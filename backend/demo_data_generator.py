@@ -789,8 +789,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                             'id': doc_id,
                             'company_id': company_id,
                             'filename': filename,
+                            'original_filename': filename,  # Added required field
                             'file_path': file_path,
                             'file_type': doc_type,
+                            'document_type': doc_type,  # Added required field matching DocumentType enum
                             'file_size': os.path.getsize(file_path),
                             'upload_date': trans_date,
                             'processing_status': 'completed',
@@ -802,7 +804,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                                 'category': category
                             },
                             'uploaded_by': user_id,
-                            'created_at': trans_date
+                            'created_at': trans_date,
+                            'tags': []  # Added required field
                         }
                         
                         await documents_collection.insert_one(document)
