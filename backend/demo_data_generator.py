@@ -783,8 +783,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
                             filename = f"statement_{trans_date.strftime('%Y%m%d')}_{uuid.uuid4().hex[:8]}.csv"
                             file_path = generate_csv_expense_report(filename)
                         
+                        doc_id = str(uuid.uuid4())
                         document = {
-                            'id': str(uuid.uuid4()),
+                            '_id': doc_id,
+                            'id': doc_id,
                             'company_id': company_id,
                             'filename': filename,
                             'file_path': file_path,
