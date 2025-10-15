@@ -1216,8 +1216,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
             weights=[0.7, 0.15, 0.1, 0.05]
         )[0]
         
+        payment_id = str(uuid.uuid4())
         payment = {
-            'id': str(uuid.uuid4()),
+            '_id': payment_id,
+            'id': payment_id,
             'company_id': company_id,
             'transaction_id': f"txn_{uuid.uuid4().hex[:16]}",
             'amount': round(amount, 2),
