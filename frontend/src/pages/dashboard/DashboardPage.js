@@ -86,18 +86,18 @@ const DashboardPage = () => {
   };
 
   const handleGenerateDemoData = async () => {
-    if (!window.confirm('This will generate sample data for testing. This process may take up to 2 minutes. Continue?')) return;
+    if (!window.confirm('This will generate comprehensive sample data for testing (~1000 transactions, ~300 documents, 12 reconciliation sessions). This process may take 3-5 minutes. Continue?')) return;
     
     setGeneratingDemo(true);
     try {
-      toast.loading('Generating demo data... Please wait...', {
+      toast.loading('Generating enhanced demo data... This may take 3-5 minutes...', {
         id: 'demo-data-loading',
         duration: Infinity
       });
 
       const token = localStorage.getItem('afms_access_token');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
       
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/auth/generate-enhanced-demo-data`, {
         method: 'POST',
