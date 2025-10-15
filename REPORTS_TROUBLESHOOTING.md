@@ -34,7 +34,7 @@ Generate demo data first:
 
 **Option B: Via API**
 ```bash
-curl -X POST "https://error-fixer-38.preview.emergentagent.com/api/auth/generate-demo-data" \
+curl -X POST "https://reconcile-demo-data.preview.emergentagent.com/api/auth/generate-demo-data" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -88,7 +88,7 @@ Hard refresh the browser:
 ### Test 1: Verify Page Loaded Correctly
 
 1. **Navigate to Reports page**
-   - URL: `https://error-fixer-38.preview.emergentagent.com/reports`
+   - URL: `https://reconcile-demo-data.preview.emergentagent.com/reports`
 
 2. **You should see:**
    - Title: "Financial Reports"
@@ -199,7 +199,7 @@ If the frontend isn't working, test the API directly:
 
 ### 1. Get Authentication Token
 ```bash
-curl -X POST "https://error-fixer-38.preview.emergentagent.com/api/auth/login" \
+curl -X POST "https://reconcile-demo-data.preview.emergentagent.com/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john.doe@testcompany.com",
@@ -211,7 +211,7 @@ Copy the `access_token` from response.
 
 ### 2. Test Report Generation
 ```bash
-curl -X GET "https://error-fixer-38.preview.emergentagent.com/api/reports/profit-loss?period=current_month&format=json" \
+curl -X GET "https://reconcile-demo-data.preview.emergentagent.com/api/reports/profit-loss?period=current_month&format=json" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
@@ -219,7 +219,7 @@ Replace `YOUR_TOKEN_HERE` with the token from step 1.
 
 ### 3. Test Export
 ```bash
-curl -X GET "https://error-fixer-38.preview.emergentagent.com/api/reports/profit-loss?period=current_month&format=pdf" \
+curl -X GET "https://reconcile-demo-data.preview.emergentagent.com/api/reports/profit-loss?period=current_month&format=pdf" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   --output test_report.pdf
 ```
