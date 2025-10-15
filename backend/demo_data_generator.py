@@ -1172,8 +1172,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     from database import payment_transactions_collection
     payment_count = 0
     
-    # Generate 15-25 payment transactions
-    for i in range(random.randint(15, 25)):
+    # Generate 40-60 payment transactions for comprehensive testing
+    for i in range(random.randint(40, 60)):
         payment_date = fake.date_between(start_date=start_date, end_date=end_date)
         amount = random.uniform(100, 10000)
         
