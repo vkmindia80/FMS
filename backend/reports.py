@@ -91,6 +91,8 @@ class BalanceSheetReport(BaseModel):
     is_balanced: bool
 
 class CashFlowReport(BaseModel):
+    model_config = {"json_encoders": {Decimal: float}}
+    
     report_id: str
     company_id: str
     report_name: str
