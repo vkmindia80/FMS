@@ -18,6 +18,7 @@ documents_router = APIRouter()
 class DocumentType(str, Enum):
     BANK_STATEMENT = "bank_statement"
     CREDIT_CARD_STATEMENT = "credit_card_statement"
+    STATEMENT = "statement"  # Generic statement type for backward compatibility
     RECEIPT = "receipt"
     INVOICE = "invoice"
     PAYROLL_STUB = "payroll_stub"
