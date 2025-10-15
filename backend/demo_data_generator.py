@@ -90,7 +90,7 @@ def generate_sample_receipt_image(filename: str, amount: float, vendor: str, dat
         title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
         body_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
         small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
-    except:
+    except Exception:
         title_font = ImageFont.load_default()
         body_font = ImageFont.load_default()
         small_font = ImageFont.load_default()
