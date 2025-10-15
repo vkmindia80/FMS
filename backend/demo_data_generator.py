@@ -1125,18 +1125,25 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     logger.info(f"  - Documents: {document_count + additional_docs}")
     logger.info(f"  - Reconciliation Sessions: {reconciliation_count}")
     logger.info(f"  - Invoices: {invoice_count}")
+    logger.info(f"  - Payment Transactions: {payment_count}")
+    logger.info(f"  - Bank Connections: {bank_connection_count}")
     logger.info(f"  - Currencies: {list(set(a['currency_code'] for a in created_accounts))}")
+    logger.info(f"  - Date Range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
     
     return {
+        'success': True,
         'accounts_created': len(created_accounts),
         'transactions_created': transaction_count,
         'documents_created': document_count + additional_docs,
         'reconciliation_sessions_created': reconciliation_count,
         'invoices_created': invoice_count,
+        'payment_transactions_created': payment_count,
+        'bank_connections_created': bank_connection_count,
         'currencies_used': list(set(a['currency_code'] for a in created_accounts)),
         'date_range': {
             'start': start_date.isoformat(),
-            'end': end_date.isoformat()
+            'end': end_date.isoformat(),
+            'span_years': 3
         },
         'summary': {
             'accounts': len(created_accounts),
@@ -1144,6 +1151,21 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
             'documents': document_count + additional_docs,
             'reconciliation_sessions': reconciliation_count,
             'invoices': invoice_count,
-            'date_span_months': 24
+            'payment_transactions': payment_count,
+            'bank_connections': bank_connection_count,
+            'date_span_months': 36
+        },
+        'details': {
+            'account_types': list(set(a['account_type'] for a in created_accounts)),
+            'document_types': ['receipt', 'invoice', 'purchase_order', 'bank_statement', 'expense_report', 'contract'],
+            'features_covered': [
+                'Multi-currency accounts and transactions',
+                'Document upload and processing',
+                'Bank reconciliation sessions',
+                'Accounts receivable invoices',
+                'Payment transactions',
+                'Bank connections',
+                '3 years of historical data'
+            ]
         }
     }
