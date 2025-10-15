@@ -1095,10 +1095,10 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     document_types = [
         ('receipt', 'png', lambda f, a, v, d: generate_sample_receipt_image(f, a, v, d), True),
         ('invoice', 'pdf', lambda f, a, v, d: generate_sample_invoice_pdf(f, a, v, d), True),
-        ('purchase_order', 'pdf', lambda f, a, v, d: generate_purchase_order_pdf(f, a, v, d), True),
+        ('other', 'pdf', lambda f, a, v, d: generate_purchase_order_pdf(f, a, v, d), True),  # purchase_order as 'other'
         ('bank_statement', 'csv', lambda f, a, v, d: generate_bank_statement_csv(f, v, d), False),
-        ('expense_report', 'csv', lambda f, a, v, d: generate_csv_expense_report(f), False),
-        ('contract', 'pdf', lambda f, a, v, d: generate_sample_bank_statement_pdf(f, v, d), False),
+        ('other', 'csv', lambda f, a, v, d: generate_csv_expense_report(f), False),  # expense_report as 'other'
+        ('other', 'pdf', lambda f, a, v, d: generate_sample_bank_statement_pdf(f, v, d), False),  # contract as 'other'
     ]
     
     # Generate 50 more diverse documents to reach ~300 total
