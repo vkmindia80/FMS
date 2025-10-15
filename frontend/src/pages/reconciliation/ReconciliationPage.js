@@ -62,7 +62,7 @@ const ReconciliationPage = () => {
     setSuccess(null);
     
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('afms_access_token');
       
       // Build query string
       const params = new URLSearchParams({
