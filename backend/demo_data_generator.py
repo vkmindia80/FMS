@@ -647,7 +647,7 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     created_transactions = []
     created_documents = []
     
-    start_date = datetime.now() - timedelta(days=365*3)  # 3 years ago
+    start_date = datetime.now() - timedelta(days=365*2)  # 2 years ago
     end_date = datetime.now()
     
     transaction_count = 0
