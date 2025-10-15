@@ -1193,7 +1193,8 @@ async def generate_enhanced_demo_data(db, company_id: str, user_id: str):
     
     # Generate 40-60 payment transactions for comprehensive testing
     for i in range(random.randint(40, 60)):
-        payment_date = fake.date_between(start_date=start_date, end_date=end_date)
+        payment_date_obj = fake.date_between(start_date=start_date, end_date=end_date)
+        payment_date = datetime.combine(payment_date_obj, datetime.min.time()) if isinstance(payment_date_obj, type(start_date.date())) else payment_date_obj
         amount = random.uniform(100, 10000)
         
         payment_status = random.choices(
