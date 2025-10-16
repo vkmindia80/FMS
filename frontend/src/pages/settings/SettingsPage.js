@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProfileSettings from './ProfileSettings';
 import CompanySettings from './CompanySettings';
 import PreferencesSettings from './PreferencesSettings';
@@ -15,7 +16,16 @@ import {
 } from '@heroicons/react/24/outline';
 
 const SettingsPage = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || 'profile');
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
 
   const tabs = [
     { id: 'profile', name: 'Profile', icon: UserIcon, description: 'Personal information' },
