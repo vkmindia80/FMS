@@ -615,11 +615,22 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
         </div>
       );
     } else if (document.file_type.includes('csv') || document.file_type.includes('text')) {
+      if (loadingCsv) {
+        return (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="ml-4 text-gray-600 dark:text-gray-400">Loading file content...</p>
+          </div>
+        );
+      }
+
+      const displayContent = csvContent || document.ocr_text || 'Text preview not available';
+      
       return (
         <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg max-h-[600px] overflow-auto">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-mono whitespace-pre-wrap">
-            {document.ocr_text || 'Text preview not available'}
-          </p>
+          <pre className="text-sm text-gray-600 dark:text-gray-400 font-mono whitespace-pre-wrap break-words">
+            {displayContent}
+          </pre>
         </div>
       );
     }
