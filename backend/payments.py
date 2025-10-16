@@ -348,16 +348,37 @@ async def process_payment(
 @router.get("/history")
 async def get_payment_history(
     limit: int = 50,
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     current_user: dict = Depends(get_current_user)
 ):
     """
     Get payment transaction history
+    - Regular users: See only their company's payments
+    - Super Admin: See payments for any company (specify company_id)
     """
     try:
-        company_id = current_user["company_id"]
+        # Check if user is superadmin
+        from rbac import is_superadmin
+        is_super = await is_superadmin(current_user["_id"])
+        
+        # Determine target company
+        target_company_id = current_user["company_id"]
+        if is_super and company_id:
+            target_company_id = company_id
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing payment history for company: {company_id}")
+        elif is_super:
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing payment history across ALL companies")
+        else:
+            target_company_id = current_user["company_id"]
+        
+        query = {}
+        if is_super and company_id:
+            query["company_id"] = target_company_id
+        elif not is_super:
+            query["company_id"] = target_company_id
         
         payments = await payment_transactions_collection.find(
-            {"company_id": company_id}
+            query
         ).sort("created_at", -1).limit(limit).to_list(length=limit)
         
         for payment in payments:
