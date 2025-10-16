@@ -149,16 +149,37 @@ class GeneralLedgerReport(BaseModel):
 async def generate_trial_balance(
     as_of_date: Optional[date] = Query(None),
     format: ReportFormat = ReportFormat.JSON,
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     current_user: dict = Depends(get_current_user)
 ):
-    """Generate Trial Balance report"""
+    """
+    Generate Trial Balance report
+    - Regular users: See only their company's report
+    - Super Admin: See report for any company (specify company_id)
+    """
+    
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Determine target company
+    target_company_id = current_user["company_id"]
+    if is_super and company_id:
+        target_company_id = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} generating trial balance for company: {company_id}")
+    elif is_super and not company_id:
+        # Super Admin must specify a company for reports
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Super Admin must specify company_id parameter for reports"
+        )
     
     if not as_of_date:
         as_of_date = date.today()
     
     # Get all active accounts
     accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "is_active": True
     }).sort("account_number", 1).to_list(length=None)
     
