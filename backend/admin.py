@@ -521,3 +521,21 @@ async def cleanup_audit_logs(
         "deleted_count": delete_result.deleted_count,
         "cutoff_date": cutoff_date
     }
+
+
+@admin_router.get("/check-superadmin")
+async def check_superadmin_status(current_user: dict = Depends(get_current_user)):
+    """
+    Check if current user is a Super Admin
+    Used by frontend to determine cross-tenant access capabilities
+    """
+    is_super = await is_superadmin(current_user["_id"])
+    
+    return {
+        "is_superadmin": is_super,
+        "user_id": current_user["_id"],
+        "email": current_user["email"],
+        "company_id": current_user["company_id"],
+        "cross_tenant_access": is_super
+
+    }
