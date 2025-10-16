@@ -36,6 +36,8 @@ async def assign_roles_to_demo():
         
         if not demo_user:
             print("❌ Demo user not found!")
+            print("\n💡 TIP: Create demo user first using:")
+            print("   curl -X POST http://localhost:8001/api/auth/create-demo-user")
             return
         
         print(f"✓ Found demo user: {demo_user['_id']}")
@@ -50,6 +52,8 @@ async def assign_roles_to_demo():
         
         if not manager_role:
             print("❌ Manager role not found!")
+            print("\n💡 TIP: Initialize RBAC first using:")
+            print("   python3 /app/backend/init_rbac.py")
             return
         
         print(f"✓ Found manager role: {manager_role['_id']}")
@@ -61,7 +65,7 @@ async def assign_roles_to_demo():
         })
         
         if existing_assignment:
-            print(f"✓ Manager role already assigned to demo account")
+            print(f"✅ Manager role already assigned to demo account")
         else:
             # Assign manager role
             assignment_doc = {
@@ -73,11 +77,11 @@ async def assign_roles_to_demo():
                 "assigned_by": "system"
             }
             await user_roles_collection.insert_one(assignment_doc)
-            print(f"✓ Assigned Manager role to demo account")
+            print(f"✅ Assigned Manager role to demo account")
         
         # Get all role assignments for this user
         assignments = await user_roles_collection.find({"user_id": user_id}).to_list(length=None)
-        print(f"\nTotal roles assigned to demo account: {len(assignments)}")
+        print(f"\n📊 Total roles assigned to demo account: {len(assignments)}")
         
         for assignment in assignments:
             role = await roles_collection.find_one({"_id": assignment["role_id"]})
@@ -85,15 +89,17 @@ async def assign_roles_to_demo():
                 print(f"  - {role['display_name']} ({len(role.get('permission_ids', []))} permissions)")
         
         print("\n" + "=" * 60)
-        print("ASSIGNMENT COMPLETE!")
+        print("✅ ASSIGNMENT COMPLETE!")
         print("=" * 60)
-        print("\nDemo account credentials:")
+        print("\n🔑 Demo account credentials:")
         print("  Email: john.doe@testcompany.com")
         print("  Password: testpassword123")
-        print("\nManager role includes permissions for:")
+        print("\n📋 Manager role includes permissions for:")
         print("  - Dashboard, Transactions, Documents, Accounts")
         print("  - Reports, Invoices, Payments, Reconciliation")
         print("  - View users and settings")
+        print("  - Integration Center, Currency Management")
+        print("\n✨ The sidebar will now be visible in the demo account!")
         print("=" * 60)
         
     except Exception as e:
