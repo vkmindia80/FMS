@@ -19,6 +19,7 @@ import {
 const Header = ({ onMobileMenuClick }) => {
   const { darkMode, toggleDarkMode, colorScheme, setColorScheme, colorSchemes } = useTheme();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showColorMenu, setShowColorMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +32,11 @@ const Header = ({ onMobileMenuClick }) => {
   const handleColorSchemeChange = (schemeId) => {
     setColorScheme(schemeId);
     setShowColorMenu(false);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setShowUserMenu(false);
   };
 
   return (
