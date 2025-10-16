@@ -261,7 +261,7 @@ async def generate_trial_balance(
     if format == ReportFormat.PDF:
         from report_exports import ReportExporter
         report_dict = report_data.dict()
-        report_dict['company_name'] = (await companies_collection.find_one({"_id": current_user["company_id"]}))["name"]
+        report_dict['company_name'] = (await companies_collection.find_one({"_id": target_company_id}))["name"]
         return ReportExporter.export_to_pdf(report_dict, "trial_balance")
     elif format == ReportFormat.EXCEL:
         from report_exports import ReportExporter
