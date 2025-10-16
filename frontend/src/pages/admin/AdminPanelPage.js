@@ -427,6 +427,8 @@ const RolesTab = ({ roles, onEdit, onDelete }) => {
 // ============================================================================
 
 const PermissionsTab = ({ permissions }) => {
+  const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
+  
   // Group permissions by resource
   const groupedPermissions = permissions.reduce((acc, perm) => {
     const resource = perm.resource || 'other';
@@ -437,56 +439,185 @@ const PermissionsTab = ({ permissions }) => {
     return acc;
   }, {});
 
+  const resourceColors = {
+    dashboard: 'blue',
+    transactions: 'green',
+    accounts: 'orange',
+    documents: 'purple',
+    reports: 'red',
+    invoices: 'pink',
+    payments: 'indigo',
+    bank_connections: 'cyan',
+    reconciliation: 'teal',
+    users: 'violet',
+    roles: 'fuchsia',
+    settings: 'gray',
+    audit_logs: 'slate',
+    integrations: 'emerald',
+    company: 'amber'
+  };
+
+  const getResourceColor = (resource) => {
+    return resourceColors[resource] || 'gray';
+  };
+
+  if (Object.keys(groupedPermissions).length === 0) {
+    return (
+      <div className="text-center py-12">
+        <KeyIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <p className="mt-2 text-gray-500 dark:text-gray-400">No permissions found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6" data-testid="permissions-list">
-      {Object.keys(groupedPermissions).length === 0 ? (
-        <div className="text-center py-12">
-          <KeyIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-gray-500 dark:text-gray-400">No permissions found</p>
+      {/* View Mode Toggle */}
+      <div className="flex justify-end">
+        <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800">
+          <button
+            onClick={() => setViewMode('table')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              viewMode === 'table'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            Table View
+          </button>
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              viewMode === 'grid'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            Grid View
+          </button>
+        </div>
+      </div>
+
+      {viewMode === 'table' ? (
+        // Table View
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Permission Name
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Resource
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Action
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Type
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {permissions.map((perm) => {
+                  const color = getResourceColor(perm.resource);
+                  return (
+                    <tr 
+                      key={perm.id} 
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      data-testid={`permission-${perm.id}`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <CheckIcon className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {perm.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-${color}-100 text-${color}-800 dark:bg-${color}-900 dark:text-${color}-200 capitalize`}>
+                          {perm.resource.replace(/_/g, ' ')}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 capitalize">
+                          {perm.action}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        {perm.description || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {perm.is_system && (
+                          <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            System
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
-        Object.entries(groupedPermissions).map(([resource, perms]) => (
-          <div
-            key={resource}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
-          >
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 capitalize flex items-center gap-2">
-              <KeyIcon className="w-5 h-5 text-blue-600" />
-              {resource.replace(/_/g, ' ')}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {perms.map((perm) => (
-                <div
-                  key={perm.id}
-                  className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                  data-testid={`permission-${perm.id}`}
-                >
-                  <CheckIcon className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
-                      {perm.name}
-                    </p>
-                    {perm.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {perm.description}
+        // Grid View (Original)
+        Object.entries(groupedPermissions).map(([resource, perms]) => {
+          const color = getResourceColor(resource);
+          return (
+            <div
+              key={resource}
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white capitalize flex items-center gap-2">
+                  <KeyIcon className={`w-5 h-5 text-${color}-600`} />
+                  {resource.replace(/_/g, ' ')}
+                </h3>
+                <span className={`px-3 py-1 bg-${color}-100 dark:bg-${color}-900 text-${color}-700 dark:text-${color}-300 text-sm rounded-full font-semibold`}>
+                  {perms.length} permissions
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {perms.map((perm) => (
+                  <div
+                    key={perm.id}
+                    className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all"
+                    data-testid={`permission-${perm.id}`}
+                  >
+                    <CheckIcon className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
+                        {perm.name}
                       </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full font-medium">
-                        {perm.action}
-                      </span>
-                      {perm.is_system && (
-                        <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 text-xs rounded-full font-medium">
-                          System
-                        </span>
+                      {perm.description && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                          {perm.description}
+                        </p>
                       )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full font-medium capitalize">
+                          {perm.action}
+                        </span>
+                        {perm.is_system && (
+                          <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 text-xs rounded-full font-medium">
+                            System
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
