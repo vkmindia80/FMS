@@ -246,7 +246,7 @@ async def generate_trial_balance(
     
     report_data = TrialBalanceReport(
         report_id=report_id,
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         report_name=f"Trial Balance as of {as_of_date}",
         as_of_date=as_of_date,
         generated_at=datetime.utcnow(),
