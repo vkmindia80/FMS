@@ -242,7 +242,7 @@ async def generate_trial_balance(
     )
     
     # Get company base currency
-    base_currency = await get_company_base_currency(current_user["company_id"])
+    base_currency = await get_company_base_currency(target_company_id)
     
     report_data = TrialBalanceReport(
         report_id=report_id,
