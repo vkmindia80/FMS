@@ -622,10 +622,16 @@ async def generate_demo_data():
             }
             await users_collection.insert_one(user_doc)
             
+            # ✅ CRITICAL: Assign Manager role to demo user for proper permissions
+            await assign_manager_role_to_user(user_id, company_id)
+            
             demo_user = user_doc
         
         company_id = demo_user["company_id"]
         user_id = demo_user["_id"]
+        
+        # ✅ Ensure existing demo user has manager role assigned (if already exists)
+        await assign_manager_role_to_user(user_id, company_id)
         
         # Import necessary collections and functions
         from database import accounts_collection, transactions_collection, documents_collection
