@@ -493,11 +493,9 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
   // Fetch CSV content when modal opens
   useEffect(() => {
     if (isOpen && document) {
-      // Check if it's a CSV or text file by filename or file_type
-      const isCsvOrText = document.file_type.includes('csv') || 
-                          document.file_type.includes('text') || 
-                          document.original_filename?.toLowerCase().endsWith('.csv') ||
-                          document.original_filename?.toLowerCase().endsWith('.txt');
+      // Check if it's a CSV or text file by filename extension
+      const fileExtension = document.original_filename?.toLowerCase().split('.').pop() || '';
+      const isCsvOrText = ['csv', 'txt'].includes(fileExtension);
       
       if (isCsvOrText) {
         const fetchFileContent = async () => {
