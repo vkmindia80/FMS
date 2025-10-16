@@ -114,6 +114,33 @@ const LoginPage = () => {
     }
   };
 
+  const handleAutofillAdmin = () => {
+    setFormData(prev => ({
+      ...prev,
+      email: ADMIN_CREDENTIALS.email,
+      password: ADMIN_CREDENTIALS.password
+    }));
+    toast.success('Admin credentials filled! Click "Sign In" to continue.');
+  };
+
+  const handleAutofillSuperadmin = () => {
+    setFormData(prev => ({
+      ...prev,
+      email: SUPERADMIN_CREDENTIALS.email,
+      password: SUPERADMIN_CREDENTIALS.password
+    }));
+    toast.success('System Superadmin credentials filled! Click "Sign In" to continue.');
+  };
+
+  const handleAutofillDemo = () => {
+    setFormData(prev => ({
+      ...prev,
+      email: DEMO_CREDENTIALS.email,
+      password: DEMO_CREDENTIALS.password
+    }));
+    toast.success('Demo credentials filled! Click "Sign In" to continue.');
+  };
+
   const handleSocialLogin = (provider) => {
     // Placeholder for social login implementation
     console.log(`Social login with ${provider} - Coming soon!`);
