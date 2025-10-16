@@ -508,11 +508,28 @@ async def upload_bank_statement(
 async def list_reconciliation_sessions(
     account_id: Optional[str] = None,
     status_filter: Optional[str] = None,
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     current_user: dict = Depends(get_current_user)
 ):
-    """List reconciliation sessions"""
+    """
+    List reconciliation sessions
+    - Regular users: See only their company's sessions
+    - Super Admin: See sessions across all companies (optionally filter by company_id)
+    """
     
-    query = {'company_id': current_user['company_id']}
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Build query with tenant filtering
+    query = {}
+    if is_super and company_id:
+        query["company_id"] = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing reconciliation sessions from company: {company_id}")
+    elif is_super:
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing reconciliation sessions across ALL companies")
+    else:
+        query["company_id"] = current_user["company_id"]
     
     if account_id:
         query['account_id'] = account_id
