@@ -288,6 +288,15 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
         </div>
       </div>
 
+      {/* ✅ Warning Banner: Show when user has no permissions (fallback active) */}
+      {hasNoPermissions && (
+        <div className="mx-4 mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <p className="text-xs text-amber-800 dark:text-amber-200 font-medium">
+            ⚠️ Limited access - contact your administrator to assign roles
+          </p>
+        </div>
+      )}
+
       {/* Navigation Items */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {finalNavigationItems.map((item) => {
