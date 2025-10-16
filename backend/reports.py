@@ -189,7 +189,7 @@ async def generate_trial_balance(
     
     for account in accounts:
         # Calculate balance for each account
-        balance = await calculate_account_balance(account["_id"], current_user["company_id"])
+        balance = await calculate_account_balance(account["_id"], target_company_id)
         
         account_category = AccountCategory(account.get("account_category", "assets"))
         
