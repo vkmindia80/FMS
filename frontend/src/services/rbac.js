@@ -85,7 +85,7 @@ export const deleteRole = async (roleId) => {
 
 export const getUserRoles = async (userId) => {
   try {
-    const response = await api.get(`/api/rbac/users/${userId}/roles`);
+    const response = await api.get(`/rbac/users/${userId}/roles`);
     return response.data;
   } catch (error) {
     console.error('Error fetching user roles:', error);
@@ -95,7 +95,7 @@ export const getUserRoles = async (userId) => {
 
 export const getUserPermissions = async (userId) => {
   try {
-    const response = await api.get(`/api/rbac/users/${userId}/permissions`);
+    const response = await api.get(`/rbac/users/${userId}/permissions`);
     return response.data;
   } catch (error) {
     console.error('Error fetching user permissions:', error);
@@ -105,7 +105,7 @@ export const getUserPermissions = async (userId) => {
 
 export const assignRolesToUser = async (userId, roleIds) => {
   try {
-    const response = await api.post(`/api/rbac/users/${userId}/roles`, {
+    const response = await api.post(`/rbac/users/${userId}/roles`, {
       user_id: userId,
       role_ids: roleIds
     });
