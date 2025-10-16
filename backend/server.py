@@ -71,9 +71,11 @@ from report_scheduling import router as scheduling_router
 from reconciliation import router as reconciliation_router
 from email_config import router as email_config_router
 from payment_gateway_config import router as payment_gateway_router
+from settings import settings_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(settings_router, prefix="/api/settings", tags=["Settings"])
 app.include_router(documents_router, prefix="/api/documents", tags=["Documents"])
 app.include_router(transactions_router, prefix="/api/transactions", tags=["Transactions"])
 app.include_router(accounts_router, prefix="/api/accounts", tags=["Accounts"])
