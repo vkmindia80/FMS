@@ -397,6 +397,15 @@ async def create_account(
     # Determine account category
     account_category = get_account_category(account_data.account_type)
     
+    # Auto-generate account number if not provided
+    account_number = account_data.account_number
+    if not account_number:
+        account_number = await generate_unique_account_number(
+            current_user["company_id"], 
+            account_data.account_type
+        )
+        logger.info(f"Auto-generated account number {account_number} for account {account_data.name}")
+    
     # Create account document
     account_doc = {
         "_id": account_id,
@@ -404,7 +413,7 @@ async def create_account(
         "name": account_data.name,
         "account_type": account_data.account_type,
         "account_category": account_category,
-        "account_number": account_data.account_number,
+        "account_number": account_number,
         "parent_account_id": account_data.parent_account_id,
         "description": account_data.description,
         "is_active": account_data.is_active,
