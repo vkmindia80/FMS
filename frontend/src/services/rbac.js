@@ -7,7 +7,7 @@ import api from './api';
 export const getPermissions = async (resource = null) => {
   try {
     const params = resource ? { resource } : {};
-    const response = await api.get('/api/rbac/permissions', { params });
+    const response = await api.get('/rbac/permissions', { params });
     return response.data;
   } catch (error) {
     console.error('Error fetching permissions:', error);
@@ -17,7 +17,7 @@ export const getPermissions = async (resource = null) => {
 
 export const createPermission = async (permissionData) => {
   try {
-    const response = await api.post('/api/rbac/permissions', permissionData);
+    const response = await api.post('/rbac/permissions', permissionData);
     return response.data;
   } catch (error) {
     console.error('Error creating permission:', error);
