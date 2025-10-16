@@ -543,9 +543,29 @@ async def generate_profit_loss_report(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
     format: ReportFormat = ReportFormat.JSON,
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     current_user: dict = Depends(get_current_user)
 ):
-    """Generate Profit & Loss statement"""
+    """
+    Generate Profit & Loss statement
+    - Regular users: See only their company's report
+    - Super Admin: See report for any company (specify company_id)
+    """
+    
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Determine target company
+    target_company_id = current_user["company_id"]
+    if is_super and company_id:
+        target_company_id = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} generating P&L for company: {company_id}")
+    elif is_super and not company_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Super Admin must specify company_id parameter for reports"
+        )
     
     # Get period dates
     period_start, period_end = get_period_dates(period, start_date, end_date)
