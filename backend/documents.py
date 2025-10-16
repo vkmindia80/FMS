@@ -341,10 +341,16 @@ async def get_document(
 ):
     """Get specific document details"""
     
-    document = await documents_collection.find_one({
-        "_id": document_id,
-        "company_id": current_user["company_id"]
-    })
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Build query with tenant filtering
+    query = {"_id": document_id}
+    if not is_super:
+        query["company_id"] = current_user["company_id"]
+    
+    document = await documents_collection.find_one(query)
     
     if not document:
         raise HTTPException(
