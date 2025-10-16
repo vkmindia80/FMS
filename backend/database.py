@@ -35,3 +35,9 @@ scheduled_report_history_collection = database.scheduled_report_history
 # Phase 15: Reconciliation Collections
 reconciliation_sessions_collection = database.reconciliation_sessions
 reconciliation_matches_collection = database.reconciliation_matches
+
+# RBAC Collections
+permissions_collection = database.permissions
+roles_collection = database.roles
+user_roles_collection = database.user_roles
+menus_collection = database.menus
