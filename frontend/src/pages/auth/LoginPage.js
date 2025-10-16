@@ -376,26 +376,12 @@ const LoginPage = () => {
               </div>
             </div>
           </div>
-                        </>
-                      ) : (
-                        <>
-                          <CircleStackIcon className="w-4 h-4 mr-2" />
-                          Generate Data
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Login Form */}
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-gray-200 to-gray-300 rounded-2xl blur opacity-20"></div>
             <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/50">
-              <form className="space-y-6" onSubmit={handleSubmit} data-testid="login-form">
-                {/* Error Display */}
+              <form className="space-y-6" onSubmit={handleSubmit} data-testid="login-form">{/* Error Display */}
                 {error && (
                   <div className="rounded-lg bg-red-50 border border-red-200 p-4 animate-shake" data-testid="error-message">
                     <div className="flex">
