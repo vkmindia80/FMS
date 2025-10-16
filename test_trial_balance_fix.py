@@ -85,9 +85,6 @@ async def test_trial_balance():
         print(f'\n❌ Error generating report: {e}')
         import traceback
         traceback.print_exc()
-    
-    finally:
-        await database.client.close()
 
 if __name__ == "__main__":
     asyncio.run(test_trial_balance())
