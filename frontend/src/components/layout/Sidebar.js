@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 import {
   HomeIcon,
   DocumentTextIcon,
@@ -22,6 +23,7 @@ import {
   CurrencyDollarIcon,
   PuzzlePieceIcon,
   CheckCircleIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
