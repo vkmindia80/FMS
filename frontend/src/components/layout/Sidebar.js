@@ -29,7 +29,7 @@ import {
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
   const { darkMode, sidebarCollapsed, toggleSidebar, currentScheme } = useTheme();
   const { user, logout } = useAuth();
-  const { hasPermission, hasAnyPermission, loading: permissionsLoading } = usePermissions();
+  const { hasPermission, hasAnyPermission, permissionNames, loading: permissionsLoading } = usePermissions();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState(null);
 
