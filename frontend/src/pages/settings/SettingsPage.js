@@ -18,12 +18,12 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabs = [
-    { id: 'profile', name: 'Profile', icon: UserIcon },
-    { id: 'company', name: 'Company', icon: BuildingOfficeIcon },
-    { id: 'preferences', name: 'Preferences', icon: Cog6ToothIcon },
-    { id: 'security', name: 'Security', icon: ShieldCheckIcon },
-    { id: 'integrations', name: 'Integrations', icon: CubeIcon },
-    { id: 'billing', name: 'Billing', icon: CreditCardIcon },
+    { id: 'profile', name: 'Profile', icon: UserIcon, description: 'Personal information' },
+    { id: 'company', name: 'Company', icon: BuildingOfficeIcon, description: 'Organization settings' },
+    { id: 'preferences', name: 'Preferences', icon: Cog6ToothIcon, description: 'App preferences' },
+    { id: 'security', name: 'Security', icon: ShieldCheckIcon, description: 'Password & privacy' },
+    { id: 'integrations', name: 'Integrations', icon: CubeIcon, description: 'Connected services' },
+    { id: 'billing', name: 'Billing', icon: CreditCardIcon, description: 'Plans & payments' },
   ];
 
   const renderContent = () => {
@@ -46,50 +46,70 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="space-y-6" data-testid="settings-page">
-      {/* Page Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Manage your account, company, and application preferences
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 -m-6 p-6" data-testid="settings-page">
+      {/* Enhanced Page Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-4 mb-2">
+          <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
+            <Cog6ToothIcon className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              Settings
+            </h1>
+            <p className="mt-1 text-gray-600 dark:text-gray-400">
+              Manage your account, company, and application preferences
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Settings Navigation */}
-        <div className="lg:col-span-1">
-          <nav className="space-y-1" data-testid="settings-nav">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  data-testid={`settings-tab-${tab.id}`}
-                  className={`w-full group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    isActive
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <Icon
-                    className={`mr-3 h-5 w-5 ${
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Enhanced Settings Navigation */}
+        <div className="lg:col-span-3">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 sticky top-6">
+            <nav className="space-y-1" data-testid="settings-nav">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    data-testid={`settings-tab-${tab.id}`}
+                    className={`w-full group flex items-start px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 transform ${
                       isActive
-                        ? 'text-primary-500 dark:text-primary-400'
-                        : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'
+                        ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/50 scale-[1.02]'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:scale-[1.01]'
                     }`}
-                  />
-                  {tab.name}
-                </button>
-              );
-            })}
-          </nav>
+                  >
+                    <Icon
+                      className={`mr-3 h-5 w-5 flex-shrink-0 transition-transform duration-200 ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-gray-400 dark:text-gray-500 group-hover:text-primary-500 dark:group-hover:text-primary-400'
+                      } ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}
+                    />
+                    <div className="text-left">
+                      <div className={isActive ? 'font-semibold' : ''}>{tab.name}</div>
+                      <div className={`text-xs mt-0.5 ${
+                        isActive 
+                          ? 'text-primary-100' 
+                          : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
+                      }`}>
+                        {tab.description}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
 
-        {/* Settings Content */}
-        <div className="lg:col-span-3">
-          <div data-testid="settings-content">
+        {/* Enhanced Settings Content */}
+        <div className="lg:col-span-9">
+          <div className="transition-all duration-300 ease-in-out" data-testid="settings-content">
             {renderContent()}
           </div>
         </div>
