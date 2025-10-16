@@ -310,7 +310,9 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppContent />
+        <PermissionsProvider>
+          <AppContent />
+        </PermissionsProvider>
       </AuthProvider>
     </ThemeProvider>
   );
