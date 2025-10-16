@@ -152,6 +152,23 @@ async def startup_event():
         await report_schedules_collection.create_index([("next_run", 1), ("enabled", 1)])
         await scheduled_report_history_collection.create_index([("schedule_id", 1), ("executed_at", -1)])
         
+        # RBAC indexes
+        from database import (
+            permissions_collection,
+            roles_collection,
+            user_roles_collection,
+            menus_collection
+        )
+        await permissions_collection.create_index([("name", 1)], unique=True)
+        await permissions_collection.create_index([("resource", 1)])
+        await roles_collection.create_index([("name", 1), ("company_id", 1)], unique=True)
+        await roles_collection.create_index([("company_id", 1)])
+        await user_roles_collection.create_index([("user_id", 1)])
+        await user_roles_collection.create_index([("role_id", 1)])
+        await user_roles_collection.create_index([("user_id", 1), ("role_id", 1)], unique=True)
+        await menus_collection.create_index([("name", 1)], unique=True)
+        await menus_collection.create_index([("parent_id", 1), ("order", 1)])
+        
         # Phase 13: Initialize exchange rates and start scheduler
         logger.info("💱 Initializing multi-currency support...")
         from currency_tasks import initialize_exchange_rates, start_currency_scheduler
