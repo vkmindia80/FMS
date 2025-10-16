@@ -546,16 +546,31 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
 
   const renderPreview = () => {
     const fileUrl = `${BACKEND_URL}/api/uploads/${document.filename}`;
+    
+    // Helper function to detect file type by extension
+    const getFileExtension = (filename) => {
+      return filename?.toLowerCase().split('.').pop() || '';
+    };
+    
+    const fileExtension = getFileExtension(document.original_filename || document.filename);
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(fileExtension);
+    const isPdf = fileExtension === 'pdf';
+    const isCsvOrText = ['csv', 'txt'].includes(fileExtension);
 
-    if (document.file_type.includes('image')) {
+    if (isImage) {
       return (
         <img
           src={fileUrl}
           alt={document.original_filename}
           className="max-w-full max-h-[600px] mx-auto rounded-lg"
+          onError={(e) => {
+            console.error('Image load error:', e);
+            e.target.style.display = 'none';
+            e.target.parentElement.innerHTML = '<p class="text-gray-600 dark:text-gray-400">Unable to load image</p>';
+          }}
         />
       );
-    } else if (document.file_type.includes('pdf')) {
+    } else if (isPdf) {
       if (pdfError) {
         return (
           <div className="text-center py-12">
