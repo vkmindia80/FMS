@@ -127,15 +127,20 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
   ];
 
   // Filter navigation items based on permissions
-  const navigationItems = allNavigationItems.filter(item => {
-    if (!item.permissions || item.permissions.length === 0) return true;
-    return hasAnyPermission(item.permissions);
-  });
+  // While loading, show all items to avoid empty sidebar
+  const navigationItems = permissionsLoading 
+    ? allNavigationItems 
+    : allNavigationItems.filter(item => {
+        if (!item.permissions || item.permissions.length === 0) return true;
+        return hasAnyPermission(item.permissions);
+      });
 
-  const bottomItems = allBottomItems.filter(item => {
-    if (!item.permissions || item.permissions.length === 0) return true;
-    return hasAnyPermission(item.permissions);
-  });
+  const bottomItems = permissionsLoading 
+    ? allBottomItems 
+    : allBottomItems.filter(item => {
+        if (!item.permissions || item.permissions.length === 0) return true;
+        return hasAnyPermission(item.permissions);
+      });
 
   const isActive = (href) => {
     if (href === '/dashboard') {
