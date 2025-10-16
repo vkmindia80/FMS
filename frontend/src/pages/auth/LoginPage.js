@@ -36,7 +36,7 @@ const LoginPage = () => {
   // Demo credentials
   const DEMO_CREDENTIALS = {
     email: 'john.doe@testcompany.com',
-    password: 'testpassword123'
+    password: 'Demo1234!'
   };
 
   // Real-time form validation
