@@ -136,15 +136,29 @@ async def list_invoices(
     status_filter: Optional[str] = None,
     payment_status: Optional[str] = None,
     limit: int = 50,
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     current_user: dict = Depends(get_current_user)
 ):
     """
     List all invoices with optional filters
+    - Regular users: See only their company's invoices
+    - Super Admin: See invoices across all companies (optionally filter by company_id)
     """
     try:
-        company_id = current_user["company_id"]
+        # Check if user is superadmin
+        from rbac import is_superadmin
+        is_super = await is_superadmin(current_user["_id"])
         
-        query = {"company_id": company_id}
+        # Build query with tenant filtering
+        query = {}
+        if is_super and company_id:
+            query["company_id"] = company_id
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing invoices from company: {company_id}")
+        elif is_super:
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing invoices across ALL companies")
+        else:
+            query["company_id"] = current_user["company_id"]
+        
         if status_filter:
             query["status"] = status_filter
         if payment_status:
