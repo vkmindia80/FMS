@@ -492,26 +492,34 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
 
   // Fetch CSV content when modal opens
   useEffect(() => {
-    if (isOpen && document && (document.file_type.includes('csv') || document.file_type.includes('text'))) {
-      const fetchFileContent = async () => {
-        setLoadingCsv(true);
-        try {
-          const fileUrl = `${BACKEND_URL}/api/uploads/${document.filename}`;
-          const response = await fetch(fileUrl);
-          if (response.ok) {
-            const text = await response.text();
-            setCsvContent(text);
-          } else {
-            setCsvContent('Unable to load file content');
+    if (isOpen && document) {
+      // Check if it's a CSV or text file by filename or file_type
+      const isCsvOrText = document.file_type.includes('csv') || 
+                          document.file_type.includes('text') || 
+                          document.original_filename?.toLowerCase().endsWith('.csv') ||
+                          document.original_filename?.toLowerCase().endsWith('.txt');
+      
+      if (isCsvOrText) {
+        const fetchFileContent = async () => {
+          setLoadingCsv(true);
+          try {
+            const fileUrl = `${BACKEND_URL}/api/uploads/${document.filename}`;
+            const response = await fetch(fileUrl);
+            if (response.ok) {
+              const text = await response.text();
+              setCsvContent(text);
+            } else {
+              setCsvContent('Unable to load file content');
+            }
+          } catch (error) {
+            console.error('Error fetching file content:', error);
+            setCsvContent('Error loading file content');
+          } finally {
+            setLoadingCsv(false);
           }
-        } catch (error) {
-          console.error('Error fetching file content:', error);
-          setCsvContent('Error loading file content');
-        } finally {
-          setLoadingCsv(false);
-        }
-      };
-      fetchFileContent();
+        };
+        fetchFileContent();
+      }
     }
   }, [isOpen, document]);
 
