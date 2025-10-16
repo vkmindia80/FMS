@@ -277,6 +277,30 @@ async def register_user(user_data: UserRegister, request: Request):
     
     await users_collection.insert_one(user_doc)
     
+    # Auto-assign superadmin role to first user
+    from database import roles_collection, user_roles_collection
+    total_users = await users_collection.count_documents({})
+    
+    if total_users == 1:  # First user (not counting superadmin@afms.system)
+        # Find superadmin role
+        superadmin_role = await roles_collection.find_one({
+            "name": "superadmin",
+            "is_system": True
+        })
+        
+        if superadmin_role:
+            # Assign superadmin role to this user
+            assignment_doc = {
+                "_id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "role_id": superadmin_role["_id"],
+                "company_id": company_id,
+                "assigned_at": datetime.utcnow(),
+                "assigned_by": "system"
+            }
+            await user_roles_collection.insert_one(assignment_doc)
+            logger.info(f"✅ Auto-assigned superadmin role to first user: {user_data.email}")
+    
     # Create tokens
     access_token = create_access_token(data={"sub": user_id})
     refresh_token = create_refresh_token(data={"sub": user_id})
