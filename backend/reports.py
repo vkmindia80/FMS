@@ -1272,17 +1272,39 @@ async def get_multi_currency_summary(
     }
 
 @reports_router.get("/dashboard-summary")
-async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
-    """Get summary data for dashboard"""
+async def get_dashboard_summary(
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get summary data for dashboard
+    - Regular users: See only their company's dashboard
+    - Super Admin: See dashboard for any company (specify company_id)
+    """
+    
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Determine target company
+    target_company_id = current_user["company_id"]
+    if is_super and company_id:
+        target_company_id = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} generating dashboard for company: {company_id}")
+    elif is_super and not company_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Super Admin must specify company_id parameter for reports"
+        )
     
     # Get current month P&L
     current_month_pl = await generate_profit_loss_report(
-        ReportPeriod.CURRENT_MONTH, None, None, ReportFormat.JSON, current_user
+        ReportPeriod.CURRENT_MONTH, None, None, ReportFormat.JSON, company_id, current_user
     )
     
     # Get current balance sheet
     current_bs = await generate_balance_sheet_report(
-        None, ReportFormat.JSON, current_user
+        None, ReportFormat.JSON, company_id, current_user
     )
     
     # Get transaction counts
