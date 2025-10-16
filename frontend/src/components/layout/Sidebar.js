@@ -142,6 +142,17 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
         return hasAnyPermission(item.permissions);
       });
 
+  // ✅ FALLBACK: If user has no permissions and not loading, show at least Dashboard and Settings
+  // This ensures the sidebar is never completely empty (safety net)
+  const hasNoPermissions = !permissionsLoading && permissionNames.length === 0;
+  const finalNavigationItems = hasNoPermissions && navigationItems.length === 0
+    ? [allNavigationItems[0]] // Show at least Dashboard
+    : navigationItems;
+  
+  const finalBottomItems = hasNoPermissions && bottomItems.length === 0
+    ? allBottomItems // Show Help Center and Settings when no permissions
+    : bottomItems;
+
   const isActive = (href) => {
     if (href === '/dashboard') {
       return location.pathname === '/dashboard' || location.pathname === '/';
