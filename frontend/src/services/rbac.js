@@ -31,7 +31,7 @@ export const createPermission = async (permissionData) => {
 
 export const getRoles = async () => {
   try {
-    const response = await api.get('/api/rbac/roles');
+    const response = await api.get('/rbac/roles');
     return response.data;
   } catch (error) {
     console.error('Error fetching roles:', error);
@@ -41,7 +41,7 @@ export const getRoles = async () => {
 
 export const getRole = async (roleId) => {
   try {
-    const response = await api.get(`/api/rbac/roles/${roleId}`);
+    const response = await api.get(`/rbac/roles/${roleId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching role:', error);
@@ -51,7 +51,7 @@ export const getRole = async (roleId) => {
 
 export const createRole = async (roleData) => {
   try {
-    const response = await api.post('/api/rbac/roles', roleData);
+    const response = await api.post('/rbac/roles', roleData);
     return response.data;
   } catch (error) {
     console.error('Error creating role:', error);
@@ -61,7 +61,7 @@ export const createRole = async (roleData) => {
 
 export const updateRole = async (roleId, roleData) => {
   try {
-    const response = await api.put(`/api/rbac/roles/${roleId}`, roleData);
+    const response = await api.put(`/rbac/roles/${roleId}`, roleData);
     return response.data;
   } catch (error) {
     console.error('Error updating role:', error);
@@ -71,7 +71,7 @@ export const updateRole = async (roleId, roleData) => {
 
 export const deleteRole = async (roleId) => {
   try {
-    const response = await api.delete(`/api/rbac/roles/${roleId}`);
+    const response = await api.delete(`/rbac/roles/${roleId}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting role:', error);
