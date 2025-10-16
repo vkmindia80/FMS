@@ -63,19 +63,48 @@ class SystemStats(BaseModel):
 
 @admin_router.get("/users", response_model=List[UserManagement])
 async def list_all_users(
-    company_id: Optional[str] = None,
+    company_id: Optional[str] = Query(None, description="Filter by company ID"),
     role: Optional[UserRole] = None,
     is_active: Optional[bool] = None,
     limit: int = Query(50, le=1000),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(require_admin())
+    current_user: dict = Depends(get_current_user)
 ):
-    """List users across all companies (admin only)"""
+    """
+    List users with tenant isolation
+    - Regular Admins: See only their company users
+    - Super Admin: See all users across all companies (optionally filter by company_id)
+    """
+    
+    # Check if user is superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    if not is_super:
+        # Regular users/admins can only see their own company
+        # Verify user has admin permissions for their company
+        from rbac import has_permission
+        if not await has_permission(current_user["_id"], "users:view"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to view users"
+            )
+        # Force filter by user's company
+        company_id = current_user["company_id"]
     
     # Build query
     query = {}
     
-    if company_id:
+    # Apply tenant filtering
+    if is_super and company_id:
+        # Super Admin filtering by specific company
+        query["company_id"] = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing users from company: {company_id}")
+    elif is_super:
+        # Super Admin viewing all companies
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing users across ALL companies")
+        # No company_id filter - see all
+    else:
+        # Regular admin - only their company
         query["company_id"] = company_id
     
     if role:
