@@ -153,7 +153,7 @@ const DocumentsPage = () => {
     try {
       const token = localStorage.getItem('afms_access_token');
       const response = await axios.get(
-        `${BACKEND_URL}/uploads/${doc.filename}`,
+        `${BACKEND_URL}/api/uploads/${doc.filename}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: 'blob',
