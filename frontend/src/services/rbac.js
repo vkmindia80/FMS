@@ -146,7 +146,7 @@ export const createMenu = async (menuData) => {
 
 export const getUsers = async () => {
   try {
-    const response = await api.get('/api/admin/users');
+    const response = await api.get('/admin/users');
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -156,7 +156,7 @@ export const getUsers = async () => {
 
 export const updateUser = async (userId, userData) => {
   try {
-    const response = await api.put(`/api/admin/users/${userId}`, userData);
+    const response = await api.put(`/admin/users/${userId}`, userData);
     return response.data;
   } catch (error) {
     console.error('Error updating user:', error);
@@ -166,7 +166,7 @@ export const updateUser = async (userId, userData) => {
 
 export const deleteUser = async (userId) => {
   try {
-    const response = await api.delete(`/api/admin/users/${userId}`);
+    const response = await api.delete(`/admin/users/${userId}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting user:', error);
