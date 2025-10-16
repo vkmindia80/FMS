@@ -269,6 +269,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <AdminPanelPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/help" 
             element={
               <ProtectedRoute>
