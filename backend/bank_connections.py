@@ -172,15 +172,32 @@ async def connect_bank_account(
 
 
 @router.get("/connections", response_model=List[Dict[str, Any]])
-async def list_bank_connections(current_user: dict = Depends(get_current_user)):
+async def list_bank_connections(
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
+    current_user: dict = Depends(get_current_user)
+):
     """
-    List all bank connections for the company
+    List all bank connections
+    - Regular users: See only their company's connections
+    - Super Admin: See connections across all companies (optionally filter by company_id)
     """
     try:
-        company_id = current_user["company_id"]
+        # Check if user is superadmin
+        from rbac import is_superadmin
+        is_super = await is_superadmin(current_user["_id"])
+        
+        # Build query with tenant filtering
+        query = {"status": {"$ne": "deleted"}}
+        if is_super and company_id:
+            query["company_id"] = company_id
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing bank connections from company: {company_id}")
+        elif is_super:
+            logger.info(f"🔍 Super Admin {current_user['email']} viewing bank connections across ALL companies")
+        else:
+            query["company_id"] = current_user["company_id"]
         
         connections = await bank_connections_collection.find(
-            {"company_id": company_id, "status": {"$ne": "deleted"}}
+            query
         ).to_list(length=100)
         
         # Remove sensitive data
