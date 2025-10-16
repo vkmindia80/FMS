@@ -39,6 +39,18 @@ const LoginPage = () => {
     password: 'testpassword123'
   };
 
+  // Admin credentials
+  const ADMIN_CREDENTIALS = {
+    email: 'admin@afms.com',
+    password: 'Admin@123456'
+  };
+
+  // System Superadmin credentials
+  const SUPERADMIN_CREDENTIALS = {
+    email: 'superadmin@afms.system',
+    password: 'admin123'
+  };
+
   // Real-time form validation
   useEffect(() => {
     const errors = {};
