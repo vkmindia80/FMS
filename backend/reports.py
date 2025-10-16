@@ -230,7 +230,7 @@ async def generate_trial_balance(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="trial_balance_report_generated",
         details={
             "report_id": report_id,
