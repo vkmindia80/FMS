@@ -311,9 +311,11 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <PermissionsProvider>
-          <AppContent />
-        </PermissionsProvider>
+        <SuperAdminProvider>
+          <PermissionsProvider>
+            <AppContent />
+          </PermissionsProvider>
+        </SuperAdminProvider>
       </AuthProvider>
     </ThemeProvider>
   );
