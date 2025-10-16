@@ -375,14 +375,35 @@ async def list_transactions(
     status: Optional[TransactionStatus] = None,
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
+    company_id: Optional[str] = Query(None, description="Filter by company ID (Super Admin only)"),
     limit: int = Query(50, le=1000),
     offset: int = Query(0, ge=0),
     current_user: dict = Depends(get_current_user)
 ):
-    """List transactions with filtering options"""
+    """
+    List transactions with filtering options
+    - Regular users: See only their company's transactions
+    - Super Admin: See all transactions across companies (optionally filter by company_id)
+    """
     
-    # Build query
-    query = {"company_id": current_user["company_id"]}
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Build query with tenant filtering
+    query = {}
+    
+    if is_super and company_id:
+        # Super Admin filtering by specific company
+        query["company_id"] = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing transactions from company: {company_id}")
+    elif is_super:
+        # Super Admin viewing all companies
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing transactions across ALL companies")
+        # No company_id filter - see all
+    else:
+        # Regular user - only their company
+        query["company_id"] = current_user["company_id"]
     
     if transaction_type:
         query["transaction_type"] = transaction_type
