@@ -1064,6 +1064,52 @@ Summary of Transactions:
         )
 
 
+async def assign_manager_role_to_user(user_id: str, company_id: str):
+    """
+    Helper function to assign Manager role to a user
+    This ensures users have proper permissions to access the application
+    """
+    from database import roles_collection, user_roles_collection
+    
+    try:
+        # Find the Manager role
+        manager_role = await roles_collection.find_one({
+            "name": "manager",
+            "is_system": True
+        })
+        
+        if not manager_role:
+            logger.warning("Manager role not found - RBAC may not be initialized")
+            return False
+        
+        # Check if role is already assigned
+        existing_assignment = await user_roles_collection.find_one({
+            "user_id": user_id,
+            "role_id": manager_role["_id"]
+        })
+        
+        if existing_assignment:
+            logger.info(f"Manager role already assigned to user {user_id}")
+            return True
+        
+        # Assign manager role
+        assignment_doc = {
+            "_id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "role_id": manager_role["_id"],
+            "company_id": company_id,
+            "assigned_at": datetime.utcnow(),
+            "assigned_by": "system"
+        }
+        await user_roles_collection.insert_one(assignment_doc)
+        logger.info(f"✅ Assigned Manager role to user {user_id}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to assign manager role: {str(e)}")
+        return False
+
+
 @auth_router.post("/create-demo-user")
 async def create_demo_user():
     """
@@ -1081,6 +1127,9 @@ async def create_demo_user():
         demo_user = await users_collection.find_one({"email": DEMO_EMAIL})
         
         if demo_user:
+            # Ensure existing demo user has manager role assigned
+            await assign_manager_role_to_user(demo_user["_id"], demo_user["company_id"])
+            
             logger.info(f"Demo user already exists: {DEMO_EMAIL}")
             return {
                 "success": True,
@@ -1140,23 +1189,27 @@ async def create_demo_user():
         
         logger.info(f"Created demo user: {DEMO_EMAIL} and company: {company_id}")
         
+        # ✅ CRITICAL: Assign Manager role to demo user for proper permissions
+        role_assigned = await assign_manager_role_to_user(user_id, company_id)
+        
         # Log audit event
         await log_audit_event(
             user_id=user_id,
             company_id=company_id,
             action="demo_user_created",
-            details={"email": DEMO_EMAIL}
+            details={"email": DEMO_EMAIL, "role_assigned": role_assigned}
         )
         
         return {
             "success": True,
-            "message": "Demo user created successfully",
+            "message": "Demo user created successfully with Manager role",
             "data": {
                 "email": DEMO_EMAIL,
                 "password": DEMO_PASSWORD,
                 "exists": False,
                 "user_id": user_id,
-                "company_id": company_id
+                "company_id": company_id,
+                "role_assigned": role_assigned
             }
         }
         
