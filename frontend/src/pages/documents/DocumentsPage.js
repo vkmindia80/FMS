@@ -637,10 +637,7 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
           )}
         </div>
       );
-    } else if (document.file_type.includes('csv') || 
-                document.file_type.includes('text') || 
-                document.original_filename?.toLowerCase().endsWith('.csv') ||
-                document.original_filename?.toLowerCase().endsWith('.txt')) {
+    } else if (isCsvOrText) {
       if (loadingCsv) {
         return (
           <div className="flex items-center justify-center py-12">
