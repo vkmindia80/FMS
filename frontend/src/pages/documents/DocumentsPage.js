@@ -487,6 +487,33 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfError, setPdfError] = useState(false);
+  const [csvContent, setCsvContent] = useState('');
+  const [loadingCsv, setLoadingCsv] = useState(false);
+
+  // Fetch CSV content when modal opens
+  useEffect(() => {
+    if (isOpen && document && (document.file_type.includes('csv') || document.file_type.includes('text'))) {
+      const fetchFileContent = async () => {
+        setLoadingCsv(true);
+        try {
+          const fileUrl = `${BACKEND_URL}/api/uploads/${document.filename}`;
+          const response = await fetch(fileUrl);
+          if (response.ok) {
+            const text = await response.text();
+            setCsvContent(text);
+          } else {
+            setCsvContent('Unable to load file content');
+          }
+        } catch (error) {
+          console.error('Error fetching file content:', error);
+          setCsvContent('Error loading file content');
+        } finally {
+          setLoadingCsv(false);
+        }
+      };
+      fetchFileContent();
+    }
+  }, [isOpen, document]);
 
   if (!isOpen || !document) return null;
 
