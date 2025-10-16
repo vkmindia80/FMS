@@ -1288,10 +1288,16 @@ async def generate_enhanced_demo_data_endpoint():
             await users_collection.insert_one(user_doc)
             
             logger.info(f"Created demo user: {DEMO_EMAIL} and company: {company_id}")
+            
+            # ✅ CRITICAL: Assign Manager role to demo user for proper permissions
+            await assign_manager_role_to_user(user_id, company_id)
         else:
             company_id = demo_user["company_id"]
             user_id = demo_user["_id"]
             logger.info(f"Using existing demo user: {DEMO_EMAIL}")
+            
+            # ✅ Ensure existing demo user has manager role assigned
+            await assign_manager_role_to_user(user_id, company_id)
         
         # Clear existing demo data for this company
         from database import accounts_collection, transactions_collection, documents_collection
