@@ -158,7 +158,7 @@ npm test -- --testPathPattern=PaymentGatewayManagement
 ### Documentation
 - **Technical Guide**: `/app/PAYMENT_GATEWAY_CONFIGURATION_GUIDE.md`
 - **User Guide**: `/app/QUICK_START_PAYMENT_GATEWAYS.md`
-- **API Docs**: `https://admin-components-1.preview.emergentagent.com/docs`
+- **API Docs**: `https://autofill-repair.preview.emergentagent.com/docs`
 
 ### Test Script
 ```bash
