@@ -46,11 +46,12 @@ app.add_middleware(
     max_age=600,
 )
 
-# Static files for uploads - Mount before including routers
+# Static files for uploads - Mount under /api prefix for Kubernetes ingress routing
 upload_dir = os.getenv("UPLOAD_DIR", "/app/uploads")
 os.makedirs(upload_dir, exist_ok=True)
 try:
-    app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+    app.mount("/api/uploads", StaticFiles(directory=upload_dir), name="uploads")
+    logger.info(f"✅ Uploads directory mounted at /api/uploads -> {upload_dir}")
 except Exception as e:
     logger.warning(f"Could not mount static files: {e}")
 
