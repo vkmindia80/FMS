@@ -186,8 +186,14 @@ export const adminAPI = {
   getUsers: (params = {}) =>
     api.get('/admin/users', { params }).then((res) => res.data),
   
+  getAllCompanies: (params = {}) =>
+    api.get('/admin/companies', { params }).then((res) => res.data),
+  
   getCompanies: (params = {}) =>
     api.get('/admin/companies', { params }).then((res) => res.data),
+  
+  checkSuperAdmin: () =>
+    api.get('/admin/check-superadmin').then((res) => res.data),
   
   getAuditLogs: (params = {}) =>
     api.get('/admin/audit-logs', { params }).then((res) => res.data),
