@@ -1330,7 +1330,7 @@ async def get_dashboard_summary(
     })
     
     # Multi-currency summary
-    base_currency = await get_company_base_currency(current_user["company_id"])
+    base_currency = await get_company_base_currency(target_company_id)
     
     # Get currencies used in transactions
     currencies_used = await transactions_collection.distinct(
