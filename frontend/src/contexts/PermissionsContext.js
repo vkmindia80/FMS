@@ -49,9 +49,7 @@ export const PermissionsProvider = ({ children }) => {
 
   const hasAnyPermission = (permissionsList) => {
     if (!permissionsList || permissionsList.length === 0) return true;
-    const result = permissionsList.some(perm => permissionNames.includes(perm));
-    console.log('hasAnyPermission check:', { permissionsList, permissionNames: permissionNames.slice(0, 5), result });
-    return result;
+    return permissionsList.some(perm => permissionNames.includes(perm));
   };
 
   const hasAllPermissions = (permissionsList) => {
