@@ -290,7 +290,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
 
       {/* Navigation Items */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {navigationItems.map((item) => {
+        {finalNavigationItems.map((item) => {
           const Icon = item.icon;
           const isCurrentActive = isActive(item.href);
           
