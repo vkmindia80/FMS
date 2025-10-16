@@ -510,7 +510,7 @@ const DocumentPreviewModal = ({ document, isOpen, onClose }) => {
   };
 
   const renderPreview = () => {
-    const fileUrl = `${BACKEND_URL}/uploads/${document.filename}`;
+    const fileUrl = `${BACKEND_URL}/api/uploads/${document.filename}`;
 
     if (document.file_type.includes('image')) {
       return (
