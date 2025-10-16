@@ -126,13 +126,24 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
     },
   ];
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Sidebar permissions state:', {
+      permissionsLoading,
+      userEmail: user?.email,
+      allNavigationItemsCount: allNavigationItems.length
+    });
+  }, [permissionsLoading, user?.email]);
+
   // Filter navigation items based on permissions
   // While loading, show all items to avoid empty sidebar
   const navigationItems = permissionsLoading 
     ? allNavigationItems 
     : allNavigationItems.filter(item => {
         if (!item.permissions || item.permissions.length === 0) return true;
-        return hasAnyPermission(item.permissions);
+        const hasPerms = hasAnyPermission(item.permissions);
+        console.log(`Item "${item.name}" - required: [${item.permissions.join(', ')}] - has permission: ${hasPerms}`);
+        return hasPerms;
       });
 
   const bottomItems = permissionsLoading 
@@ -141,6 +152,8 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
         if (!item.permissions || item.permissions.length === 0) return true;
         return hasAnyPermission(item.permissions);
       });
+
+  console.log('Sidebar render:', { navigationItemsCount: navigationItems.length, bottomItemsCount: bottomItems.length });
 
   const isActive = (href) => {
     if (href === '/dashboard') {
