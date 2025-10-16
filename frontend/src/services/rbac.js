@@ -122,7 +122,7 @@ export const assignRolesToUser = async (userId, roleIds) => {
 
 export const getMenus = async () => {
   try {
-    const response = await api.get('/api/rbac/menus');
+    const response = await api.get('/rbac/menus');
     return response.data;
   } catch (error) {
     console.error('Error fetching menus:', error);
@@ -132,7 +132,7 @@ export const getMenus = async () => {
 
 export const createMenu = async (menuData) => {
   try {
-    const response = await api.post('/api/rbac/menus', menuData);
+    const response = await api.post('/rbac/menus', menuData);
     return response.data;
   } catch (error) {
     console.error('Error creating menu:', error);
