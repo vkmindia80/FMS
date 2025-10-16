@@ -464,12 +464,33 @@ async def list_accounts(
     account_category: Optional[AccountCategory] = None,
     is_active: Optional[bool] = None,
     include_balances: bool = True,
+    company_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    """List company's chart of accounts"""
+    """
+    List chart of accounts
+    - Regular users: See only their company's accounts
+    - Super Admin: See all accounts across companies (optionally filter by company_id)
+    """
     
-    # Build query
-    query = {"company_id": current_user["company_id"]}
+    # Check if user is superadmin
+    from rbac import is_superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    # Build query with tenant filtering
+    query = {}
+    
+    if is_super and company_id:
+        # Super Admin filtering by specific company
+        query["company_id"] = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing accounts from company: {company_id}")
+    elif is_super:
+        # Super Admin viewing all companies
+        logger.info(f"🔍 Super Admin {current_user['email']} viewing accounts across ALL companies")
+        # No company_id filter - see all
+    else:
+        # Regular user - only their company
+        query["company_id"] = current_user["company_id"]
     
     if account_type:
         query["account_type"] = account_type
