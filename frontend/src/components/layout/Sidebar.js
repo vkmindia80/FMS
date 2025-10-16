@@ -29,23 +29,27 @@ import {
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
   const { darkMode, sidebarCollapsed, toggleSidebar, currentScheme } = useTheme();
   const { user, logout } = useAuth();
+  const { hasPermission, hasAnyPermission } = usePermissions();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState(null);
 
-  const navigationItems = [
+  // Navigation items with permission requirements
+  const allNavigationItems = [
     {
       name: 'Dashboard',
       href: '/dashboard',
       icon: HomeIcon,
       color: 'blue',
       badge: null,
+      permissions: ['dashboard:view'],
     },
     {
       name: 'Documents',
       href: '/documents',
       icon: DocumentTextIcon,
       color: 'purple',
-      badge: '3',
+      badge: null,
+      permissions: ['documents:view'],
     },
     {
       name: 'Transactions',
@@ -53,6 +57,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       icon: CreditCardIcon,
       color: 'green',
       badge: null,
+      permissions: ['transactions:view'],
     },
     {
       name: 'Accounts',
@@ -60,13 +65,15 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       icon: BanknotesIcon,
       color: 'orange',
       badge: null,
+      permissions: ['accounts:view'],
     },
     {
       name: 'Reconciliation',
       href: '/reconciliation',
       icon: CheckCircleIcon,
       color: 'purple',
-      badge: 'New',
+      badge: null,
+      permissions: ['reconciliation:view'],
     },
     {
       name: 'Reports',
@@ -74,6 +81,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       icon: ChartBarIcon,
       color: 'red',
       badge: null,
+      permissions: ['reports:view'],
     },
     {
       name: 'Currency',
@@ -81,6 +89,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       icon: CurrencyDollarIcon,
       color: 'teal',
       badge: null,
+      permissions: ['settings:view'],
     },
     {
       name: 'Integration',
@@ -88,23 +97,45 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
       icon: PuzzlePieceIcon,
       color: 'violet',
       badge: null,
+      permissions: ['integrations:view'],
+    },
+    {
+      name: 'Admin Panel',
+      href: '/admin',
+      icon: ShieldCheckIcon,
+      color: 'indigo',
+      badge: 'Admin',
+      permissions: ['users:manage', 'roles:view'],
     },
   ];
 
-  const bottomItems = [
+  const allBottomItems = [
     {
       name: 'Help Center',
       href: '/help',
       icon: QuestionMarkCircleIcon,
       color: 'gray',
+      permissions: [],
     },
     {
       name: 'Settings',
       href: '/settings',
       icon: Cog6ToothIcon,
       color: 'gray',
+      permissions: ['settings:view'],
     },
   ];
+
+  // Filter navigation items based on permissions
+  const navigationItems = allNavigationItems.filter(item => {
+    if (!item.permissions || item.permissions.length === 0) return true;
+    return hasAnyPermission(item.permissions);
+  });
+
+  const bottomItems = allBottomItems.filter(item => {
+    if (!item.permissions || item.permissions.length === 0) return true;
+    return hasAnyPermission(item.permissions);
+  });
 
   const isActive = (href) => {
     if (href === '/dashboard') {
