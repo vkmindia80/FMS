@@ -323,7 +323,7 @@ async def generate_general_ledger(
         opening_balance_pipeline = [
             {
                 "$match": {
-                    "company_id": current_user["company_id"],
+                    "company_id": target_company_id,
                     "transaction_date": {"$lt": period_start},
                     "status": {"$ne": "void"},
                     "journal_entries.account_id": account["_id"]
@@ -381,7 +381,7 @@ async def generate_general_ledger(
         pipeline = [
             {
                 "$match": {
-                    "company_id": current_user["company_id"],
+                    "company_id": target_company_id,
                     "transaction_date": {"$gte": period_start, "$lte": period_end},
                     "status": {"$ne": "void"},
                     "journal_entries.account_id": account["_id"]
@@ -450,7 +450,7 @@ async def generate_general_ledger(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="general_ledger_report_generated",
         details={
             "report_id": report_id,
@@ -465,7 +465,7 @@ async def generate_general_ledger(
     
     report_data = GeneralLedgerReport(
         report_id=report_id,
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         report_name=f"General Ledger - {period_start.date()} to {period_end.date()}",
         period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
         period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
@@ -552,7 +552,7 @@ async def generate_profit_loss_report(
     
     # Get all income and expense accounts
     income_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.REVENUE.value,
             AccountType.SERVICE_INCOME.value,
@@ -563,7 +563,7 @@ async def generate_profit_loss_report(
     }).to_list(length=None)
     
     expense_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.COST_OF_GOODS_SOLD.value,
             AccountType.OPERATING_EXPENSES.value,
@@ -595,7 +595,7 @@ async def generate_profit_loss_report(
         pipeline = [
             {
                 "$match": {
-                    "company_id": current_user["company_id"],
+                    "company_id": target_company_id,
                     "transaction_date": {"$gte": period_start, "$lte": period_end},
                     "status": {"$ne": "void"},
                     "journal_entries.account_id": account["_id"]
@@ -658,7 +658,7 @@ async def generate_profit_loss_report(
         pipeline = [
             {
                 "$match": {
-                    "company_id": current_user["company_id"],
+                    "company_id": target_company_id,
                     "transaction_date": {"$gte": period_start, "$lte": period_end},
                     "status": {"$ne": "void"},
                     "journal_entries.account_id": account["_id"]
@@ -721,7 +721,7 @@ async def generate_profit_loss_report(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="profit_loss_report_generated",
         details={
             "report_id": report_id,
@@ -738,7 +738,7 @@ async def generate_profit_loss_report(
     
     report_data = ProfitLossReport(
         report_id=report_id,
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         report_name=f"Profit & Loss Statement - {period_start} to {period_end}",
         period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
         period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
@@ -782,7 +782,7 @@ async def generate_balance_sheet_report(
     
     # Get all balance sheet accounts
     asset_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.CASH.value,
             AccountType.CHECKING.value,
@@ -797,7 +797,7 @@ async def generate_balance_sheet_report(
     }).to_list(length=None)
     
     liability_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.ACCOUNTS_PAYABLE.value,
             AccountType.CREDIT_CARD.value,
@@ -810,7 +810,7 @@ async def generate_balance_sheet_report(
     }).to_list(length=None)
     
     equity_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.OWNER_EQUITY.value,
             AccountType.RETAINED_EARNINGS.value,
@@ -909,7 +909,7 @@ async def generate_balance_sheet_report(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="balance_sheet_report_generated",
         details={
             "report_id": report_id,
@@ -926,7 +926,7 @@ async def generate_balance_sheet_report(
     
     report_data = BalanceSheetReport(
         report_id=report_id,
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         report_name=f"Balance Sheet as of {as_of_date}",
         as_of_date=as_of_date,
         generated_at=datetime.utcnow(),
@@ -980,7 +980,7 @@ async def generate_cash_flow_report(
     
     # Get cash accounts
     cash_accounts = await accounts_collection.find({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "account_type": {"$in": [
             AccountType.CASH.value,
             AccountType.CHECKING.value,
@@ -1037,7 +1037,7 @@ async def generate_cash_flow_report(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="cash_flow_report_generated",
         details={
             "report_id": report_id,
@@ -1053,7 +1053,7 @@ async def generate_cash_flow_report(
     
     report_data = CashFlowReport(
         report_id=report_id,
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         report_name=f"Cash Flow Statement - {period_start} to {period_end}",
         period_start=period_start.date() if isinstance(period_start, datetime) else period_start,
         period_end=period_end.date() if isinstance(period_end, datetime) else period_end,
@@ -1107,7 +1107,7 @@ async def get_multi_currency_summary(
     pipeline = [
         {
             "$match": {
-                "company_id": current_user["company_id"],
+                "company_id": target_company_id,
                 "transaction_date": {"$gte": period_start, "$lte": period_end},
                 "status": {"$ne": "void"}
             }
@@ -1166,7 +1166,7 @@ async def get_multi_currency_summary(
     # Log audit event
     await log_audit_event(
         user_id=current_user["_id"],
-        company_id=current_user["company_id"],
+        company_id=target_company_id,
         action="multi_currency_report_generated",
         details={
             "period_start": period_start.isoformat(),
@@ -1207,23 +1207,23 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
     
     # Get transaction counts
     total_transactions = await transactions_collection.count_documents({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "status": {"$ne": "void"}
     })
     
     pending_transactions = await transactions_collection.count_documents({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "status": "pending"
     })
     
     # Get document counts
     from database import documents_collection
     total_documents = await documents_collection.count_documents({
-        "company_id": current_user["company_id"]
+        "company_id": target_company_id
     })
     
     processing_documents = await documents_collection.count_documents({
-        "company_id": current_user["company_id"],
+        "company_id": target_company_id,
         "processing_status": "processing"
     })
     
@@ -1233,7 +1233,7 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
     # Get currencies used in transactions
     currencies_used = await transactions_collection.distinct(
         "currency",
-        {"company_id": current_user["company_id"], "status": {"$ne": "void"}}
+        {"company_id": target_company_id, "status": {"$ne": "void"}}
     )
     
     return {
