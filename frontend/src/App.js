@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { PermissionsProvider } from './contexts/PermissionsContext';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -15,6 +16,7 @@ import ReportSchedulingPage from './pages/reports/ReportSchedulingPage';
 import CurrencyManagementPage from './pages/admin/CurrencyManagementPage';
 import ExchangeRatesPage from './pages/admin/ExchangeRatesPage';
 import ReportSchedulingManagementPage from './pages/admin/ReportSchedulingManagementPage';
+import AdminPanelPage from './pages/admin/AdminPanelPage';
 import BankingPage from './pages/banking/BankingPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import IntegrationPage from './pages/integration/IntegrationPage';
