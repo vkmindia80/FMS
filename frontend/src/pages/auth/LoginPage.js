@@ -263,71 +263,119 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {/* Enhanced Demo Credentials Card */}
-          <div className="mb-8">
+          {/* Quick Login Section - Enhanced with Multiple Accounts */}
+          <div className="mb-6">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
               <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/50 rounded-xl p-4 backdrop-blur-sm">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <SparklesIcon className="h-5 w-5 text-blue-600 mr-2" />
-                      <h3 className="text-sm font-semibold text-blue-900">Try Demo Account</h3>
-                    </div>
-                    <p className="text-xs text-blue-700 mb-3">Experience full features instantly</p>
-                    
-                    <div className="space-y-1 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-blue-600 font-medium">Email:</span>
-                        <code className="bg-blue-100/80 text-blue-800 px-2 py-1 rounded text-xs font-mono">
-                          {DEMO_CREDENTIALS.email}
-                        </code>
+                <div className="flex items-center mb-3">
+                  <SparklesIcon className="h-5 w-5 text-blue-600 mr-2" />
+                  <h3 className="text-sm font-semibold text-blue-900">Quick Login</h3>
+                </div>
+                <p className="text-xs text-blue-700 mb-4">Click any account to autofill credentials</p>
+                
+                {/* Admin Account */}
+                <div className="mb-3 p-3 bg-white/70 rounded-lg border border-blue-200/50 hover:border-blue-400 transition-all cursor-pointer group/card" onClick={handleAutofillAdmin}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                        <ShieldCheckIcon className="w-4 h-4 text-white" />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-blue-600 font-medium">Password:</span>
-                        <code className="bg-blue-100/80 text-blue-800 px-2 py-1 rounded text-xs font-mono">
-                          ••••••••••••
-                        </code>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-900 flex items-center gap-1">
+                          Superadmin Account
+                          <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">FULL ACCESS</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500 font-mono mt-0.5">admin@afms.com</div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="ml-4 flex flex-col gap-2">
                     <button
                       type="button"
-                      onClick={handleDemoLogin}
-                      disabled={loading || generatingData}
-                      data-testid="demo-login-button"
-                      className={`inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
-                        loading || generatingData ? 'opacity-50 cursor-not-allowed transform-none' : ''
-                      }`}
+                      className="px-3 py-1.5 text-xs font-medium text-blue-700 hover:text-blue-900 hover:bg-blue-100 rounded-md transition-colors"
+                      data-testid="autofill-admin-btn"
                     >
-                      {loading ? (
-                        <>
-                          <LoadingSpinner size="small" color="white" className="mr-2" />
-                          Signing In...
-                        </>
-                      ) : (
-                        <>
-                          <UserIcon className="w-4 h-4 mr-2" />
-                          Demo Login
-                        </>
-                      )}
+                      Autofill
                     </button>
-                    
+                  </div>
+                </div>
+
+                {/* System Admin Account */}
+                <div className="mb-3 p-3 bg-white/70 rounded-lg border border-purple-200/50 hover:border-purple-400 transition-all cursor-pointer group/card" onClick={handleAutofillSuperadmin}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                        <ShieldCheckIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-900 flex items-center gap-1">
+                          System Admin
+                          <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-[10px] font-bold">SYSTEM</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500 font-mono mt-0.5">superadmin@afms.system</div>
+                      </div>
+                    </div>
                     <button
                       type="button"
-                      onClick={handleGenerateData}
-                      disabled={loading || generatingData}
-                      data-testid="generate-data-button"
-                      className={`inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
-                        loading || generatingData ? 'opacity-50 cursor-not-allowed transform-none' : ''
-                      }`}
+                      className="px-3 py-1.5 text-xs font-medium text-purple-700 hover:text-purple-900 hover:bg-purple-100 rounded-md transition-colors"
+                      data-testid="autofill-superadmin-btn"
                     >
-                      {generatingData ? (
-                        <>
-                          <LoadingSpinner size="small" color="white" className="mr-2" />
-                          Generating...
+                      Autofill
+                    </button>
+                  </div>
+                </div>
+
+                {/* Demo Account */}
+                <div className="p-3 bg-white/70 rounded-lg border border-green-200/50 hover:border-green-400 transition-all cursor-pointer group/card" onClick={handleAutofillDemo}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                        <UserIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-900 flex items-center gap-1">
+                          Demo Account
+                          <span className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[10px] font-bold">DEMO</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500 font-mono mt-0.5">john.doe@testcompany.com</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 text-xs font-medium text-green-700 hover:text-green-900 hover:bg-green-100 rounded-md transition-colors"
+                      data-testid="autofill-demo-btn"
+                    >
+                      Autofill
+                    </button>
+                  </div>
+                </div>
+
+                {/* Generate Demo Data Button */}
+                <div className="mt-4 pt-3 border-t border-blue-200/50">
+                  <button
+                    type="button"
+                    onClick={handleGenerateData}
+                    disabled={loading || generatingData}
+                    data-testid="generate-data-button"
+                    className={`w-full inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                      loading || generatingData ? 'opacity-50 cursor-not-allowed transform-none' : ''
+                    }`}
+                  >
+                    {generatingData ? (
+                      <>
+                        <LoadingSpinner size="small" color="white" className="mr-2" />
+                        Generating Demo Data...
+                      </>
+                    ) : (
+                      <>
+                        <CircleStackIcon className="w-4 h-4 mr-2" />
+                        Generate Demo Data (12 months)
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
                         </>
                       ) : (
                         <>
