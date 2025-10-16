@@ -149,9 +149,23 @@ async def list_all_companies(
     is_active: Optional[bool] = None,
     limit: int = Query(50, le=1000),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(require_admin())
+    current_user: dict = Depends(get_current_user)
 ):
-    """List all companies (admin only)"""
+    """
+    List all companies (Super Admin only - cross-tenant access)
+    Regular admins cannot access this endpoint
+    """
+    
+    # Check if user is superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    if not is_super:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Super Admin can view all companies"
+        )
+    
+    logger.info(f"🔍 Super Admin {current_user['email']} viewing all companies")
     
     # Build query
     query = {}
