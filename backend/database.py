@@ -41,3 +41,7 @@ permissions_collection = database.permissions
 roles_collection = database.roles
 user_roles_collection = database.user_roles
 menus_collection = database.menus
+
+# Plans Collections
+plans_collection = database.plans
+company_plans_collection = database.company_plans
