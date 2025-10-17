@@ -294,6 +294,28 @@ function AppContent() {
           />
           
           <Route 
+            path="/admin/permission-template/new" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <PermissionTemplatePage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/permission-template/:id" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <PermissionTemplatePage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/help" 
             element={
               <ProtectedRoute>
