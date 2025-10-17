@@ -283,8 +283,8 @@ const LoginPage = () => {
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-gray-900 flex items-center gap-1">
-                          Superadmin Account
-                          <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">FULL ACCESS</span>
+                          Company Admin
+                          <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">COMPANY</span>
                         </div>
                         <div className="text-[10px] text-gray-500 font-mono mt-0.5">admin@afms.com</div>
                       </div>
@@ -299,7 +299,7 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* System Admin Account */}
+                {/* System Superadmin Account */}
                 <div className="mb-3 p-3 bg-white/70 rounded-lg border border-purple-200/50 hover:border-purple-400 transition-all cursor-pointer group/card" onClick={handleAutofillSuperadmin}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -308,8 +308,8 @@ const LoginPage = () => {
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-gray-900 flex items-center gap-1">
-                          System Admin
-                          <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-[10px] font-bold">SYSTEM</span>
+                          System Superadmin
+                          <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-[10px] font-bold">ALL COMPANIES</span>
                         </div>
                         <div className="text-[10px] text-gray-500 font-mono mt-0.5">superadmin@afms.system</div>
                       </div>
