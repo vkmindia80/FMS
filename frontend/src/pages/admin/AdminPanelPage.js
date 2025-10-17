@@ -101,17 +101,27 @@ const AdminPanelPage = () => {
             </div>
             
             {activeTab === 'roles' && (
-              <button
-                onClick={() => {
-                  setSelectedRole(null);
-                  setIsRoleModalOpen(true);
-                }}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-                data-testid="create-role-btn"
-              >
-                <PlusIcon className="w-5 h-5 mr-2" />
-                Create Role
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedRole(null);
+                    setIsRoleModalOpen(true);
+                  }}
+                  className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
+                  data-testid="create-role-btn"
+                >
+                  <PlusIcon className="w-5 h-5 mr-2" />
+                  Quick Create
+                </button>
+                <button
+                  onClick={() => window.location.href = '/admin/permission-template/new'}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                  data-testid="create-template-btn"
+                >
+                  <PlusIcon className="w-5 h-5 mr-2" />
+                  Create Permission Template
+                </button>
+              </div>
             )}
           </div>
         </div>
