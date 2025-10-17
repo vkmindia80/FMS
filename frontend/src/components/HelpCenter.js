@@ -16,9 +16,37 @@ import {
 const HelpCenter = () => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [activeCategory, setActiveCategory] = useState('getting-started');
+  const [downloading, setDownloading] = useState(false);
 
   const toggleSection = (sectionId) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId);
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      setDownloading(true);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+      const response = await fetch(`${backendUrl}/api/download/user-guide`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to download user guide');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `AFMS_User_Guide_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Failed to download user guide. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const categories = [
