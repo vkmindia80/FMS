@@ -58,6 +58,7 @@ const ACCOUNT_TYPES = {
 };
 
 const AccountsPage = () => {
+  const { selectedCompanyId } = useSuperAdmin();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,13 +77,17 @@ const AccountsPage = () => {
 
   useEffect(() => {
     fetchAccounts();
-  }, []);
+  }, [selectedCompanyId]);
 
   const fetchAccounts = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/accounts/');
+      const params = {};
+      if (selectedCompanyId) {
+        params.company_id = selectedCompanyId;
+      }
+      const response = await api.get('/accounts/', { params });
       setAccounts(response.data);
     } catch (err) {
       console.error('Failed to fetch accounts:', err);
