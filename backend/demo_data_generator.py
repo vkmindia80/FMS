@@ -40,6 +40,38 @@ fake = Faker()
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Category mapping to valid backend enum values
+CATEGORY_MAPPING = {
+    # Income categories
+    'freelance_income': 'business_income',
+    'passive_income': 'other_income',
+    'subscription_revenue': 'sales_revenue',
+    'licensing_revenue': 'sales_revenue',
+    'project_revenue': 'service_income',
+    'consulting_revenue': 'service_income',
+    'training_revenue': 'service_income',
+    'product_sales': 'sales_revenue',
+    'wholesale_revenue': 'sales_revenue',
+    
+    # Expense categories
+    'groceries': 'meals',
+    'dining': 'meals',
+    'auto_loan': 'other_expense',
+    'fitness': 'other_expense',
+    'entertainment': 'other_expense',
+    'savings': 'other_expense',
+    'retirement': 'other_expense',
+    'cost_of_goods': 'other_expense',
+    'shipping': 'transportation',
+    'meals': 'meals',
+    'shopping': 'other_expense',
+    'payroll': 'professional_services',
+}
+
+def map_category(category: str) -> str:
+    """Map custom categories to valid backend enum values"""
+    return CATEGORY_MAPPING.get(category, category)
+
 # Multi-currency support
 CURRENCIES = {
     'USD': {'symbol': '$', 'name': 'US Dollar'},
