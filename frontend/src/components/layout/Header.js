@@ -74,6 +74,9 @@ const Header = ({ onMobileMenuClick }) => {
 
         {/* Right section */}
         <div className="flex items-center space-x-4">
+          {/* Company Filter (Super Admin only) */}
+          <CompanyFilter />
+          
           {/* Color scheme selector */}
           <div className="relative">
             <button
