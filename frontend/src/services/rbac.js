@@ -154,6 +154,16 @@ export const getUsers = async () => {
   }
 };
 
+export const createUser = async (userData) => {
+  try {
+    const response = await api.post('/admin/users', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
 export const updateUser = async (userId, userData) => {
   try {
     const response = await api.put(`/admin/users/${userId}`, userData);
@@ -170,6 +180,117 @@ export const deleteUser = async (userId) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+
+export const activateUser = async (userId) => {
+  try {
+    const response = await api.put(`/admin/users/${userId}/activate`);
+    return response.data;
+  } catch (error) {
+    console.error('Error activating user:', error);
+    throw error;
+  }
+};
+
+export const deactivateUser = async (userId) => {
+  try {
+    const response = await api.put(`/admin/users/${userId}/deactivate`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deactivating user:', error);
+    throw error;
+  }
+};
+
+// ============================================================================
+// PLANS API
+// ============================================================================
+
+export const getPlans = async () => {
+  try {
+    const response = await api.get('/plans/plans');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching plans:', error);
+    throw error;
+  }
+};
+
+export const getPlan = async (planId) => {
+  try {
+    const response = await api.get(`/plans/plans/${planId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching plan:', error);
+    throw error;
+  }
+};
+
+export const createPlan = async (planData) => {
+  try {
+    const response = await api.post('/plans/plans', planData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating plan:', error);
+    throw error;
+  }
+};
+
+export const updatePlan = async (planId, planData) => {
+  try {
+    const response = await api.put(`/plans/plans/${planId}`, planData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating plan:', error);
+    throw error;
+  }
+};
+
+export const deletePlan = async (planId) => {
+  try {
+    const response = await api.delete(`/plans/plans/${planId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting plan:', error);
+    throw error;
+  }
+};
+
+export const assignPlanToCompany = async (companyId, planId) => {
+  try {
+    const response = await api.post(`/plans/companies/${companyId}/plan`, {
+      company_id: companyId,
+      plan_id: planId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning plan to company:', error);
+    throw error;
+  }
+};
+
+export const getCompanyPlan = async (companyId) => {
+  try {
+    const response = await api.get(`/plans/companies/${companyId}/plan`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching company plan:', error);
+    throw error;
+  }
+};
+
+// ============================================================================
+// COMPANIES API
+// ============================================================================
+
+export const getCompanies = async () => {
+  try {
+    const response = await api.get('/admin/companies');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching companies:', error);
     throw error;
   }
 };
