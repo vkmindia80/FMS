@@ -593,7 +593,8 @@ async def get_user_roles(
             is_system=role.get("is_system", False),
             user_count=user_count,
             created_at=role["created_at"],
-            updated_at=role["updated_at"]
+            updated_at=role["updated_at"],
+            applicable_on=role.get("applicable_on", "all")
         ))
     
     return role_responses
