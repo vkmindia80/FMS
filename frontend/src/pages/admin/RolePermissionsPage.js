@@ -187,15 +187,100 @@ const RolePermissionsPage = () => {
         </div>
       </div>
 
-      {/* Permissions Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            {/* Table Header */}
+      {/* Permissions Display */}
+      {viewMode === 'card' ? (
+        /* Card View */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {roles.map(role => (
+            <motion.div
+              key={role.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow p-6"
+              data-testid={`role-card-${role.id}`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {role.display_name}
+                  </h3>
+                  {role.description && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {role.description}
+                    </p>
+                  )}
+                </div>
+                {role.is_system && (
+                  <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded text-xs font-medium">
+                    System
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Permissions
+                  </span>
+                  <span className="text-sm font-bold text-blue-600">
+                    {(rolePermissions[role.id] || []).length}
+                  </span>
+                </div>
+
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {Object.entries(groupedPermissions).map(([resource, perms]) => {
+                    const rolePerms = rolePermissions[role.id] || [];
+                    const resourcePerms = perms.filter(p => rolePerms.includes(p.id));
+                    
+                    if (resourcePerms.length === 0) return null;
+                    
+                    return (
+                      <div key={resource} className="text-sm">
+                        <div className="font-medium text-gray-700 dark:text-gray-300 mb-1 capitalize">
+                          {resource.replace('_', ' ')}
+                        </div>
+                        <div className="pl-3 space-y-1">
+                          {resourcePerms.map(perm => (
+                            <div key={perm.id} className="flex items-center text-xs text-gray-600 dark:text-gray-400">
+                              <CheckCircleIcon className="h-3 w-3 mr-1 text-green-500" />
+                              {perm.action}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <UserGroupIcon className="h-4 w-4 mr-1" />
+                    <span>{role.user_count} users</span>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    role.applicable_on === 'admin_users' 
+                      ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                      : role.applicable_on === 'non_admin_users'
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                  }`}>
+                    {role.applicable_on === 'admin_users' ? 'Admin' : role.applicable_on === 'non_admin_users' ? 'Non-Admin' : 'All'}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        /* Table View */
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              {/* Table Header */}
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="sticky left-0 z-20 bg-gray-50 dark:bg-gray-900 px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-700">
