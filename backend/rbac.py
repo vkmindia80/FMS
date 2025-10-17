@@ -277,6 +277,7 @@ async def create_role(
         "description": role_data.description,
         "permission_ids": role_data.permission_ids,
         "is_system": role_data.is_system,
+        "applicable_on": role_data.applicable_on or "all",
         "company_id": current_user["company_id"],
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow(),
