@@ -100,6 +100,7 @@ class RoleUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     permission_ids: Optional[List[str]] = None
+    applicable_on: Optional[str] = None
 
 class RoleResponse(BaseModel):
     id: str
