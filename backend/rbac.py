@@ -111,6 +111,7 @@ class RoleResponse(BaseModel):
     user_count: int
     created_at: datetime
     updated_at: datetime
+    applicable_on: Optional[str] = None
 
 class UserRoleAssignment(BaseModel):
     user_id: str
