@@ -8,6 +8,9 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   InformationCircleIcon,
+  TableCellsIcon,
+  Squares2X2Icon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
@@ -18,6 +21,7 @@ const RolePermissionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [groupedPermissions, setGroupedPermissions] = useState({});
+  const [viewMode, setViewMode] = useState('table'); // 'card' or 'table'
 
   useEffect(() => {
     fetchData();
