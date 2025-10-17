@@ -286,6 +286,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/admin/roles" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <RolesManagementPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/admin/users" 
             element={
               <ProtectedRoute>
