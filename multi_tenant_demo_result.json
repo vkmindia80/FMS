@@ -6,91 +6,91 @@
     "individuals_created": 2,
     "total_tenants": 5,
     "total_accounts": 101,
-    "total_transactions": 3329,
-    "total_documents": 843,
-    "total_invoices": 122,
-    "total_bills": 105,
-    "total_payment_transactions": 195,
+    "total_transactions": 3346,
+    "total_documents": 852,
+    "total_invoices": 118,
+    "total_bills": 109,
+    "total_payment_transactions": 175,
     "total_bank_connections": 6
   },
   "companies": [
     {
-      "company_id": "adb5470c-7739-4636-80b4-23c6429e303e",
+      "company_id": "1d98e6ec-b26e-4211-b7ad-24be5fa29bb1",
       "company_name": "TechVenture SaaS Inc",
       "industry": "Technology - SaaS",
-      "user_id": "cdd5708b-cc6e-41cd-91f2-1857329f094f",
+      "user_id": "a03e4048-f53c-480e-84b9-64c27cca769f",
       "email": "admin@techventure.demo",
       "password": "Demo123!",
       "demo_data": {
         "accounts_created": 19,
-        "transactions_created": 1020,
-        "documents_created": 256,
-        "invoices_created": 39,
-        "bills_created": 36,
-        "payment_transactions_created": 62,
+        "transactions_created": 1040,
+        "documents_created": 298,
+        "invoices_created": 41,
+        "bills_created": 34,
+        "payment_transactions_created": 61,
         "bank_connections_created": 2
       }
     },
     {
-      "company_id": "48041b0f-46b2-4f4b-9554-39fbc84ad8c8",
+      "company_id": "923cdb1e-280e-4f07-b6eb-42b1e91562e3",
       "company_name": "Strategic Advisory Group",
       "industry": "Professional Services - Consulting",
-      "user_id": "7195c9d7-a396-46a0-989a-6e7d02e7d9d0",
+      "user_id": "77736daf-fff7-475e-b522-b0d2c8279ce1",
       "email": "admin@strategicadvisory.demo",
       "password": "Demo123!",
       "demo_data": {
         "accounts_created": 24,
-        "transactions_created": 793,
-        "documents_created": 230,
-        "invoices_created": 43,
-        "bills_created": 34,
-        "payment_transactions_created": 69,
+        "transactions_created": 794,
+        "documents_created": 193,
+        "invoices_created": 42,
+        "bills_created": 37,
+        "payment_transactions_created": 61,
         "bank_connections_created": 2
       }
     },
     {
-      "company_id": "b969087e-70ae-4ed6-b10d-1e3a20e87ea6",
+      "company_id": "33898689-42ed-4f6a-a861-8ca7f5fca09b",
       "company_name": "Urban Style Boutique",
       "industry": "Retail - E-commerce",
-      "user_id": "33255fa9-8b18-4770-b16e-c29560a4597a",
+      "user_id": "b526ecbe-cd28-4e68-8139-5aa4d27aa856",
       "email": "admin@urbanstyle.demo",
       "password": "Demo123!",
       "demo_data": {
         "accounts_created": 20,
-        "transactions_created": 1120,
+        "transactions_created": 1118,
         "documents_created": 300,
-        "invoices_created": 40,
-        "bills_created": 35,
-        "payment_transactions_created": 64,
+        "invoices_created": 35,
+        "bills_created": 38,
+        "payment_transactions_created": 53,
         "bank_connections_created": 2
       }
     }
   ],
   "individuals": [
     {
-      "company_id": "b63f74f3-3f08-4422-85bc-20988d57842a",
+      "company_id": "7a9817a5-3946-421e-9021-3c548724ea2f",
       "user_type": "Individual",
       "name": "Alex Thompson",
-      "user_id": "4b508c67-aa12-49d7-897c-3866cdf90706",
+      "user_id": "edd5dd43-51b1-4f10-87b3-9bdf9d969efd",
       "email": "alex.thompson@demo.com",
       "password": "Demo123!",
       "demo_data": {
         "accounts_created": 19,
         "transactions_created": 193,
-        "documents_created": 27
+        "documents_created": 32
       }
     },
     {
-      "company_id": "1fbc494d-ffaa-4efe-b778-31f589bc3a7b",
+      "company_id": "c34c84ea-b9d4-448f-a5df-f9e4bd728e7c",
       "user_type": "Individual",
       "name": "Jordan Martinez",
-      "user_id": "893e84f9-f257-4330-bc03-0310d3cc8933",
+      "user_id": "a00974f3-edd6-472e-b76f-7fb4ac85a576",
       "email": "jordan.martinez@demo.com",
       "password": "Demo123!",
       "demo_data": {
         "accounts_created": 19,
-        "transactions_created": 203,
-        "documents_created": 30
+        "transactions_created": 201,
+        "documents_created": 29
       }
     }
   ],
