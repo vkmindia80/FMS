@@ -19,6 +19,7 @@ import ExchangeRatesPage from './pages/admin/ExchangeRatesPage';
 import ReportSchedulingManagementPage from './pages/admin/ReportSchedulingManagementPage';
 import AdminPanelPage from './pages/admin/AdminPanelPage';
 import RolePermissionsPage from './pages/admin/RolePermissionsPage';
+import RolesManagementPage from './pages/admin/RolesManagementPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import PlansManagementPage from './pages/admin/PlansManagementPage';
 import PermissionTemplatePage from './pages/admin/PermissionTemplatePage';
