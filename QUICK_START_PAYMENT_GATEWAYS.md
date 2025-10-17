@@ -5,7 +5,7 @@
 ### Access the Feature
 
 1. **Login to your AFMS account**
-   - URL: https://user-admin-panel-4.preview.emergentagent.com
+   - URL: https://button-repair-4.preview.emergentagent.com
    - Use your credentials or Demo Login
 
 2. **Navigate to Integration Center**
@@ -163,7 +163,7 @@ If you're using the API directly:
 TOKEN="your_jwt_token"
 
 # Create gateway
-curl -X POST https://user-admin-panel-4.preview.emergentagent.com/api/integrations/payment/gateways \
+curl -X POST https://button-repair-4.preview.emergentagent.com/api/integrations/payment/gateways \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
