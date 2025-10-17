@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSuperAdmin } from '../../contexts/SuperAdminContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -33,6 +34,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const DocumentsPage = () => {
   const { user } = useAuth();
+  const { selectedCompanyId } = useSuperAdmin();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -47,7 +49,11 @@ const DocumentsPage = () => {
   const fetchDocuments = useCallback(async () => {
     try {
       const token = localStorage.getItem('afms_access_token');
-      const response = await axios.get(`${BACKEND_URL}/api/documents/`, {
+      const params = new URLSearchParams();
+      if (selectedCompanyId) {
+        params.append('company_id', selectedCompanyId);
+      }
+      const response = await axios.get(`${BACKEND_URL}/api/documents/?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDocuments(response.data);
@@ -57,7 +63,7 @@ const DocumentsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedCompanyId]);
 
   useEffect(() => {
     fetchDocuments();
