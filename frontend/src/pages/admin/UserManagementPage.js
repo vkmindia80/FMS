@@ -46,6 +46,11 @@ const UserManagementPage = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   
+  // Debug logging
+  useEffect(() => {
+    console.log('Modal states:', { isCreateModalOpen, isEditModalOpen, isViewModalOpen });
+  }, [isCreateModalOpen, isEditModalOpen, isViewModalOpen]);
+  
   // Form state
   const [formData, setFormData] = useState({
     email: '',
