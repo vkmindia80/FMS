@@ -75,7 +75,6 @@ const RolePermissionsPage = () => {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
       
       // Get current permissions
       const currentPermissions = rolePermissions[roleId] || [];
@@ -91,20 +90,9 @@ const RolePermissionsPage = () => {
       }
 
       // Update role
-      const response = await fetch(`${API_BASE_URL}/api/rbac/roles/${roleId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          permission_ids: newPermissions
-        })
+      await rbacAPI.updateRole(roleId, {
+        permission_ids: newPermissions
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update role');
-      }
 
       // Update local state
       setRolePermissions(prev => ({
