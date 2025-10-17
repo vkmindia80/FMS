@@ -1279,24 +1279,139 @@ async def get_dashboard_summary(
     """
     Get summary data for dashboard
     - Regular users: See only their company's dashboard
-    - Super Admin: See dashboard for any company (specify company_id)
+    - Super Admin: See aggregated dashboard across ALL companies (or specify company_id for specific company)
     """
     
     # Check if user is superadmin
     from rbac import is_superadmin
     is_super = await is_superadmin(current_user["_id"])
     
-    # Determine target company
+    # Build query for filtering
+    query_filter = {}
     target_company_id = current_user["company_id"]
-    if is_super and company_id:
-        target_company_id = company_id
-        logger.info(f"🔍 Super Admin {current_user['email']} generating dashboard for company: {company_id}")
-    elif is_super and not company_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Super Admin must specify company_id parameter for reports"
-        )
     
+    if is_super and company_id:
+        # Super Admin viewing specific company
+        target_company_id = company_id
+        query_filter["company_id"] = company_id
+        logger.info(f"🔍 Super Admin {current_user['email']} generating dashboard for company: {company_id}")
+    elif is_super:
+        # Super Admin viewing ALL companies (aggregated)
+        logger.info(f"🔍 Super Admin {current_user['email']} generating aggregated dashboard across ALL companies")
+        # No company_id filter - aggregate all
+        target_company_id = None
+    else:
+        # Regular user - only their company
+        query_filter["company_id"] = current_user["company_id"]
+        target_company_id = current_user["company_id"]
+    
+    # For aggregated superadmin view, we need to calculate metrics differently
+    if is_super and not company_id:
+        # Aggregated metrics across all companies
+        from database import documents_collection
+        
+        # Get transaction counts (all companies)
+        total_transactions = await transactions_collection.count_documents({
+            "status": {"$ne": "void"}
+        })
+        
+        pending_transactions = await transactions_collection.count_documents({
+            "status": "pending"
+        })
+        
+        # Get document counts (all companies)
+        total_documents = await documents_collection.count_documents({})
+        
+        processing_documents = await documents_collection.count_documents({
+            "processing_status": "processing"
+        })
+        
+        # Aggregate financial metrics using MongoDB aggregation
+        pipeline = [
+            {"$match": {"status": {"$ne": "void"}}},
+            {"$group": {
+                "_id": "$transaction_type",
+                "total": {"$sum": "$amount"}
+            }}
+        ]
+        
+        transaction_totals = await transactions_collection.aggregate(pipeline).to_list(length=None)
+        
+        total_revenue = 0
+        total_expenses = 0
+        
+        for item in transaction_totals:
+            if item["_id"] == "income":
+                total_revenue += item["total"]
+            elif item["_id"] == "expense":
+                total_expenses += item["total"]
+        
+        # Get current month transactions
+        from datetime import datetime, timedelta
+        current_month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        current_month_pipeline = [
+            {"$match": {
+                "status": {"$ne": "void"},
+                "transaction_date": {"$gte": current_month_start}
+            }},
+            {"$group": {
+                "_id": "$transaction_type",
+                "total": {"$sum": "$amount"}
+            }}
+        ]
+        
+        current_month_totals = await transactions_collection.aggregate(current_month_pipeline).to_list(length=None)
+        
+        current_month_revenue = 0
+        current_month_expenses = 0
+        
+        for item in current_month_totals:
+            if item["_id"] == "income":
+                current_month_revenue += item["total"]
+            elif item["_id"] == "expense":
+                current_month_expenses += item["total"]
+        
+        current_month_profit = current_month_revenue - current_month_expenses
+        
+        # Get aggregated account balances (simplified for all companies)
+        accounts_pipeline = [
+            {"$group": {
+                "_id": None,
+                "total_balance": {"$sum": "$balance"}
+            }}
+        ]
+        
+        account_totals = await accounts_collection.aggregate(accounts_pipeline).to_list(length=1)
+        cash_balance = account_totals[0]["total_balance"] if account_totals else 0
+        
+        # Get all currencies in use
+        currencies_used = await transactions_collection.distinct("currency", {"status": {"$ne": "void"}})
+        
+        return {
+            "summary": {
+                "current_month_revenue": current_month_revenue,
+                "current_month_expenses": current_month_expenses,
+                "current_month_profit": current_month_profit,
+                "total_assets": cash_balance,  # Simplified
+                "total_liabilities": 0,
+                "total_equity": cash_balance,
+                "cash_balance": cash_balance,
+                "base_currency": "USD",  # Default for aggregated view
+                "currencies_in_use": currencies_used or ["USD"],
+                "aggregated": True,
+                "company_count": await companies_collection.count_documents({"is_active": True})
+            },
+            "counts": {
+                "total_transactions": total_transactions,
+                "pending_transactions": pending_transactions,
+                "total_documents": total_documents,
+                "processing_documents": processing_documents
+            },
+            "alerts": []
+        }
+    
+    # Single company view (regular user or superadmin with company_id)
     # Get current month P&L
     current_month_pl = await generate_profit_loss_report(
         ReportPeriod.CURRENT_MONTH, None, None, ReportFormat.JSON, company_id, current_user
@@ -1309,23 +1424,21 @@ async def get_dashboard_summary(
     
     # Get transaction counts
     total_transactions = await transactions_collection.count_documents({
-        "company_id": target_company_id,
+        **query_filter,
         "status": {"$ne": "void"}
     })
     
     pending_transactions = await transactions_collection.count_documents({
-        "company_id": target_company_id,
+        **query_filter,
         "status": "pending"
     })
     
     # Get document counts
     from database import documents_collection
-    total_documents = await documents_collection.count_documents({
-        "company_id": target_company_id
-    })
+    total_documents = await documents_collection.count_documents(query_filter)
     
     processing_documents = await documents_collection.count_documents({
-        "company_id": target_company_id,
+        **query_filter,
         "processing_status": "processing"
     })
     
@@ -1335,7 +1448,7 @@ async def get_dashboard_summary(
     # Get currencies used in transactions
     currencies_used = await transactions_collection.distinct(
         "currency",
-        {"company_id": target_company_id, "status": {"$ne": "void"}}
+        {**query_filter, "status": {"$ne": "void"}}
     )
     
     return {
