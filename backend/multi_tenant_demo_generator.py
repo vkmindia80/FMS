@@ -285,7 +285,7 @@ async def create_company_with_demo_data(
         '_id': user_id,
         'id': user_id,
         'email': admin_email,
-        'password_hash': get_password_hash(admin_password),
+        'hashed_password': get_password_hash(admin_password),
         'full_name': f"Admin - {company_profile['name']}",
         'company_id': company_id,
         'role': 'admin',
