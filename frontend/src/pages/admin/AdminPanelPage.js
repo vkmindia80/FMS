@@ -378,8 +378,17 @@ const RolesTab = ({ roles, onEdit, onDelete }) => {
               {!role.is_system && (
                 <div className="flex gap-2">
                   <button
+                    onClick={() => window.location.href = `/admin/permission-template/${role.id}`}
+                    className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                    title="Edit in Permission Template"
+                    data-testid={`template-edit-btn-${role.id}`}
+                  >
+                    <ShieldCheckIcon className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => onEdit(role)}
                     className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    title="Quick Edit"
                     data-testid={`edit-role-btn-${role.id}`}
                   >
                     <PencilIcon className="w-4 h-4" />
@@ -387,6 +396,7 @@ const RolesTab = ({ roles, onEdit, onDelete }) => {
                   <button
                     onClick={() => onDelete(role)}
                     className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                    title="Delete"
                     data-testid={`delete-role-btn-${role.id}`}
                   >
                     <TrashIcon className="w-4 h-4" />
