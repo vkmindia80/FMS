@@ -375,6 +375,7 @@ const RolePermissionsPage = () => {
           </table>
         </div>
       </motion.div>
+      )}
 
       {/* Stats Footer */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
