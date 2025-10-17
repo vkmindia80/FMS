@@ -304,7 +304,8 @@ async def create_role(
         is_system=role_doc["is_system"],
         user_count=0,
         created_at=role_doc["created_at"],
-        updated_at=role_doc["updated_at"]
+        updated_at=role_doc["updated_at"],
+        applicable_on=role_doc["applicable_on"]
     )
 
 @rbac_router.get("/roles", response_model=List[RoleResponse])
