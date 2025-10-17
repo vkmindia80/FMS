@@ -837,3 +837,83 @@ async def check_superadmin_status(current_user: dict = Depends(get_current_user)
         "cross_tenant_access": is_super
 
     }
+
+
+
+@admin_router.post("/generate-multi-tenant-demo-data")
+async def generate_multi_tenant_demo_data_endpoint(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Generate comprehensive demo data for 3 companies and 2 individuals.
+    
+    Creates:
+    - 3 Company Tenants with different industry profiles:
+      1. TechVenture SaaS Inc (Technology - SaaS)
+      2. Strategic Advisory Group (Professional Services)
+      3. Urban Style Boutique (Retail E-commerce)
+    
+    - 2 Individual Users with personal finance data:
+      1. Alex Thompson (Young Professional)
+      2. Jordan Martinez (Freelancer)
+    
+    Each tenant gets:
+    - Company: ~1000 transactions, ~300 documents, 35-45 invoices, 30-40 bills
+    - Individual: ~200 transactions, ~60 documents
+    
+    Returns login credentials for all created tenants.
+    
+    ⚠️ WARNING: This will create new companies and users. Use for demo/testing only.
+    """
+    
+    # Check if user is superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    if not is_super:
+        # Regular admins can also generate demo data, but log it
+        logger.warning(f"Non-superadmin user {current_user['email']} generating multi-tenant demo data")
+    
+    try:
+        from multi_tenant_demo_generator import generate_all_multi_tenant_demo_data
+        
+        logger.info("="*80)
+        logger.info(f"Multi-tenant demo data generation initiated by: {current_user['email']}")
+        logger.info("="*80)
+        
+        # Generate all demo data
+        result = await generate_all_multi_tenant_demo_data(database)
+        
+        # Log audit event
+        await log_audit_event(
+            user_id=current_user["_id"],
+            company_id=current_user["company_id"],
+            action="multi_tenant_demo_data_generated",
+            details={
+                "companies_created": result['summary']['companies_created'],
+                "individuals_created": result['summary']['individuals_created'],
+                "total_accounts": result['summary']['total_accounts'],
+                "total_transactions": result['summary']['total_transactions'],
+                "total_documents": result['summary']['total_documents'],
+                "initiated_by": current_user['email']
+            }
+        )
+        
+        logger.info("✅ Multi-tenant demo data generation completed successfully!")
+        
+        return {
+            "success": True,
+            "message": "Multi-tenant demo data generated successfully",
+            "summary": result['summary'],
+            "companies": result['companies'],
+            "individuals": result['individuals'],
+            "credentials": result['credentials']
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error generating multi-tenant demo data: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate multi-tenant demo data: {str(e)}"
+        )
