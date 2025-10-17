@@ -244,6 +244,50 @@ export const currencyAPI = {
     api.post('/currency/rates', data).then((res) => res.data),
 };
 
+// RBAC API
+export const rbacAPI = {
+  // Roles
+  getRoles: (companyId = null) =>
+    api.get('/rbac/roles', { params: { company_id: companyId } }).then((res) => res.data),
+  
+  getRole: (roleId) =>
+    api.get(`/rbac/roles/${roleId}`).then((res) => res.data),
+  
+  createRole: (data) =>
+    api.post('/rbac/roles', data).then((res) => res.data),
+  
+  updateRole: (roleId, data) =>
+    api.put(`/rbac/roles/${roleId}`, data).then((res) => res.data),
+  
+  deleteRole: (roleId) =>
+    api.delete(`/rbac/roles/${roleId}`).then((res) => res.data),
+  
+  // Permissions
+  getPermissions: () =>
+    api.get('/rbac/permissions').then((res) => res.data),
+  
+  getPermission: (permissionId) =>
+    api.get(`/rbac/permissions/${permissionId}`).then((res) => res.data),
+  
+  // User Roles
+  getUserRoles: (userId) =>
+    api.get(`/rbac/users/${userId}/roles`).then((res) => res.data),
+  
+  assignRole: (userId, roleId) =>
+    api.post(`/rbac/users/${userId}/roles`, { role_id: roleId }).then((res) => res.data),
+  
+  removeRole: (userId, roleId) =>
+    api.delete(`/rbac/users/${userId}/roles/${roleId}`).then((res) => res.data),
+  
+  // Check permissions
+  checkPermission: (permissionName) =>
+    api.get('/rbac/check-permission', { params: { permission: permissionName } }).then((res) => res.data),
+  
+  // Menus
+  getMenus: () =>
+    api.get('/rbac/menus').then((res) => res.data),
+};
+
 // Health check
 export const healthAPI = {
   check: () => api.get('/health').then((res) => res.data),
