@@ -94,6 +94,7 @@ class RoleCreate(BaseModel):
     description: Optional[str] = None
     permission_ids: List[str] = []
     is_system: bool = False
+    applicable_on: Optional[str] = None  # "admin_users", "non_admin_users", or "all"
 
 class RoleUpdate(BaseModel):
     name: Optional[str] = None
