@@ -26,20 +26,13 @@ const RolePermissionsPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       
       // Fetch roles
-      const rolesResponse = await fetch(`${API_BASE_URL}/api/rbac/roles`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const rolesData = await rolesResponse.json();
+      const rolesData = await rbacAPI.getRoles();
       setRoles(rolesData);
 
       // Fetch permissions
-      const permissionsResponse = await fetch(`${API_BASE_URL}/api/rbac/permissions`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const permissionsData = await permissionsResponse.json();
+      const permissionsData = await rbacAPI.getPermissions();
       setPermissions(permissionsData);
 
       // Group permissions by resource
@@ -55,10 +48,7 @@ const RolePermissionsPage = () => {
       // Build role-permission mapping
       const mapping = {};
       for (const role of rolesData) {
-        const response = await fetch(`${API_BASE_URL}/api/rbac/roles/${role.id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const roleDetail = await response.json();
+        const roleDetail = await rbacAPI.getRole(role.id);
         mapping[role.id] = roleDetail.permission_ids || [];
       }
       setRolePermissions(mapping);
