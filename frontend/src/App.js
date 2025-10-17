@@ -28,6 +28,7 @@ import PaymentsPage from './pages/payments/PaymentsPage';
 import IntegrationPage from './pages/integration/IntegrationPage';
 import ReconciliationPage from './pages/reconciliation/ReconciliationPage';
 import SettingsPage from './pages/settings/SettingsPage';
+import HelpCenter from './components/HelpCenter';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
