@@ -333,6 +333,29 @@ async def root():
         "status": "operational"
     }
 
+@app.get("/api/download/user-guide")
+async def download_user_guide():
+    """Download the complete user guide PDF"""
+    try:
+        from user_guide_generator import generate_user_guide_pdf
+        
+        logger.info("Generating user guide PDF...")
+        pdf_data = generate_user_guide_pdf()
+        
+        return Response(
+            content=pdf_data,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=AFMS_User_Guide_{datetime.utcnow().strftime('%Y%m%d')}.pdf"
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error generating user guide PDF: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate user guide: {str(e)}"
+        )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
