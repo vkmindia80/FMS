@@ -57,7 +57,7 @@ class CompanyManagement(BaseModel):
     settings: CompanySettings
     is_active: bool
     user_count: int
-    created_at: datetime
+    created_at: Optional[datetime]
 
 class AuditLogEntry(BaseModel):
     id: str
