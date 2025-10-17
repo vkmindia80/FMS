@@ -27,8 +27,8 @@ const AdminPanelPage = () => {
       description: 'Configure role-based access control and permission management',
       icon: ShieldCheckIcon,
       color: 'purple',
-      href: '/admin/roles-permissions',
-      features: ['Role management', 'Permission assignment', 'Access control', 'Card & Table views']
+      href: '/admin/roles',
+      features: ['Create roles', 'Edit roles', 'Delete roles', 'Assign permissions']
     },
     {
       id: 'plans',
