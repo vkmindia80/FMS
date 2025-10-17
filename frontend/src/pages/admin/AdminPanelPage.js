@@ -296,7 +296,7 @@ const AdminPanelPage = () => {
 // USERS TAB
 // ============================================================================
 
-const UsersTab = ({ users, onManageRoles }) => {
+const UsersTab = ({ users, onManageRoles, onEdit, onDelete, onToggleActive }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="users-list">
       {users.length === 0 ? (
@@ -307,52 +307,84 @@ const UsersTab = ({ users, onManageRoles }) => {
       ) : (
         users.map((user) => (
           <div
-            key={user._id}
+            key={user.id}
             className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-lg transition-all"
-            data-testid={`user-card-${user._id}`}
+            data-testid={`user-card-${user.id}`}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {user.full_name?.charAt(0) || 'U'}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {user.full_name || 'Unknown User'}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
-                  </div>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                  {user.full_name?.charAt(0) || 'U'}
                 </div>
-                
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 dark:text-gray-400 w-20">Role:</span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {user.role || 'No role'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 dark:text-gray-400 w-20">Status:</span>
-                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
-                      user.is_active
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                    }`}>
-                      {user.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    {user.full_name || 'Unknown User'}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                 </div>
               </div>
             </div>
             
-            <button
-              onClick={() => onManageRoles(user)}
-              className="mt-4 w-full px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium"
-              data-testid={`manage-roles-btn-${user._id}`}
-            >
-              Manage Roles
-            </button>
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Company:</span>
+                <span className="font-medium text-gray-900 dark:text-white text-right">{user.company_name}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Role:</span>
+                <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-semibold capitalize">
+                  {user.role || 'No role'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Status:</span>
+                <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
+                  user.is_active
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                }`}>
+                  {user.is_active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => onManageRoles(user)}
+                className="flex-1 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium"
+                data-testid={`manage-roles-btn-${user.id}`}
+              >
+                Roles
+              </button>
+              <button
+                onClick={() => onEdit(user)}
+                className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                title="Edit"
+                data-testid={`edit-user-btn-${user.id}`}
+              >
+                <PencilIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => onToggleActive(user)}
+                className={`p-2 rounded-lg transition-colors ${
+                  user.is_active 
+                    ? 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30' 
+                    : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30'
+                }`}
+                title={user.is_active ? 'Disable' : 'Enable'}
+                data-testid={`toggle-user-btn-${user.id}`}
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => onDelete(user)}
+                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                title="Delete"
+                data-testid={`delete-user-btn-${user.id}`}
+              >
+                <TrashIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         ))
       )}
