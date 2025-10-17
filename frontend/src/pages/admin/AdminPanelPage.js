@@ -112,6 +112,20 @@ const AdminPanelPage = () => {
               </p>
             </div>
             
+            {activeTab === 'users' && (
+              <button
+                onClick={() => {
+                  setSelectedUser(null);
+                  setIsUserModalOpen(true);
+                }}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                data-testid="create-user-btn"
+              >
+                <PlusIcon className="w-5 h-5 mr-2" />
+                Create User
+              </button>
+            )}
+            
             {activeTab === 'roles' && (
               <div className="flex gap-3">
                 <button
