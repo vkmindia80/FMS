@@ -359,7 +359,7 @@ async def create_individual_with_demo_data(
         '_id': user_id,
         'id': user_id,
         'email': email,
-        'password_hash': get_password_hash(password),
+        'hashed_password': get_password_hash(password),
         'full_name': individual_profile['name'],
         'company_id': company_id,
         'role': 'individual',
