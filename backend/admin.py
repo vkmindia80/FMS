@@ -41,7 +41,7 @@ class UserManagement(BaseModel):
     is_system_user: bool
     company_ids: List[str]
     last_login: Optional[datetime]
-    created_at: datetime
+    created_at: Optional[datetime]
 
 class CompanySettings(BaseModel):
     base_currency: str
