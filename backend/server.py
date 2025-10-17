@@ -19,6 +19,89 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# RBAC INITIALIZATION HELPER
+# ============================================================================
+
+async def ensure_rbac_initialized():
+    """
+    Ensure RBAC system is initialized with superadmin on every startup.
+    This is a permanent fix for superadmin access issues.
+    """
+    try:
+        from database import permissions_collection, roles_collection, user_roles_collection
+        from auth import get_password_hash
+        
+        # Check if superadmin role exists
+        superadmin_role = await roles_collection.find_one({
+            "name": "superadmin",
+            "is_system": True
+        })
+        
+        if not superadmin_role:
+            logger.warning("⚠️  Superadmin role not found. Running init_rbac.py...")
+            import subprocess
+            result = subprocess.run(
+                ["python", "/app/backend/init_rbac.py"],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                logger.info("✅ RBAC initialized successfully")
+            else:
+                logger.error(f"❌ RBAC initialization failed: {result.stderr}")
+                return
+            
+            # Re-fetch superadmin role
+            superadmin_role = await roles_collection.find_one({
+                "name": "superadmin",
+                "is_system": True
+            })
+        
+        if superadmin_role:
+            logger.info(f"✅ Superadmin role verified: {superadmin_role['_id']}")
+            
+            # Ensure superadmin user exists and is active
+            superadmin_user = await users_collection.find_one({"email": "superadmin@afms.system"})
+            
+            if superadmin_user:
+                # Ensure user is active
+                if not superadmin_user.get("is_active", True):
+                    await users_collection.update_one(
+                        {"_id": superadmin_user["_id"]},
+                        {"$set": {"is_active": True}}
+                    )
+                    logger.info("✅ Activated superadmin user")
+                
+                # Ensure superadmin role is assigned
+                assignment = await user_roles_collection.find_one({
+                    "user_id": superadmin_user["_id"],
+                    "role_id": superadmin_role["_id"]
+                })
+                
+                if not assignment:
+                    assignment_id = str(uuid.uuid4())
+                    await user_roles_collection.insert_one({
+                        "_id": assignment_id,
+                        "user_id": superadmin_user["_id"],
+                        "role_id": superadmin_role["_id"],
+                        "company_id": superadmin_user["company_id"],
+                        "assigned_at": datetime.utcnow(),
+                        "assigned_by": "system"
+                    })
+                    logger.info("✅ Assigned superadmin role to superadmin user")
+                
+                logger.info("🔑 Superadmin login: superadmin@afms.system / admin123")
+            else:
+                logger.warning("⚠️  Superadmin user not found. Run fix_superadmin.py manually.")
+        else:
+            logger.error("❌ Failed to initialize superadmin role")
+            
+    except Exception as e:
+        logger.error(f"❌ RBAC initialization error: {e}")
+        import traceback
+        traceback.print_exc()
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Advanced Finance Management System",
