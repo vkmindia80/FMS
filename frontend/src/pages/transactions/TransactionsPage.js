@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { CreditCardIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { transactionsAPI } from '../../services/api';
 import CurrencySelector from '../../components/common/CurrencySelector';
+import { useSuperAdmin } from '../../contexts/SuperAdminContext';
 import toast from 'react-hot-toast';
 
 // Transaction management page with full functionality
 const TransactionsPage = () => {
+  const { selectedCompanyId } = useSuperAdmin();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,9 +26,10 @@ const TransactionsPage = () => {
     currency: 'USD',
   });
 
+  // Refetch transactions when company selection changes
   useEffect(() => {
     fetchTransactions();
-  }, [currentPage, filter]);
+  }, [currentPage, filter, selectedCompanyId]);
 
   const fetchTransactions = async () => {
     try {
