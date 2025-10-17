@@ -224,7 +224,10 @@ const UserManagementPage = () => {
           </p>
         </div>
         <button
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={() => {
+            console.log('Create User button clicked');
+            setIsCreateModalOpen(true);
+          }}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           data-testid="create-user-button"
         >
