@@ -157,11 +157,290 @@ async def list_all_users(
             company_id=user["company_id"],
             company_name=company.get("name", "Unknown"),
             is_active=user["is_active"],
+            is_system_user=user.get("is_system_user", False),
+            company_ids=user.get("company_ids", []),
             last_login=user.get("last_login"),
             created_at=user["created_at"]
         ))
     
     return response_users
+
+@admin_router.post("/users", response_model=UserManagement)
+async def create_user(
+    user_data: UserCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create a new user (Admin/Superadmin only)"""
+    
+    # Check permissions
+    is_super = await is_superadmin(current_user["_id"])
+    from rbac import has_permission
+    
+    if not is_super and not await has_permission(current_user["_id"], "users:create"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions to create users"
+        )
+    
+    # Company admins can only create users in their own company
+    if not is_super and user_data.company_id != current_user["company_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can only create users in your own company"
+        )
+    
+    # System users can only be created by superadmin
+    if user_data.is_system_user and not is_super:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only superadmin can create system users"
+        )
+    
+    # Check if user already exists
+    existing_user = await users_collection.find_one({"email": user_data.email})
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists"
+        )
+    
+    # Verify company exists
+    company = await companies_collection.find_one({"_id": user_data.company_id})
+    if not company:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Company not found"
+        )
+    
+    # Verify additional companies for system users
+    if user_data.is_system_user and user_data.company_ids:
+        for comp_id in user_data.company_ids:
+            comp = await companies_collection.find_one({"_id": comp_id})
+            if not comp:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Company {comp_id} not found"
+                )
+    
+    # Create user
+    user_id = str(uuid.uuid4())
+    hashed_password = get_password_hash(user_data.password)
+    
+    user_doc = {
+        "_id": user_id,
+        "email": user_data.email,
+        "password": hashed_password,
+        "full_name": user_data.full_name,
+        "role": user_data.role,
+        "company_id": user_data.company_id,
+        "is_system_user": user_data.is_system_user,
+        "company_ids": user_data.company_ids if user_data.is_system_user else [],
+        "is_active": True,
+        "created_at": datetime.utcnow(),
+        "last_login": None,
+        "preferences": {
+            "theme": "light",
+            "language": "en",
+            "notifications": True
+        }
+    }
+    
+    await users_collection.insert_one(user_doc)
+    
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="user_created",
+        details={
+            "created_user_id": user_id,
+            "email": user_data.email,
+            "company_id": user_data.company_id
+        }
+    )
+    
+    return UserManagement(
+        id=user_id,
+        email=user_data.email,
+        full_name=user_data.full_name,
+        role=user_data.role,
+        company_id=user_data.company_id,
+        company_name=company["name"],
+        is_active=True,
+        is_system_user=user_data.is_system_user,
+        company_ids=user_data.company_ids if user_data.is_system_user else [],
+        last_login=None,
+        created_at=datetime.utcnow()
+    )
+
+@admin_router.put("/users/{user_id}", response_model=UserManagement)
+async def update_user(
+    user_id: str,
+    user_data: UserUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update user details (Admin/Superadmin only)"""
+    
+    # Check permissions
+    is_super = await is_superadmin(current_user["_id"])
+    from rbac import has_permission
+    
+    if not is_super and not await has_permission(current_user["_id"], "users:edit"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions to update users"
+        )
+    
+    # Find user
+    user = await users_collection.find_one({"_id": user_id})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Company admins can only update users in their own company
+    if not is_super and user["company_id"] != current_user["company_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can only update users in your own company"
+        )
+    
+    # System user modifications only by superadmin
+    if user_data.is_system_user is not None and not is_super:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only superadmin can modify system user status"
+        )
+    
+    update_data = {}
+    
+    if user_data.email is not None:
+        # Check if email already exists for another user
+        existing = await users_collection.find_one({
+            "email": user_data.email,
+            "_id": {"$ne": user_id}
+        })
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already in use"
+            )
+        update_data["email"] = user_data.email
+    
+    if user_data.full_name is not None:
+        update_data["full_name"] = user_data.full_name
+    
+    if user_data.role is not None:
+        update_data["role"] = user_data.role
+    
+    if user_data.company_id is not None:
+        # Verify company exists
+        company = await companies_collection.find_one({"_id": user_data.company_id})
+        if not company:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Company not found"
+            )
+        update_data["company_id"] = user_data.company_id
+    
+    if user_data.is_system_user is not None:
+        update_data["is_system_user"] = user_data.is_system_user
+    
+    if user_data.company_ids is not None:
+        # Verify companies exist
+        for comp_id in user_data.company_ids:
+            comp = await companies_collection.find_one({"_id": comp_id})
+            if not comp:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Company {comp_id} not found"
+                )
+        update_data["company_ids"] = user_data.company_ids
+    
+    if update_data:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": update_data}
+        )
+    
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="user_updated",
+        details={"updated_user_id": user_id, "changes": update_data}
+    )
+    
+    # Get updated user
+    updated_user = await users_collection.find_one({"_id": user_id})
+    company = await companies_collection.find_one({"_id": updated_user["company_id"]})
+    
+    return UserManagement(
+        id=updated_user["_id"],
+        email=updated_user["email"],
+        full_name=updated_user["full_name"],
+        role=updated_user["role"],
+        company_id=updated_user["company_id"],
+        company_name=company.get("name", "Unknown") if company else "Unknown",
+        is_active=updated_user["is_active"],
+        is_system_user=updated_user.get("is_system_user", False),
+        company_ids=updated_user.get("company_ids", []),
+        last_login=updated_user.get("last_login"),
+        created_at=updated_user["created_at"]
+    )
+
+@admin_router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete/deactivate a user (Admin/Superadmin only)"""
+    
+    # Check permissions
+    is_super = await is_superadmin(current_user["_id"])
+    from rbac import has_permission
+    
+    if not is_super and not await has_permission(current_user["_id"], "users:delete"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions to delete users"
+        )
+    
+    # Find user
+    user = await users_collection.find_one({"_id": user_id})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Company admins can only delete users in their own company
+    if not is_super and user["company_id"] != current_user["company_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can only delete users in your own company"
+        )
+    
+    # Cannot delete yourself
+    if user_id == current_user["_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete your own account"
+        )
+    
+    # Soft delete - set is_active to False
+    await users_collection.update_one(
+        {"_id": user_id},
+        {"$set": {"is_active": False}}
+    )
+    
+    await log_audit_event(
+        user_id=current_user["_id"],
+        company_id=current_user["company_id"],
+        action="user_deleted",
+        details={"deleted_user_id": user_id, "email": user["email"]}
+    )
+    
+    return {"message": "User deactivated successfully"}
 
 @admin_router.get("/companies", response_model=List[CompanyManagement])
 async def list_all_companies(
