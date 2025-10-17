@@ -73,6 +73,7 @@ from email_config import router as email_config_router
 from payment_gateway_config import router as payment_gateway_router
 from settings import settings_router
 from rbac import rbac_router
+from plans import plans_router
 
 # Include all routers with API prefix
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
@@ -92,6 +93,7 @@ app.include_router(reconciliation_router, prefix="/api/reconciliation", tags=["R
 app.include_router(email_config_router, prefix="/api/email", tags=["Email Configuration"])
 app.include_router(payment_gateway_router, prefix="/api/integrations/payment", tags=["Payment Gateway Config"])
 app.include_router(rbac_router, prefix="/api/rbac", tags=["RBAC - Roles & Permissions"])
+app.include_router(plans_router, prefix="/api/plans", tags=["Plans Management"])
 
 @app.on_event("startup")
 async def startup_event():
