@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import CompanyFilter from '../common/CompanyFilter';
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
