@@ -1374,8 +1374,14 @@ async def get_dashboard_summary(
         
         current_month_profit = current_month_revenue - current_month_expenses
         
-        # Get aggregated account balances (simplified for all companies)
+        # Get aggregated cash balance (only liquid asset accounts: cash, checking, savings)
+        # This matches the logic used for single company view to ensure consistency
         accounts_pipeline = [
+            {"$match": {
+                "account_category": "assets",
+                "account_type": {"$in": ["cash", "checking", "savings"]},
+                "is_active": True
+            }},
             {"$group": {
                 "_id": None,
                 "total_balance": {"$sum": "$balance"}
