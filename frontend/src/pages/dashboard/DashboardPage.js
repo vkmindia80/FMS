@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useSuperAdmin } from '../../contexts/SuperAdminContext';
+import useCompanyFilter from '../../hooks/useCompanyFilter';
 import toast from 'react-hot-toast';
 import {
   BanknotesIcon,
@@ -37,6 +39,8 @@ import CurrencyConverter from '../../components/common/CurrencyConverter';
 const DashboardPage = () => {
   const { user } = useAuth();
   const { darkMode, currentScheme } = useTheme();
+  const { selectedCompanyId, getSelectedCompanyName } = useSuperAdmin();
+  const companyFilter = useCompanyFilter();
   const navigate = useNavigate();
   const [showAmounts, setShowAmounts] = useState(true);
   const [timeframe, setTimeframe] = useState('7d');
@@ -52,17 +56,25 @@ const DashboardPage = () => {
     transactions: 0,
     documents: 0,
     pendingApprovals: 0,
+    isAggregated: false,
+    companyCount: 0,
   });
 
-  // Fetch dashboard data
+  // Fetch dashboard data when company filter changes
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [selectedCompanyId]);
 
   const fetchDashboardData = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('afms_access_token');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/reports/dashboard-summary`, {
+      
+      // Build URL with company filter
+      const params = new URLSearchParams(companyFilter);
+      const url = `${process.env.REACT_APP_BACKEND_URL || ''}/api/reports/dashboard-summary${params.toString() ? '?' + params.toString() : ''}`;
+      
+      const response = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -76,10 +88,13 @@ const DashboardPage = () => {
           transactions: data.counts?.total_transactions || 0,
           documents: data.counts?.total_documents || 0,
           pendingApprovals: data.counts?.pending_transactions || 0,
+          isAggregated: data.summary?.aggregated || false,
+          companyCount: data.summary?.company_count || 0,
         });
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
