@@ -428,6 +428,9 @@ async def update_role(
             )
         update_data["permission_ids"] = role_data.permission_ids
     
+    if role_data.applicable_on is not None:
+        update_data["applicable_on"] = role_data.applicable_on
+    
     await roles_collection.update_one(
         {"_id": role_id},
         {"$set": update_data}
