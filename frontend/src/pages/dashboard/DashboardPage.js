@@ -291,11 +291,20 @@ const DashboardPage = () => {
       {/* Welcome Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {getGreeting()}, {user?.full_name?.split(' ')[0] || 'User'}! 👋
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {getGreeting()}, {user?.full_name?.split(' ')[0] || 'User'}! 👋
+            </h1>
+            {dashboardData.isAggregated && (
+              <span className="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-semibold rounded-full border border-purple-200 dark:border-purple-700">
+                📊 {dashboardData.companyCount} Companies
+              </span>
+            )}
+          </div>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Here's what's happening with your finances today.
+            {dashboardData.isAggregated 
+              ? `Viewing aggregated data across all companies` 
+              : `Here's what's happening with your finances today.`}
           </p>
         </div>
         
