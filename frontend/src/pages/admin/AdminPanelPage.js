@@ -21,7 +21,13 @@ import {
   deleteRole,
   getUsers,
   getUserRoles,
-  assignRolesToUser
+  assignRolesToUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  activateUser,
+  deactivateUser,
+  getCompanies
 } from '../../services/rbac';
 
 const AdminPanelPage = () => {
