@@ -364,6 +364,11 @@ const RolesTab = ({ roles, onEdit, onDelete }) => {
                       System
                     </span>
                   )}
+                  {role.applicable_on && role.applicable_on !== 'all' && (
+                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full font-semibold">
+                      {role.applicable_on === 'admin_users' ? 'Admin' : 'Non-Admin'}
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {role.description || 'No description'}
