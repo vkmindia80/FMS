@@ -525,8 +525,13 @@ const HelpCenter = () => {
               <p className="text-purple-100 text-sm mb-4">
                 Download the complete user manual
               </p>
-              <button className="text-sm font-medium underline hover:no-underline">
-                Coming Soon
+              <button 
+                onClick={handleDownloadPDF}
+                disabled={downloading}
+                className="bg-white text-purple-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                data-testid="download-user-guide-btn"
+              >
+                {downloading ? 'Downloading...' : 'Download PDF'}
               </button>
             </div>
           </div>
