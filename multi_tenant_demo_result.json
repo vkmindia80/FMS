@@ -1,0 +1,132 @@
+{
+  "success": true,
+  "message": "Multi-tenant demo data generated successfully",
+  "summary": {
+    "companies_created": 3,
+    "individuals_created": 2,
+    "total_tenants": 5,
+    "total_accounts": 101,
+    "total_transactions": 3329,
+    "total_documents": 843,
+    "total_invoices": 122,
+    "total_bills": 105,
+    "total_payment_transactions": 195,
+    "total_bank_connections": 6
+  },
+  "companies": [
+    {
+      "company_id": "adb5470c-7739-4636-80b4-23c6429e303e",
+      "company_name": "TechVenture SaaS Inc",
+      "industry": "Technology - SaaS",
+      "user_id": "cdd5708b-cc6e-41cd-91f2-1857329f094f",
+      "email": "admin@techventure.demo",
+      "password": "Demo123!",
+      "demo_data": {
+        "accounts_created": 19,
+        "transactions_created": 1020,
+        "documents_created": 256,
+        "invoices_created": 39,
+        "bills_created": 36,
+        "payment_transactions_created": 62,
+        "bank_connections_created": 2
+      }
+    },
+    {
+      "company_id": "48041b0f-46b2-4f4b-9554-39fbc84ad8c8",
+      "company_name": "Strategic Advisory Group",
+      "industry": "Professional Services - Consulting",
+      "user_id": "7195c9d7-a396-46a0-989a-6e7d02e7d9d0",
+      "email": "admin@strategicadvisory.demo",
+      "password": "Demo123!",
+      "demo_data": {
+        "accounts_created": 24,
+        "transactions_created": 793,
+        "documents_created": 230,
+        "invoices_created": 43,
+        "bills_created": 34,
+        "payment_transactions_created": 69,
+        "bank_connections_created": 2
+      }
+    },
+    {
+      "company_id": "b969087e-70ae-4ed6-b10d-1e3a20e87ea6",
+      "company_name": "Urban Style Boutique",
+      "industry": "Retail - E-commerce",
+      "user_id": "33255fa9-8b18-4770-b16e-c29560a4597a",
+      "email": "admin@urbanstyle.demo",
+      "password": "Demo123!",
+      "demo_data": {
+        "accounts_created": 20,
+        "transactions_created": 1120,
+        "documents_created": 300,
+        "invoices_created": 40,
+        "bills_created": 35,
+        "payment_transactions_created": 64,
+        "bank_connections_created": 2
+      }
+    }
+  ],
+  "individuals": [
+    {
+      "company_id": "b63f74f3-3f08-4422-85bc-20988d57842a",
+      "user_type": "Individual",
+      "name": "Alex Thompson",
+      "user_id": "4b508c67-aa12-49d7-897c-3866cdf90706",
+      "email": "alex.thompson@demo.com",
+      "password": "Demo123!",
+      "demo_data": {
+        "accounts_created": 19,
+        "transactions_created": 193,
+        "documents_created": 27
+      }
+    },
+    {
+      "company_id": "1fbc494d-ffaa-4efe-b778-31f589bc3a7b",
+      "user_type": "Individual",
+      "name": "Jordan Martinez",
+      "user_id": "893e84f9-f257-4330-bc03-0310d3cc8933",
+      "email": "jordan.martinez@demo.com",
+      "password": "Demo123!",
+      "demo_data": {
+        "accounts_created": 19,
+        "transactions_created": 203,
+        "documents_created": 30
+      }
+    }
+  ],
+  "credentials": [
+    {
+      "type": "Company",
+      "name": "TechVenture SaaS Inc",
+      "industry": "Technology - SaaS",
+      "email": "admin@techventure.demo",
+      "password": "Demo123!"
+    },
+    {
+      "type": "Company",
+      "name": "Strategic Advisory Group",
+      "industry": "Professional Services - Consulting",
+      "email": "admin@strategicadvisory.demo",
+      "password": "Demo123!"
+    },
+    {
+      "type": "Company",
+      "name": "Urban Style Boutique",
+      "industry": "Retail - E-commerce",
+      "email": "admin@urbanstyle.demo",
+      "password": "Demo123!"
+    },
+    {
+      "type": "Individual",
+      "name": "Alex Thompson",
+      "email": "alex.thompson@demo.com",
+      "password": "Demo123!"
+    },
+    {
+      "type": "Individual",
+      "name": "Jordan Martinez",
+      "email": "jordan.martinez@demo.com",
+      "password": "Demo123!"
+    }
+  ]
+}
