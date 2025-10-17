@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { rbacAPI } from '../../services/api';
 import {
   ShieldCheckIcon,
   PencilSquareIcon,
@@ -9,8 +10,6 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const RolePermissionsPage = () => {
   const [roles, setRoles] = useState([]);
