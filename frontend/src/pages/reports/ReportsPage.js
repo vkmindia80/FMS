@@ -8,10 +8,12 @@ import {
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSuperAdmin } from '../../contexts/SuperAdminContext';
 import CurrencySelector from '../../components/common/CurrencySelector';
 
 const ReportsPage = () => {
   const { getAccessToken } = useAuth();
+  const { selectedCompanyId } = useSuperAdmin();
   const [selectedReport, setSelectedReport] = useState(null);
   const [period, setPeriod] = useState('current_month');
   const [loading, setLoading] = useState(false);
