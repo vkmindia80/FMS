@@ -54,8 +54,12 @@ const AdminPanelPage = () => {
     setLoading(true);
     try {
       if (activeTab === 'users') {
-        const usersData = await getUsers();
+        const [usersData, companiesData] = await Promise.all([
+          getUsers(),
+          getCompanies().catch(() => [])
+        ]);
         setUsers(usersData);
+        setCompanies(companiesData);
       } else if (activeTab === 'roles') {
         const rolesData = await getRoles();
         setRoles(rolesData);
