@@ -149,6 +149,26 @@ const RolePermissionsPage = () => {
             Manage permissions for each role using the grid below
           </p>
         </div>
+        
+        {/* View Mode Toggle */}
+        <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('card')}
+            className={`p-2 rounded flex items-center space-x-2 ${viewMode === 'card' ? 'bg-white dark:bg-gray-600 shadow' : ''}`}
+            data-testid="roles-card-view-button"
+          >
+            <Squares2X2Icon className="h-5 w-5" />
+            <span className="text-sm font-medium">Card</span>
+          </button>
+          <button
+            onClick={() => setViewMode('table')}
+            className={`p-2 rounded flex items-center space-x-2 ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 shadow' : ''}`}
+            data-testid="roles-table-view-button"
+          >
+            <TableCellsIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Table</span>
+          </button>
+        </div>
       </div>
 
       {/* Info Banner */}
