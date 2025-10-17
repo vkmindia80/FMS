@@ -171,6 +171,10 @@ async def startup_event():
         await menus_collection.create_index([("name", 1)], unique=True)
         await menus_collection.create_index([("parent_id", 1), ("order", 1)])
         
+        # Initialize RBAC and ensure superadmin exists
+        logger.info("🛡️  Ensuring RBAC system is initialized...")
+        await ensure_rbac_initialized()
+        
         # Phase 13: Initialize exchange rates and start scheduler
         logger.info("💱 Initializing multi-currency support...")
         from currency_tasks import initialize_exchange_rates, start_currency_scheduler
