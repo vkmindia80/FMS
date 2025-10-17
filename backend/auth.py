@@ -355,7 +355,7 @@ async def login_user(user_credentials: UserLogin, request: Request):
         )
     
     # Verify password
-    if not verify_password(user_credentials.password, user["password"]):
+    if not verify_password(user_credentials.password, user.get("hashed_password", user.get("password", ""))):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
