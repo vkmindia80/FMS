@@ -5,13 +5,30 @@ from datetime import datetime, date, timedelta
 from enum import Enum
 import uuid
 from database import database, users_collection, companies_collection, audit_logs_collection
-from auth import get_current_user, log_audit_event, UserRole, require_admin, require_corporate_or_above
+from auth import get_current_user, log_audit_event, UserRole, require_admin, require_corporate_or_above, get_password_hash
 from rbac import is_superadmin
 import logging
 
 logger = logging.getLogger(__name__)
 
 admin_router = APIRouter()
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+    role: UserRole = UserRole.INDIVIDUAL
+    company_id: str
+    is_system_user: bool = False
+    company_ids: List[str] = []  # For system users
+
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+    role: Optional[UserRole] = None
+    company_id: Optional[str] = None
+    is_system_user: Optional[bool] = None
+    company_ids: Optional[List[str]] = None
 
 class UserManagement(BaseModel):
     id: str
@@ -21,6 +38,8 @@ class UserManagement(BaseModel):
     company_id: str
     company_name: str
     is_active: bool
+    is_system_user: bool
+    company_ids: List[str]
     last_login: Optional[datetime]
     created_at: datetime
 
