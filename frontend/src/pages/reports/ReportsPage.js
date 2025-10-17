@@ -112,6 +112,11 @@ const ReportsPage = () => {
         url += `&display_currency=${displayCurrency}`;
       }
 
+      // Add company_id for Super Admin filtering
+      if (selectedCompanyId) {
+        url += `&company_id=${selectedCompanyId}`;
+      }
+
       console.log('Generating report:', url);
 
       const response = await fetch(url, {
