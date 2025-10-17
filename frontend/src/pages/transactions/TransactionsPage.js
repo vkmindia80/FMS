@@ -53,6 +53,11 @@ const TransactionsPage = () => {
         queryParams.append('search', searchTerm);
       }
 
+      // Add company_id for Super Admin filtering
+      if (selectedCompanyId) {
+        queryParams.append('company_id', selectedCompanyId);
+      }
+
       console.log('Fetching transactions with params:', Object.fromEntries(queryParams));
       
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/transactions/?${queryParams}`, {
