@@ -59,6 +59,18 @@ class CompanyManagement(BaseModel):
     user_count: int
     created_at: Optional[datetime]
 
+class TenantCreate(BaseModel):
+    name: str
+    type: str  # "company" or "individual"
+    base_currency: str = "USD"
+    fiscal_year_start: str = "01-01"
+    date_format: str = "MM/DD/YYYY"
+    number_format: str = "US"
+    timezone: str = "UTC"
+    admin_email: Optional[EmailStr] = None
+    admin_full_name: Optional[str] = None
+    admin_password: Optional[str] = None
+
 class AuditLogEntry(BaseModel):
     id: str
     user_id: str
