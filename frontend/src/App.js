@@ -299,6 +299,17 @@ function AppContent() {
           />
           
           <Route 
+            path="/admin/tenants" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <TenantManagementPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
             path="/admin/users" 
             element={
               <ProtectedRoute>
