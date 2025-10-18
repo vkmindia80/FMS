@@ -5,7 +5,8 @@ import {
   UserGroupIcon, 
   ShieldCheckIcon, 
   RectangleStackIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 
 const AdminPanelPage = () => {
