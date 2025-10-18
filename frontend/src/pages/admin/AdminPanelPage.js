@@ -53,6 +53,11 @@ const AdminPanelPage = () => {
 
   const getColorClasses = (color) => {
     const colors = {
+      orange: {
+        gradient: 'from-orange-500 to-orange-600',
+        icon: 'text-orange-600',
+        badge: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+      },
       blue: {
         gradient: 'from-blue-500 to-blue-600',
         icon: 'text-blue-600',
