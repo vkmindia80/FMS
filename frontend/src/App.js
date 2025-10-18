@@ -23,6 +23,7 @@ import RolesManagementPage from './pages/admin/RolesManagementPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import PlansManagementPage from './pages/admin/PlansManagementPage';
 import PermissionTemplatePage from './pages/admin/PermissionTemplatePage';
+import TenantManagementPage from './pages/admin/TenantManagementPage';
 import BankingPage from './pages/banking/BankingPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import IntegrationPage from './pages/integration/IntegrationPage';
