@@ -512,6 +512,117 @@ async def list_all_companies(
     
     return response_companies
 
+@admin_router.post("/tenants", status_code=status.HTTP_201_CREATED)
+async def create_tenant(
+    tenant_data: TenantCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Create a new tenant (company or individual)
+    Only Super Admin can create tenants
+    """
+    
+    # Check if user is superadmin
+    is_super = await is_superadmin(current_user["_id"])
+    
+    if not is_super:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Super Admin can create tenants"
+        )
+    
+    logger.info(f"🏢 Super Admin {current_user['email']} creating new tenant: {tenant_data.name}")
+    
+    # Generate company/tenant ID
+    tenant_id = str(uuid.uuid4())
+    
+    # Create company/tenant document
+    company_doc = {
+        "_id": tenant_id,
+        "name": tenant_data.name,
+        "type": tenant_data.type,
+        "settings": {
+            "base_currency": tenant_data.base_currency,
+            "fiscal_year_start": tenant_data.fiscal_year_start,
+            "date_format": tenant_data.date_format,
+            "number_format": tenant_data.number_format,
+            "timezone": tenant_data.timezone
+        },
+        "is_active": True,
+        "created_at": datetime.utcnow(),
+        "created_by": current_user["_id"]
+    }
+    
+    try:
+        # Insert company/tenant
+        await companies_collection.insert_one(company_doc)
+        logger.info(f"✅ Tenant created: {tenant_id} - {tenant_data.name}")
+        
+        # Create admin user if credentials provided
+        admin_user_id = None
+        if tenant_data.admin_email and tenant_data.admin_password:
+            admin_user_id = str(uuid.uuid4())
+            hashed_password = get_password_hash(tenant_data.admin_password)
+            
+            admin_user_doc = {
+                "_id": admin_user_id,
+                "email": tenant_data.admin_email,
+                "hashed_password": hashed_password,
+                "full_name": tenant_data.admin_full_name or f"Admin - {tenant_data.name}",
+                "role": UserRole.ADMIN,
+                "company_id": tenant_id,
+                "is_active": True,
+                "is_system_user": False,
+                "company_ids": [],
+                "created_at": datetime.utcnow(),
+                "last_login": None
+            }
+            
+            try:
+                await users_collection.insert_one(admin_user_doc)
+                logger.info(f"✅ Admin user created for tenant: {tenant_data.admin_email}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create admin user: {e}")
+                # Don't fail tenant creation if admin user creation fails
+        
+        # Create default accounts for tenant
+        from accounts import create_default_accounts
+        try:
+            account_ids = await create_default_accounts(tenant_id)
+            logger.info(f"✅ Default accounts created for tenant: {len(account_ids)} accounts")
+        except Exception as e:
+            logger.error(f"⚠️  Failed to create default accounts: {e}")
+            # Don't fail tenant creation
+        
+        # Log audit event
+        await log_audit_event(
+            user_id=current_user["_id"],
+            company_id=current_user["company_id"],
+            action="tenant_created",
+            details={
+                "tenant_id": tenant_id,
+                "tenant_name": tenant_data.name,
+                "tenant_type": tenant_data.type,
+                "admin_user_id": admin_user_id,
+                "admin_email": tenant_data.admin_email
+            }
+        )
+        
+        return {
+            "message": "Tenant created successfully",
+            "tenant_id": tenant_id,
+            "tenant_name": tenant_data.name,
+            "admin_user_id": admin_user_id,
+            "admin_email": tenant_data.admin_email
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to create tenant: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create tenant: {str(e)}"
+        )
+
 @admin_router.get("/audit-logs", response_model=List[AuditLogEntry])
 async def list_audit_logs(
     company_id: Optional[str] = None,
