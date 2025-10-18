@@ -13,6 +13,15 @@ const AdminPanelPage = () => {
 
   const adminSections = [
     {
+      id: 'tenants',
+      name: 'Tenant Management',
+      description: 'Create and manage companies and individual tenants',
+      icon: BuildingOfficeIcon,
+      color: 'orange',
+      href: '/admin/tenants',
+      features: ['Create tenants', 'Company or Individual', 'Auto-setup accounts', 'Admin user creation']
+    },
+    {
       id: 'users',
       name: 'User Management',
       description: 'Create, edit, and manage user accounts across your organization',
