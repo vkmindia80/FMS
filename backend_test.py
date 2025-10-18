@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class AFMSBackendTester:
-    def __init__(self, base_url="https://data-populator.preview.emergentagent.com"):
+    def __init__(self, base_url="https://github-connect-22.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.refresh_token = None
@@ -637,9 +637,9 @@ def main():
     """Main test execution"""
     print("Advanced Finance Management System - Backend API Tests")
     print("Testing against demo credentials: john.doe@testcompany.com")
-    print("Using public endpoint: https://data-populator.preview.emergentagent.com")
+    print("Using public endpoint: https://github-connect-22.preview.emergentagent.com")
     
-    tester = AFMSBackendTester("https://data-populator.preview.emergentagent.com")
+    tester = AFMSBackendTester("https://github-connect-22.preview.emergentagent.com")
     
     try:
         success = tester.run_all_tests()

@@ -39,7 +39,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 
 1. **Navigate to the application:**
    ```
-   https://data-populator.preview.emergentagent.com/login
+   https://github-connect-22.preview.emergentagent.com/login
    ```
 
 2. **Click "Demo Login" button** (blue button in the demo account section)
@@ -103,7 +103,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 ```bash
 # From backend
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  "https://data-populator.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
+  "https://github-connect-22.preview.emergentagent.com/api/reports/profit-loss?format=pdf"
 ```
 
 ### All Export Formats Working
