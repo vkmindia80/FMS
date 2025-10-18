@@ -217,6 +217,9 @@ export const adminAPI = {
     api.post('/admin/maintenance/cleanup-audit-logs', null, {
       params: { days_to_keep: daysToKeep },
     }).then((res) => res.data),
+  
+  createTenant: (tenantData) =>
+    api.post('/admin/tenants', tenantData).then((res) => res.data),
 };
 
 // Currency API
