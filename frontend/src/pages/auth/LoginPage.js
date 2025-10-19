@@ -14,7 +14,15 @@ import {
   ShieldCheckIcon,
   ChartBarIcon,
   DocumentTextIcon,
-  CircleStackIcon
+  CircleStackIcon,
+  CurrencyDollarIcon,
+  BanknotesIcon,
+  ClockIcon,
+  CheckBadgeIcon,
+  RocketLaunchIcon,
+  ArrowTrendingUpIcon,
+  GlobeAltIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
