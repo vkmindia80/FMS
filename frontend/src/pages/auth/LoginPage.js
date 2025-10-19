@@ -604,88 +604,188 @@ const LoginPage = () => {
 
       {/* Right side - Enhanced Feature Showcase */}
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 overflow-hidden">
+          {/* Animated Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+            <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
           </div>
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-indigo-900/80 to-purple-900/80"></div>
           
-          <div className="relative flex flex-col justify-center h-full px-12 text-white">
-            <div className="max-w-lg">
-              {/* Main Content */}
-              <div className="mb-8">
-                <h1 className="text-5xl font-bold mb-6 leading-tight">
+          <div className="relative flex flex-col justify-center h-full px-12 py-12 text-white overflow-y-auto">
+            <div className="max-w-xl">
+              {/* Main Heading */}
+              <div className="mb-10 animate-fade-in">
+                <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
+                  <RocketLaunchIcon className="h-5 w-5 mr-2 text-blue-300" />
+                  <span className="text-sm font-medium text-blue-100">Enterprise Finance Platform</span>
+                </div>
+                
+                <h1 className="text-6xl font-bold mb-6 leading-tight">
                   Advanced
                   <br />
-                  <span className="bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
                     Finance Management
                   </span>
+                  <br />
+                  <span className="text-4xl text-blue-200">System</span>
                 </h1>
-                <p className="text-xl text-blue-100 leading-relaxed">
-                  Transform your financial operations with AI-powered insights, automated workflows, and enterprise-grade security.
+                <p className="text-xl text-blue-100 leading-relaxed font-light">
+                  Enterprise-grade financial management with AI-powered insights, multi-currency support, and real-time analytics.
                 </p>
               </div>
 
-              {/* Feature Grid */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <DocumentTextIcon className="w-4 h-4 text-blue-300" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-blue-100">Smart OCR Processing</h3>
-                      <p className="text-sm text-blue-200/70">Automated document extraction</p>
+              {/* Key Features Grid */}
+              <div className="space-y-4 mb-10">
+                <h2 className="text-2xl font-bold mb-6 text-white flex items-center">
+                  <SparklesIcon className="h-6 w-6 mr-2 text-yellow-300" />
+                  Powerful Features
+                </h2>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Feature 1 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-blue-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <DocumentTextIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Smart Document Processing
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">AI-powered OCR extracts data from invoices, receipts, and bank statements automatically</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                      <ShieldCheckIcon className="w-4 h-4 text-purple-300" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-blue-100">Enterprise Security</h3>
-                      <p className="text-sm text-blue-200/70">Bank-level encryption</p>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                      <ChartBarIcon className="w-4 h-4 text-indigo-300" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-blue-100">Real-time Analytics</h3>
-                      <p className="text-sm text-blue-200/70">Live financial insights</p>
+                  {/* Feature 2 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-purple-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <GlobeAltIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Multi-Currency Support
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">164+ currencies with real-time exchange rates and automated conversions</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                      <SparklesIcon className="w-4 h-4 text-green-300" />
+
+                  {/* Feature 3 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-indigo-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <ChartBarIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Real-Time Analytics
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">P&L, Balance Sheet, Cash Flow reports with interactive dashboards</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-medium text-blue-100">AI Automation</h3>
-                      <p className="text-sm text-blue-200/70">Smart categorization</p>
+                  </div>
+
+                  {/* Feature 4 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-green-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <ShieldCheckIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Enterprise Security
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">Role-based access control, audit logs, and bank-grade encryption</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Feature 5 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-pink-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <CreditCardIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Payment Integration
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">Stripe, bank connections, and automated reconciliation</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Feature 6 */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:border-yellow-400/50">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <ClockIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-1 flex items-center">
+                          Automated Workflows
+                          <CheckBadgeIcon className="h-4 w-4 ml-2 text-green-400" />
+                        </h3>
+                        <p className="text-sm text-blue-200/80">Scheduled reports, automatic categorization, and smart notifications</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="flex space-x-8 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-white">99.9%</div>
-                  <div className="text-sm text-blue-200">Uptime</div>
+              {/* Stats Section */}
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <ArrowTrendingUpIcon className="h-8 w-8 text-green-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">99.9%</div>
+                    <div className="text-sm text-blue-200">Uptime SLA</div>
+                  </div>
+                  <div className="text-center border-l border-r border-white/10">
+                    <div className="flex items-center justify-center mb-2">
+                      <BuildingOfficeIcon className="h-8 w-8 text-blue-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">10K+</div>
+                    <div className="text-sm text-blue-200">Companies</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <CurrencyDollarIcon className="h-8 w-8 text-yellow-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">50M+</div>
+                    <div className="text-sm text-blue-200">Transactions</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">10K+</div>
-                  <div className="text-sm text-blue-200">Companies</div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="mt-8 flex items-center justify-center space-x-6 opacity-60">
+                <div className="flex items-center space-x-2">
+                  <ShieldCheckIcon className="h-5 w-5 text-green-400" />
+                  <span className="text-sm text-blue-200">SOC 2 Certified</span>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">50M+</div>
-                  <div className="text-sm text-blue-200">Transactions</div>
+                <div className="w-px h-4 bg-white/20"></div>
+                <div className="flex items-center space-x-2">
+                  <CheckBadgeIcon className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm text-blue-200">GDPR Compliant</span>
+                </div>
+                <div className="w-px h-4 bg-white/20"></div>
+                <div className="flex items-center space-x-2">
+                  <LockClosedIcon className="h-5 w-5 text-purple-400" />
+                  <span className="text-sm text-blue-200">256-bit SSL</span>
                 </div>
               </div>
             </div>
